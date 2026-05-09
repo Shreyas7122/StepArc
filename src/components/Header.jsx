@@ -1,4 +1,4 @@
-import { Target } from 'lucide-react';
+import { Activity } from 'lucide-react';
 
 const Header = () => (
   <header className="header animate-slide-up">
@@ -6,10 +6,10 @@ const Header = () => (
       <div className="date-text">
         {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
       </div>
-      <h1>MacroTrack</h1>
+      <h1 className="app-title">StepArc</h1>
     </div>
-    <div style={{ background: 'rgba(255,255,255,0.1)', padding: '10px', borderRadius: '50%' }}>
-      <Target color="var(--primary-color)" size={24} />
+    <div className="logo-icon">
+      <Activity color="white" size={22} strokeWidth={2.5} />
     </div>
   </header>
 );

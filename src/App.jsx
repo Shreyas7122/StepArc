@@ -45,13 +45,20 @@ export default function App() {
   const totals = useMemo(() => {
     let p = 0, c = 0, f = 0, calIn = 0;
     foodLogs.forEach(log => {
-      const item = foodDatabase.find(food => food.id === log.foodId);
-      if (item) {
-        const multiplier = log.amount / 100;
-        p += item.protein * multiplier;
-        c += item.carbs * multiplier;
-        f += item.fats * multiplier;
-        calIn += item.calories * multiplier;
+      if (log.aiMacros) {
+        p += log.aiMacros.protein;
+        c += log.aiMacros.carbs;
+        f += log.aiMacros.fats;
+        calIn += log.aiMacros.calories;
+      } else {
+        const item = foodDatabase.find(food => food.id === log.foodId);
+        if (item) {
+          const multiplier = log.amount / 100;
+          p += item.protein * multiplier;
+          c += item.carbs * multiplier;
+          f += item.fats * multiplier;
+          calIn += item.calories * multiplier;
+        }
       }
     });
 
@@ -130,6 +137,11 @@ export default function App() {
 
   const handleDeleteFoodLog = (id) => {
     setFoodLogs(prev => prev.filter(log => log.id !== id));
+  };
+
+  const handleAILog = ({ name, aiMacros }) => {
+    setFoodLogs(prev => [...prev, { id: Date.now(), name, aiMacros }]);
+    setActiveTab('dashboard');
   };
 
 
@@ -225,7 +237,7 @@ export default function App() {
       {activeTab === 'dashboard' && (
         <>
           <Dashboard totals={totals} steps={steps} />
-          <AIInput />
+          <AIInput caloriesLoggedToday={totals.calIn} onLogMeal={handleAILog} />
           <LogList 
             foodLogs={foodLogs} 
             workoutLogs={workoutLogs} 

@@ -1,31 +1,29 @@
+import { LayoutDashboard, Utensils, Dumbbell } from 'lucide-react';
+
+const TABS = [
+  { id: 'dashboard', label: 'Overview', Icon: LayoutDashboard },
+  { id: 'food',      label: 'Nutrition', Icon: Utensils },
+  { id: 'workout',   label: 'Training',  Icon: Dumbbell },
+];
+
 const TabBar = ({ activeTab, setActiveTab, onResetDrafts }) => {
   const handleTabClick = (tab) => {
     setActiveTab(tab);
-    if (tab === 'food' || tab === 'workout') {
-      onResetDrafts();
-    }
+    if (tab === 'food' || tab === 'workout') onResetDrafts();
   };
 
   return (
     <div className="tabs animate-slide-up delay-1">
-      <div
-        className={`tab ${activeTab === 'dashboard' ? 'active' : ''}`}
-        onClick={() => handleTabClick('dashboard')}
-      >
-        Overview
-      </div>
-      <div
-        className={`tab ${activeTab === 'food' ? 'active' : ''}`}
-        onClick={() => handleTabClick('food')}
-      >
-        Log Food
-      </div>
-      <div
-        className={`tab ${activeTab === 'workout' ? 'active' : ''}`}
-        onClick={() => handleTabClick('workout')}
-      >
-        Log Workout
-      </div>
+      {TABS.map(({ id, label, Icon }) => (
+        <div
+          key={id}
+          className={`tab ${activeTab === id ? 'active' : ''}`}
+          onClick={() => handleTabClick(id)}
+        >
+          <Icon size={15} strokeWidth={2} />
+          <span>{label}</span>
+        </div>
+      ))}
     </div>
   );
 };

@@ -40,24 +40,38 @@ const LogList = ({ foodLogs, workoutLogs, onUpdateFoodLog, onDeleteFoodLog, onUp
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {foodLogs.map(log => {
-              const isEditing = editingFoodId === log.id;
-              const foodItem = foodDatabase.find(f => f.id === log.foodId);
-              const cal = foodItem ? Math.round((foodItem.calories * log.amount) / 100) : 0;
+              const isAI = !!log.aiMacros;
+              const isEditing = !isAI && editingFoodId === log.id;
+              const foodItem = isAI ? null : foodDatabase.find(f => f.id === log.foodId);
+              const cal = isAI
+                ? Math.round(log.aiMacros.calories)
+                : foodItem ? Math.round((foodItem.calories * log.amount) / 100) : 0;
+              const displayName = log.name || foodItem?.name;
 
               return (
                 <div key={log.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(0,0,0,0.2)', padding: '10px 12px', borderRadius: '12px' }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '0.9rem', fontWeight: 500 }}>{log.name || foodItem?.name}</div>
-                    {!isEditing && <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{log.amount}g • <span style={{ color: 'var(--calories-color)' }}>{cal} kcal</span></div>}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{displayName}</span>
+                      {isAI && <span style={{ fontSize: '0.6rem', background: 'rgba(99,102,241,0.2)', color: 'var(--primary-color)', padding: '1px 6px', borderRadius: '999px', fontWeight: 700 }}>AI</span>}
+                    </div>
+                    {!isEditing && (
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                        {isAI
+                          ? <>P {log.aiMacros.protein.toFixed(1)}g · C {log.aiMacros.carbs.toFixed(1)}g · F {log.aiMacros.fats.toFixed(1)}g · <span style={{ color: 'var(--calories-color)' }}>{cal} kcal</span></>
+                          : <>{log.amount}g · <span style={{ color: 'var(--calories-color)' }}>{cal} kcal</span></>
+                        }
+                      </div>
+                    )}
                   </div>
-                  
+
                   {isEditing ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <input 
-                        type="number" 
-                        value={editFoodAmount} 
-                        onChange={(e) => setEditFoodAmount(e.target.value)} 
-                        style={{ width: '70px', padding: '6px', margin: 0, fontSize: '0.9rem' }} 
+                      <input
+                        type="number"
+                        value={editFoodAmount}
+                        onChange={(e) => setEditFoodAmount(e.target.value)}
+                        style={{ width: '70px', padding: '6px', margin: 0, fontSize: '0.9rem' }}
                         autoFocus
                       />
                       <button onClick={() => saveEditFood(log.id)} style={{ padding: '6px', width: 'auto', background: '#10b981' }}><Check size={14} /></button>
@@ -65,7 +79,7 @@ const LogList = ({ foodLogs, workoutLogs, onUpdateFoodLog, onDeleteFoodLog, onUp
                     </div>
                   ) : (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <button onClick={() => startEditFood(log)} style={{ padding: '6px', width: 'auto', background: 'transparent', color: 'var(--text-secondary)' }}><Edit2 size={16} /></button>
+                      {!isAI && <button onClick={() => startEditFood(log)} style={{ padding: '6px', width: 'auto', background: 'transparent', color: 'var(--text-secondary)' }}><Edit2 size={16} /></button>}
                       <button onClick={() => onDeleteFoodLog(log.id)} style={{ padding: '6px', width: 'auto', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}><X size={16} /></button>
                     </div>
                   )}

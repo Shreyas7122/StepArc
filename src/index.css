@@ -79,11 +79,22 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 8px;
 }
 
-.header h1 {
-  font-size: 1.75rem;
-  background: linear-gradient(to right, #fff, #a5b4fc);
+.app-title {
+  font-size: 1.85rem;
+  background: linear-gradient(110deg, #fff 30%, #a5b4fc 70%, #f472b6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  letter-spacing: -0.03em;
+}
+
+.logo-icon {
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  padding: 10px;
+  border-radius: 14px;
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .date-text {
@@ -218,28 +229,66 @@ button.secondary:hover {
 /* Tabs */
 .tabs {
   display: flex;
-  gap: 8px;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 4px;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 5px;
   border-radius: 16px;
+  border: 1px solid var(--surface-border);
 }
 
 .tab {
   flex: 1;
-  padding: 10px;
-  text-align: center;
-  border-radius: 12px;
-  font-size: 0.875rem;
+  padding: 9px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border-radius: 11px;
+  font-size: 0.72rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
   color: var(--text-secondary);
+  letter-spacing: 0.01em;
 }
 
 .tab.active {
-  background: var(--surface-color);
+  background: rgba(99, 102, 241, 0.15);
   color: var(--text-primary);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+/* AI Input */
+.ai-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ai-card {
+  background: linear-gradient(145deg, rgba(99, 102, 241, 0.06) 0%, rgba(236, 72, 153, 0.06) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.ai-result-card {
+  background: linear-gradient(145deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.05) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+/* Spinner */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
 }
 
 /* Lists */
