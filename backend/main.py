@@ -12,7 +12,7 @@ BULK_TARGET_KCAL = MAINTENANCE_KCAL + 300  # 2870
 app = FastAPI(title="StepArc Nutrition API", version="1.0.0")
 
 _frontend_url = os.getenv("FRONTEND_URL", "")
-_allowed_origins = ["http://localhost:5173", "http://localhost:3000"]
+_allowed_origins = ["http://localhost:5173", "http://localhost:3000", "https://localhost"]
 if _frontend_url:
     _allowed_origins.append(_frontend_url)
 
