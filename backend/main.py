@@ -4,13 +4,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 
-from nutrition_ai import analyze_meal
+from nutrition_ai import analyze_meal, analyze_cardio
 
-# Derived from data.js dailyTargets: protein 160g, carbs 400g, fats 70g
-# (160*4) + (400*4) + (70*9) = 2870 kcal bulk target
 MAINTENANCE_KCAL = 2570
 BULK_TARGET_KCAL = MAINTENANCE_KCAL + 300  # 2870
-
 
 app = FastAPI(title="StepArc Nutrition API", version="1.0.0")
 
@@ -26,6 +23,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+# ── Meal models ──────────────────────────────────────────────────────────────
 
 class AnalyzeMealRequest(BaseModel):
     meal_text: str
@@ -49,6 +48,21 @@ class AnalyzeMealResponse(BaseModel):
     daily_summary: DailySummary
 
 
+# ── Cardio models ────────────────────────────────────────────────────────────
+
+class AnalyzeCardioRequest(BaseModel):
+    session_text: str
+
+
+class AnalyzeCardioResponse(BaseModel):
+    session_name: str
+    total_duration_mins: float
+    total_calories_burned: float
+    segments: list
+
+
+# ── Routes ───────────────────────────────────────────────────────────────────
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
@@ -58,7 +72,6 @@ def health():
 async def analyze_meal_endpoint(request: AnalyzeMealRequest):
     if not request.meal_text.strip():
         raise HTTPException(status_code=400, detail="meal_text cannot be empty.")
-
     try:
         ai_result = analyze_meal(request.meal_text)
     except Exception as e:
@@ -81,4 +94,21 @@ async def analyze_meal_endpoint(request: AnalyzeMealRequest):
             this_meal_calories=meal_calories,
             remaining_calories=remaining,
         ),
+    )
+
+
+@app.post("/analyze-cardio", response_model=AnalyzeCardioResponse)
+async def analyze_cardio_endpoint(request: AnalyzeCardioRequest):
+    if not request.session_text.strip():
+        raise HTTPException(status_code=400, detail="session_text cannot be empty.")
+    try:
+        result = analyze_cardio(request.session_text)
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"AI analysis failed: {str(e)}")
+
+    return AnalyzeCardioResponse(
+        session_name=result["session_name"],
+        total_duration_mins=result["total_duration_mins"],
+        total_calories_burned=result["total_calories_burned"],
+        segments=result["segments"],
     )

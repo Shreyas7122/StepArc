@@ -276,6 +276,33 @@ button.secondary:hover {
   border: 1px solid rgba(99, 102, 241, 0.25);
 }
 
+/* Search dropdown */
+.search-dropdown {
+  background: #0f111a;
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  overflow: hidden;
+  z-index: 200;
+  max-height: 180px;
+  overflow-y: auto;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.search-option {
+  padding: 10px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--surface-border);
+  transition: background 0.1s;
+}
+
+.search-option:last-child {
+  border-bottom: none;
+}
+
+.search-option:hover {
+  background: rgba(99, 102, 241, 0.12);
+}
+
 /* Spinner */
 @keyframes spin {
   to { transform: rotate(360deg); }

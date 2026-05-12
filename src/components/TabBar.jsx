@@ -1,9 +1,10 @@
-import { LayoutDashboard, Utensils, Dumbbell } from 'lucide-react';
+import { LayoutDashboard, Utensils, Dumbbell, ClipboardList } from 'lucide-react';
 
 const TABS = [
-  { id: 'dashboard', label: 'Overview', Icon: LayoutDashboard },
+  { id: 'dashboard', label: 'Overview',  Icon: LayoutDashboard },
   { id: 'food',      label: 'Nutrition', Icon: Utensils },
   { id: 'workout',   label: 'Training',  Icon: Dumbbell },
+  { id: 'logs',      label: 'Logs',      Icon: ClipboardList },
 ];
 
 const TabBar = ({ activeTab, setActiveTab, onResetDrafts }) => {

@@ -92,6 +92,20 @@ export const dailyTargets = {
   fats: 70
 };
 
+// Bulk target: maintenance 2570 + 300 surplus (matches backend BULK_TARGET_KCAL)
+export const DAILY_BULK_TARGET = 2870;
+
+export const cardioDatabase = [
+  { id: 201, name: "Incline Walk (10 incl, 4.5 spd)", calPerMin: 10.4 },
+  { id: 202, name: "Brisk Walk (flat, 5.5 spd)",       calPerMin: 6.0  },
+  { id: 203, name: "Treadmill Run (8-9 km/h)",          calPerMin: 10.5 },
+  { id: 204, name: "Stationary Cycle (moderate)",       calPerMin: 8.0  },
+  { id: 205, name: "Stair Climber",                     calPerMin: 11.0 },
+  { id: 206, name: "Rowing Machine",                    calPerMin: 9.5  },
+  { id: 207, name: "Elliptical",                        calPerMin: 8.5  },
+  { id: 208, name: "Jump Rope",                         calPerMin: 12.0 },
+];
+
 export const fixedMeals = [
   {
     name: "Meal 1: Pre-Workout (9:15 AM)",

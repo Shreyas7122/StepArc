@@ -33,6 +33,8 @@ export default function App() {
   const [selectedWorkoutId, setSelectedWorkoutId] = useState(workoutDatabase[0].id);
   const [workoutSets, setWorkoutSets] = useState('');
 
+  const [cardioLogs, setCardioLogs] = useState([]);
+
   // State for Draft Workout
   const [draftWorkout, setDraftWorkout] = useState(null);
   const [draftAddWorkoutId, setDraftAddWorkoutId] = useState(workoutDatabase[0].id);
@@ -46,10 +48,10 @@ export default function App() {
     let p = 0, c = 0, f = 0, calIn = 0;
     foodLogs.forEach(log => {
       if (log.aiMacros) {
-        p += log.aiMacros.protein;
-        c += log.aiMacros.carbs;
-        f += log.aiMacros.fats;
-        calIn += log.aiMacros.calories;
+        p     += Number(log.aiMacros.protein)  || 0;
+        c     += Number(log.aiMacros.carbs)    || 0;
+        f     += Number(log.aiMacros.fats)     || 0;
+        calIn += Number(log.aiMacros.calories) || 0;
       } else {
         const item = foodDatabase.find(food => food.id === log.foodId);
         if (item) {
@@ -65,13 +67,14 @@ export default function App() {
     let calOut = steps * STEP_CALORIES_MULTIPLIER;
     workoutLogs.forEach(log => {
       const item = workoutDatabase.find(w => w.id === log.workoutId);
-      if (item) {
-        calOut += item.calPerSet * log.sets;
-      }
+      if (item) calOut += item.calPerSet * log.sets;
+    });
+    cardioLogs.forEach(log => {
+      calOut += Number(log.aiCalories) || 0;
     });
 
     return { p: Math.round(p), c: Math.round(c), f: Math.round(f), calIn: Math.round(calIn), calOut: Math.round(calOut) };
-  }, [foodLogs, workoutLogs, steps]);
+  }, [foodLogs, workoutLogs, cardioLogs, steps]);
 
 
   // --- FOOD METHODS ---
@@ -218,6 +221,15 @@ export default function App() {
   };
 
 
+  const handleAICardioLog = ({ name, durationMins, aiCalories }) => {
+    setCardioLogs(prev => [...prev, { id: Date.now(), name, durationMins, aiCalories, cardioId: null }]);
+    setActiveTab('dashboard');
+  };
+
+  const handleDeleteCardioLog = (id) => {
+    setCardioLogs(prev => prev.filter(log => log.id !== id));
+  };
+
   const handleResetDrafts = () => {
     setDraftMeal(null);
     setDraftWorkout(null);
@@ -238,15 +250,20 @@ export default function App() {
         <>
           <Dashboard totals={totals} steps={steps} />
           <AIInput caloriesLoggedToday={totals.calIn} onLogMeal={handleAILog} />
-          <LogList 
-            foodLogs={foodLogs} 
-            workoutLogs={workoutLogs} 
-            onUpdateFoodLog={handleUpdateFoodLog}
-            onDeleteFoodLog={handleDeleteFoodLog}
-            onUpdateWorkoutLog={handleUpdateWorkoutLog}
-            onDeleteWorkoutLog={handleDeleteWorkoutLog}
-          />
         </>
+      )}
+
+      {activeTab === 'logs' && (
+        <LogList
+          foodLogs={foodLogs}
+          workoutLogs={workoutLogs}
+          cardioLogs={cardioLogs}
+          onUpdateFoodLog={handleUpdateFoodLog}
+          onDeleteFoodLog={handleDeleteFoodLog}
+          onUpdateWorkoutLog={handleUpdateWorkoutLog}
+          onDeleteWorkoutLog={handleDeleteWorkoutLog}
+          onDeleteCardioLog={handleDeleteCardioLog}
+        />
       )}
 
       {activeTab === 'food' && !draftMeal && (
@@ -286,6 +303,7 @@ export default function App() {
           workoutSets={workoutSets}
           setWorkoutSets={setWorkoutSets}
           onAddWorkout={handleAddWorkout}
+          onLogCardio={handleAICardioLog}
         />
       )}
 
