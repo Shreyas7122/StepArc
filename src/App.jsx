@@ -3,7 +3,7 @@ import { foodDatabase, workoutDatabase } from './data';
 import './index.css';
 
 import { supabase } from './supabase';
-import { loadSettings, saveSettings, loadTodayLogs, saveTodayLogs, pruneOldLogs, DEFAULT_SETTINGS } from './db';
+import { loadSettings, saveSettings, loadTodayLogs, saveTodayLogs, pruneOldLogs, clearLocalCache, DEFAULT_SETTINGS } from './db';
 import { computeTotals } from './utils';
 
 import AuthScreen from './components/AuthScreen';
@@ -94,6 +94,7 @@ export default function App() {
   const userProfile = { age: settings.age, heightCm: settings.height_cm, weightKg: settings.weight_kg };
 
   const handleSignOut = async () => {
+    clearLocalCache(authUser.id);
     await supabase.auth.signOut();
     setAuthUser(null);
     setSettings(DEFAULT_SETTINGS);

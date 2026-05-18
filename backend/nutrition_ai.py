@@ -169,72 +169,166 @@ def analyze_cardio(session_text: str) -> dict:
     return json.loads(_strip_fences(response.text))
 
 
+DIET_PLAN_SYSTEM_PROMPT = """
+You are a sports nutritionist. Given a user's body stats and daily macro targets, create a structured daily meal plan with EXACTLY 5 meals in this fixed order and focus:
+
+1. Pre-Workout  — good fast/slow carbs and micronutrients (e.g. banana, eggs, oats, dates/fruit). Fuels the session.
+2. Post-Workout — high protein + fibre + antioxidants to replenish micronutrients lost in training (e.g. whey, banana, blueberry, egg white, oats, seeds).
+3. Lunch        — carb refill, muscle-repairing protein, must include dahi (yogurt). Use rice/chapati, paneer/tofu, vegetables.
+4. Snacks       — light: one or two fruits + a protein source (e.g. egg whites, dahi, almonds).
+5. Dinner       — low-calorie, MUST include potato (good slow carb, improves sleep quality). Keep fats moderate.
+
+You MUST respond with ONLY a valid JSON object — no markdown, no explanation.
+
+Structure (the meals array must have exactly 5 items in the order above):
+{
+  "meals": [
+    { "name": "Pre-Workout",  "items": [ { "foodId": 2, "amount": 100 }, { "foodId": 1, "amount": 150 } ] },
+    { "name": "Post-Workout", "items": [ ... ] },
+    { "name": "Lunch",        "items": [ ... ] },
+    { "name": "Snacks",       "items": [ ... ] },
+    { "name": "Dinner",       "items": [ ... ] }
+  ]
+}
+
+Rules:
+- Use ONLY the foodIds listed in the prompt. Never invent new IDs.
+- amount is in grams (integer).
+- The 5 meals together must hit the user's daily calorie and macro targets.
+- Each meal: 2–7 items appropriate to its category.
+- Dinner MUST include foodId 9 (Potato) and MUST NOT include whey protein.
+- Lunch MUST include foodId 11 (Low Fat Dahi) or foodId 28 (Amul High Protein Dahi).
+"""
+
+WORKOUT_PLAN_SYSTEM_PROMPT = """
+You are a strength & conditioning coach. Given a user profile and an exercise database with IDs, create a structured weekly workout plan.
+You MUST respond with ONLY a valid JSON object — no markdown, no explanation.
+
+Structure:
+{
+  "days": [
+    {
+      "name": "Monday: Back, Biceps & Abs",
+      "items": [
+        { "exerciseId": 101, "sets": 3 },
+        { "exerciseId": 102, "sets": 4 }
+      ]
+    }
+  ]
+}
+
+Rules:
+- Use ONLY the exerciseIds listed in the prompt. Never invent new IDs.
+- sets is an integer (typically 3-4).
+- Suggest a 5-6 day split. Each day should have 6-11 exercises.
+- Always include exerciseId 200 (Incline Walk cardio) as the last item on training days.
+"""
+
+
 def get_diet_recommendation(ctx: dict) -> dict:
-    prompt = f"""You are a sports nutritionist. Based on the user's profile and the available food database, suggest a daily meal plan.
+    prompt = f"""User profile: Age {ctx['age']}, Weight {ctx['weight_kg']} kg, Height {ctx['height_cm']} cm
+Daily targets: {ctx['calorie_goal']} kcal | Protein {ctx['protein_goal']}g | Carbs {ctx['carbs_goal']}g | Fats {ctx['fats_goal']}g
 
-User: Age {ctx['age']}, Weight {ctx['weight_kg']}kg, Height {ctx['height_cm']}cm
-Daily targets: {ctx['calorie_goal']} kcal, Protein {ctx['protein_goal']}g, Carbs {ctx['carbs_goal']}g, Fats {ctx['fats_goal']}g
+Available foods — use ONLY these foodIds, never invent new ones:
+PRE-WORKOUT candidates (carbs + micros):
+  1: Banana (Raw) — 89kcal P1.1g C22.8g
+  2: Whole Egg (Raw) — 143kcal P12.6g C0.7g F9.5g
+  3: Oats (Dry/Raw) — 389kcal P16.9g C66.3g F6.9g
+  4: Mixed Seeds — 550kcal P20g C20g F45g
 
-Available foods in app database:
-- Banana (Raw): 89kcal, P1.1g C22.8g F0.3g — energy, potassium
-- Whole Egg (Raw): 143kcal, P12.6g C0.7g F9.5g — complete protein
-- Oats (Dry/Raw): 389kcal, P16.9g C66.3g F6.9g — fiber, slow carbs
-- Mixed Seeds: 550kcal, P20g C20g F45g — omega-3, fiber, antioxidants
-- Almonds (Raw): 579kcal, P21.1g C21.6g F49.9g — healthy fats, vitamin E
-- Blueberry: 57kcal — powerful antioxidants
-- Rice (White, Cooked): 130kcal, P2.7g C28g F0.3g
-- Chapati (Whole Wheat): 297kcal, P9g C46g F10g — fiber
-- Potato (Boiled): 77kcal — carbs, potassium
-- Low Fat Paneer: 180kcal, P20g C4g F10g — protein
-- Low Fat Dahi: 43kcal, P4.3g C4.7g F1.5g — probiotics
-- Capsicum: 20kcal — vitamin C, antioxidants
-- Carrot: 41kcal — beta-carotene, fiber
-- French Beans: 31kcal — fiber
-- Cucumber: 15kcal — hydration
-- Tomato: 18kcal — lycopene antioxidant
-- Papaya: 43kcal — digestive enzymes, antioxidants
-- Watermelon: 30kcal — hydration, lycopene
-- Mango: 60kcal — vitamins, antioxidants
-- Tofu (Firm): 144kcal, P16g — plant protein
-- ON Whey / Whey Isolate: ~375kcal, P77-81g — post-workout protein
-- Egg White: 52kcal, P10.9g — lean protein
-- Amul High Protein Dahi: 80kcal, P10g
-- Mom's Subji (Green Leafy): 100kcal — iron, antioxidants, fiber
-- Mom's Subji (Cruciferous): 110kcal — fiber, glucosinolates
-- Mom's Subji (Legume-based): 140kcal, P4.5g — plant protein, fiber
-- Ghee: 900kcal — healthy fats (use sparingly)
+POST-WORKOUT candidates (protein + antioxidants + fibre):
+  1: Banana (Raw) — 89kcal P1.1g C22.8g
+  3: Oats (Dry/Raw) — 389kcal P16.9g C66.3g F6.9g
+  4: Mixed Seeds — 550kcal P20g C20g F45g
+  6: Blueberry (Raw) — 57kcal P0.7g C14.5g
+  25: ON Whey (Gold Standard) — 375kcal P77g C10g F3.3g
+  26: Egg White (Raw) — 52kcal P10.9g C0.7g
+  27: Whey Isolate (NitroTech) — 370kcal P81g C6.5g F2g
+  28: Amul High Protein Dahi — 80kcal P10g C4g
 
-Suggest 4-5 meals (Pre-Workout, Post-Workout, Lunch, Evening Snack, Dinner) using ONLY foods from this list. For each meal specify food items and approximate amounts in grams. Keep it practical and hit the macro targets. Format as plain readable text, not JSON."""
+LUNCH candidates (carbs + muscle repair + dahi):
+  7: Rice (White, Cooked) — 130kcal P2.7g C28g
+  8: Chapati (Whole Wheat) — 297kcal P9g C46g F10g
+  9: Potato (Boiled/Raw) — 77kcal P2g C17g
+  10: Low Fat Paneer — 180kcal P20g C4g F10g
+  11: Low Fat Dahi — 43kcal P4.3g C4.7g F1.5g
+  12: Capsicum — 20kcal P1g C4.6g
+  13: Carrot — 41kcal P0.9g C9.6g
+  16: Ghee — 900kcal F100g (use sparingly, 3-8g)
+  17: French Beans — 31kcal P1.8g C7g
+  19: Tomato — 18kcal P0.9g C3.9g
+  24: Tofu (Firm) — 144kcal P16g C2.8g F8.7g
+  28: Amul High Protein Dahi — 80kcal P10g C4g
+  29: Cucumber (Raw) — 15kcal P0.6g C3.6g
+  30: Mom's Subji (Green Leafy) — 100kcal P3.5g C7g F6g
+  31: Mom's Subji (Starchy) — 175kcal P2.5g C22.5g F8g
+  32: Mom's Subji (Cruciferous) — 110kcal P2.5g C9g F6g
+  33: Mom's Subji (Legume-based) — 140kcal P4.5g C13.5g F7g
+
+SNACKS candidates (fruit + protein):
+  1: Banana (Raw) — 89kcal
+  5: Almonds (Raw) — 579kcal P21.1g F49.9g
+  6: Blueberry (Raw) — 57kcal
+  20: Papaya — 43kcal
+  22: Watermelon — 30kcal
+  23: Mango — 60kcal (if available)
+  26: Egg White (Raw) — 52kcal P10.9g
+  28: Amul High Protein Dahi — 80kcal P10g
+
+DINNER candidates (low-cal, MUST include potato, NO whey):
+  9: Potato (Boiled/Raw) — 77kcal ← REQUIRED
+  10: Low Fat Paneer — 180kcal P20g
+  11: Low Fat Dahi — 43kcal P4.3g
+  12: Capsicum — 20kcal
+  16: Ghee — 900kcal (use sparingly, 3-8g)
+  17: French Beans — 31kcal
+  19: Tomato — 18kcal
+  24: Tofu (Firm) — 144kcal P16g
+  26: Egg White (Raw) — 52kcal P10.9g
+  29: Cucumber (Raw) — 15kcal
+  30: Mom's Subji (Green Leafy) — 100kcal P3.5g
+  32: Mom's Subji (Cruciferous) — 110kcal
+  33: Mom's Subji (Legume-based) — 140kcal P4.5g
+
+Generate the 5-meal plan now."""
 
     response = _client.models.generate_content(
-        model="gemini-1.5-flash",
+        model="gemini-2.5-flash",
         contents=prompt,
+        config=types.GenerateContentConfig(
+            system_instruction=DIET_PLAN_SYSTEM_PROMPT,
+            response_mime_type="application/json",
+        ),
     )
-    return {"recommendation": response.text}
+    data = json.loads(_strip_fences(response.text))
+    return {"plan": data}
 
 
 def get_workout_recommendation(ctx: dict) -> dict:
-    prompt = f"""You are a strength & conditioning coach. Based on this user's profile, suggest a weekly gym workout plan.
+    prompt = f"""User: Age {ctx['age']}, Weight {ctx['weight_kg']}kg, Goal: {ctx['calorie_goal']} kcal/day
 
-User: Age {ctx['age']}, Weight {ctx['weight_kg']}kg, Goal: {ctx['calorie_goal']} kcal/day (muscle building/maintenance)
+Available exercises (use ONLY these exerciseIds):
+BACK: 101 Deadlift, 102 Lat Pull Down, 103 Seated Rowing, 104 Chest Supported DB Rowing, 140 Pull Ups, 141 T Bar
+BICEPS: 105 DB Curl Incline, 106 EZ Barbell Curl, 107 DB Preacher Curl
+CHEST: 110 Incline Smith Machine Bench Press, 138 Flat Smith Machine Bench Press, 111 Cable Crossover, 112 Push Ups, 113 Machine Chest Press, 114 Pec Dec Fly, 139 Low to High Cable Fly
+TRICEPS: 115 Close Grip Bench Press, 116 Cable Overhead Extension, 117 Cable Pushdown, 118 Cross Cable Triceps Tension, 119 Bar Dips
+SHOULDERS: 129 Smith Machine Shoulder Press, 130 Cable Lateral Raises, 131 Rear Delt DB Fly, 132 Plate Front Raises, 133 Face Pull, 134 DB Shrugs, 135 Smith Machine Shrugs
+LEGS: 120 Smith Machine Squats, 121 Leg Extension, 122 Leg Press, 123 Lying Leg Curls, 124 Glute Mid Kickback, 125 Standing Calf Raises, 126 Seated Calf Raises, 142 RDL, 143 Walking Lunges, 144 Bulgarian Split Squats, 145 Hip Thrust, 146 Seated Leg Curl
+ABS: 108 Cable Crunch Kneeling, 109 Decline Bench Crunch, 127 Russian Twist, 128 Plank (60s), 136 Seated In and Outs, 137 Lying Leg Raises
+CARDIO: 200 Incline Walk (always add at end of each training day, sets: 1)
 
-Available exercises in app database:
-BACK: Deadlift, Lat Pull Down, Seated Rowing, Chest Supported DB Rowing, T Bar, Pull Ups
-BICEPS: DB Curl Incline, EZ Barbell Curl, DB Preacher Curl
-CHEST: Incline Smith Machine Bench Press, Flat Smith Machine Bench Press, Cable Crossover, Push Ups, Machine Chest Press, Pec Dec Fly, Low to High Cable Fly
-TRICEPS: Close Grip Bench Press, Cable Overhead Extension, Cable Pushdown, Cross Cable Triceps Tension, Bar Dips
-SHOULDERS: Smith Machine Shoulder Press, Cable Lateral Raises, Rear Delt DB Fly, Plate Front Raises, Face Pull, DB Shrugs, Smith Machine Shrugs
-LEGS: Smith Machine Squats, Leg Extension, Leg Press, Lying Leg Curls, Glute Mid Kickback, Standing Calf Raises, Seated Calf Raises, RDL, Walking Lunges, Bulgarian Split Squats, Hip Thrust, Seated Leg Curl
-ABS: Cable Crunch Kneeling, Decline Bench Crunch, Russian Twist, Plank (60s), Seated In and Outs, Lying Leg Raises
-CARDIO: Incline Walk (25 mins, 10 Incl, 4.5 Spd)
-
-Suggest a 5-6 day workout split using ONLY exercises from this list. For each day specify muscle group focus, exercises, and sets (typically 3-4 sets per exercise). Format as plain readable text."""
+Create a 5-6 day workout split optimised for muscle building."""
 
     response = _client.models.generate_content(
-        model="gemini-1.5-flash",
+        model="gemini-2.5-flash",
         contents=prompt,
+        config=types.GenerateContentConfig(
+            system_instruction=WORKOUT_PLAN_SYSTEM_PROMPT,
+            response_mime_type="application/json",
+        ),
     )
-    return {"recommendation": response.text}
+    data = json.loads(_strip_fences(response.text))
+    return {"plan": data}
 
 
 def get_ai_advice(context: dict) -> dict:

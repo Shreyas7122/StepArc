@@ -208,7 +208,7 @@ async def recommend_diet_endpoint(request: DietRecommendRequest):
         result = get_diet_recommendation(request.model_dump())
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Diet recommendation failed: {str(e)}")
-    return {"recommendation": result["recommendation"]}
+    return result["plan"]
 
 
 # ── Workout recommendation ────────────────────────────────────────────────────
@@ -225,4 +225,4 @@ async def recommend_workout_endpoint(request: WorkoutRecommendRequest):
         result = get_workout_recommendation(request.model_dump())
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Workout recommendation failed: {str(e)}")
-    return {"recommendation": result["recommendation"]}
+    return result["plan"]

@@ -1,16 +1,32 @@
 import { User, X, Save, Brain, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import SearchSelect from './SearchSelect';
-import { foodDatabase, workoutDatabase, fixedMeals, fixedWorkouts } from '../data';
+import { foodDatabase, workoutDatabase, fixedWorkouts } from '../data';
 import { getApiBase } from '../utils';
 
-// Convert fixedMeals / fixedWorkouts into editable plan format
-const seedMeals = () =>
-  fixedMeals.map((m, i) => ({
-    id: Date.now() + i,
-    name: m.name,
-    items: m.items.map((it, j) => ({ tempId: Date.now() + i * 1000 + j, foodId: it.foodId, amount: it.amount })),
-  }));
+// Fixed 5 meal categories — order and names are canonical
+const FIXED_CATEGORIES = [
+  { name: 'Pre-Workout',  hint: 'Good carbs & micronutrients — fuel the session' },
+  { name: 'Post-Workout', hint: 'Protein, fibre & antioxidants — replenish what was lost' },
+  { name: 'Lunch',        hint: 'Carbs refill, muscle repair & dahi' },
+  { name: 'Snacks',       hint: 'Fruit + protein — light and satisfying' },
+  { name: 'Dinner',       hint: 'Low calorie, potato for slow carbs & sleep quality' },
+];
+
+// Always return exactly 5 meals aligned to FIXED_CATEGORIES
+const normalizeMeals = (saved) =>
+  FIXED_CATEGORIES.map((cat, i) => {
+    const s = saved?.[i];
+    return {
+      id: i + 1,
+      name: cat.name,
+      hint: cat.hint,
+      items: (s?.items ?? []).map((it, j) => ({
+        ...it,
+        tempId: it.tempId ?? (Date.now() + i * 1000 + j),
+      })),
+    };
+  });
 
 const seedDays = () =>
   fixedWorkouts.map((w, i) => ({
@@ -116,28 +132,6 @@ const Field = ({ label, value, onChange, min, max, step, unit }) => (
   </div>
 );
 
-// ── Gemini recommendation box ─────────────────────────────────────────────────
-const RecBox = ({ text, loading }) => {
-  if (!loading && !text) return null;
-  return (
-    <div style={{
-      maxHeight: '200px',
-      overflowY: 'auto',
-      fontSize: '0.8rem',
-      color: 'var(--gray-300)',
-      padding: '12px',
-      border: '1px solid var(--purple-600, rgba(91,31,158,0.6))',
-      borderRadius: 'var(--r-md)',
-      background: 'rgba(10,6,18,0.6)',
-      marginBottom: '12px',
-      lineHeight: 1.6,
-      whiteSpace: 'pre-wrap',
-    }}>
-      {loading ? 'Asking Gemini…' : text}
-    </div>
-  );
-};
-
 // ── Compact icon-only delete button ──────────────────────────────────────────
 const iconDeleteBtn = {
   display: 'flex',
@@ -156,15 +150,15 @@ const iconDeleteBtn = {
 
 // ── Tab 2: Diet Plan ──────────────────────────────────────────────────────────
 const DietPlanTab = ({ meals, setMeals, formState }) => {
-  const [dietRec, setDietRec] = useState('');
-  const [dietLoading, setDietLoading] = useState(false);
+  const [aiSuggestion, setAiSuggestion] = useState(null);
+  const [aiLoading, setAiLoading]       = useState(false);
+  const [aiError, setAiError]           = useState('');
+  const [selected, setSelected]         = useState(new Set());
+  const [addFood, setAddFood]           = useState({});
 
-  // Per-meal add-food row state
-  const [addFood, setAddFood] = useState({});   // { [mealId]: { foodId, amount } }
-
-  const handleAskGemini = async () => {
-    setDietLoading(true);
-    setDietRec('');
+  const handleGenerate = async () => {
+    setAiLoading(true);
+    setAiError('');
     try {
       const { calorieGoal, proteinGoal, carbsGoal, fatsGoal, age, heightCm, weightKg } = formState;
       const res = await fetch(`${apiBase}/recommend-diet`, {
@@ -180,134 +174,195 @@ const DietPlanTab = ({ meals, setMeals, formState }) => {
           fats_goal: parseInt(fatsGoal) || 80,
         }),
       });
+      if (!res.ok) throw new Error('server');
       const data = await res.json();
-      setDietRec(data.recommendation || 'No recommendation received.');
-    } catch (err) {
-      setDietRec('Failed to get recommendation. Check your connection.');
+      if (!data.meals?.length) throw new Error('empty');
+      setAiSuggestion(data);
+      setSelected(new Set(data.meals.map((_, i) => i)));
+    } catch {
+      setAiError('Generation failed. Check your connection and try again.');
     } finally {
-      setDietLoading(false);
+      setAiLoading(false);
     }
   };
 
-  const addMeal = () => {
-    setMeals(prev => [...prev, { id: Date.now(), name: '', items: [] }]);
+  const toggleSelect = (i) =>
+    setSelected(prev => { const n = new Set(prev); n.has(i) ? n.delete(i) : n.add(i); return n; });
+
+  // Apply AI meals → always produce 5 fixed-category slots
+  const handleApply = () => {
+    const applied = FIXED_CATEGORIES.map((cat, i) => {
+      const aiMeal = aiSuggestion.meals[i];
+      return {
+        id: i + 1,
+        name: cat.name,
+        hint: cat.hint,
+        items: (aiMeal?.items ?? [])
+          .filter(it => foodDatabase.find(f => f.id === it.foodId))
+          .map((it, j) => ({ tempId: Date.now() + i * 1000 + j, foodId: it.foodId, amount: it.amount })),
+      };
+    });
+    setMeals(applied);
+    setAiSuggestion(null);
   };
 
-  const deleteMeal = (mealId) => {
-    setMeals(prev => prev.filter(m => m.id !== mealId));
-  };
-
-  const updateMealName = (mealId, name) => {
-    setMeals(prev => prev.map(m => m.id === mealId ? { ...m, name } : m));
-  };
-
-  const getAddFood = (mealId) => addFood[mealId] || { foodId: foodDatabase[0].id, amount: '' };
-
-  const setAddFoodField = (mealId, field, val) => {
-    setAddFood(prev => ({ ...prev, [mealId]: { ...getAddFood(mealId), [field]: val } }));
-  };
-
+  // edit helpers
+  const getAF = (mealId) => addFood[mealId] || { foodId: foodDatabase[0].id, amount: '' };
+  const setAFField = (mealId, field, val) => setAddFood(prev => ({ ...prev, [mealId]: { ...getAF(mealId), [field]: val } }));
   const addFoodToMeal = (mealId) => {
-    const { foodId, amount } = getAddFood(mealId);
+    const { foodId, amount } = getAF(mealId);
     if (!amount || Number(amount) <= 0) return;
-    setMeals(prev => prev.map(m =>
-      m.id === mealId
-        ? { ...m, items: [...m.items, { tempId: Date.now(), foodId: Number(foodId), amount: Number(amount) }] }
-        : m
-    ));
-    setAddFoodField(mealId, 'amount', '');
+    setMeals(prev => prev.map(m => m.id === mealId ? { ...m, items: [...m.items, { tempId: Date.now(), foodId: Number(foodId), amount: Number(amount) }] } : m));
+    setAFField(mealId, 'amount', '');
   };
+  const removeFoodItem = (mealId, tempId) => setMeals(prev => prev.map(m => m.id === mealId ? { ...m, items: m.items.filter(it => it.tempId !== tempId) } : m));
+  const updateFoodItemAmount = (mealId, tempId, val) => setMeals(prev => prev.map(m => m.id === mealId ? { ...m, items: m.items.map(it => it.tempId === tempId ? { ...it, amount: val === '' ? '' : Number(val) } : it) } : m));
 
-  const removeFoodItem = (mealId, tempId) => {
-    setMeals(prev => prev.map(m =>
-      m.id === mealId ? { ...m, items: m.items.filter(it => it.tempId !== tempId) } : m
-    ));
-  };
+  // ── AI suggestion panel ────────────────────────────────────────────────────
+  if (aiSuggestion) {
+    const totalCal = aiSuggestion.meals
+      .filter((_, i) => selected.has(i))
+      .flatMap(m => m.items)
+      .reduce((s, it) => {
+        const f = foodDatabase.find(fd => fd.id === it.foodId);
+        return s + (f ? f.calories * it.amount / 100 : 0);
+      }, 0);
 
-  const updateFoodItemAmount = (mealId, tempId, val) => {
-    setMeals(prev => prev.map(m =>
-      m.id === mealId
-        ? { ...m, items: m.items.map(it => it.tempId === tempId ? { ...it, amount: val === '' ? '' : Number(val) } : it) }
-        : m
-    ));
-  };
+    return (
+      <div style={{ marginTop: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+          <span style={{ ...sectionLabel, marginTop: 0, marginBottom: 0 }}>AI Suggested Plan</span>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem', color: 'var(--gold-400)' }}>
+            ~{Math.round(totalCal)} kcal selected
+          </span>
+        </div>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.73rem', color: 'var(--gray-400)', marginBottom: '10px', lineHeight: 1.5 }}>
+          Tap meals to toggle. Apply to replace your current plan, then fine-tune.
+        </p>
 
+        {aiSuggestion.meals.map((meal, i) => {
+          const cat = FIXED_CATEGORIES[i] ?? { name: meal.name, hint: '' };
+          const on  = selected.has(i);
+          const mt  = meal.items.reduce((acc, it) => {
+            const f = foodDatabase.find(fd => fd.id === it.foodId);
+            if (!f) return acc;
+            const r = it.amount / 100;
+            return { cal: acc.cal + f.calories * r, p: acc.p + f.protein * r };
+          }, { cal: 0, p: 0 });
+
+          return (
+            <div
+              key={i}
+              onClick={() => toggleSelect(i)}
+              style={{
+                ...mealCard,
+                cursor: 'pointer',
+                border: on ? '1px solid var(--gold-500)' : '1px solid rgba(255,255,255,0.06)',
+                opacity: on ? 1 : 0.4,
+                transition: 'all 0.15s',
+                userSelect: 'none',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                <div style={{
+                  width: 15, height: 15, borderRadius: 3, flexShrink: 0,
+                  border: on ? 'none' : '1px solid rgba(255,255,255,0.2)',
+                  background: on ? 'var(--gradient-cta)' : 'transparent',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  {on && <span style={{ fontSize: '9px', color: 'var(--purple-900)', lineHeight: 1, fontWeight: 700 }}>✓</span>}
+                </div>
+                <span style={{ flex: 1, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--gold-400)' }}>
+                  {cat.name}
+                </span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: 'var(--gold-400)', whiteSpace: 'nowrap' }}>
+                  {Math.round(mt.cal)} kcal · P {mt.p.toFixed(0)}g
+                </span>
+              </div>
+              {cat.hint && (
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.66rem', color: 'var(--gray-500)', marginLeft: '23px', marginBottom: '6px' }}>
+                  {cat.hint}
+                </div>
+              )}
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '6px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                {meal.items.map((it, j) => {
+                  const food = foodDatabase.find(f => f.id === it.foodId);
+                  return (
+                    <div key={j} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.71rem', color: 'var(--gray-300)' }}>{food?.name ?? `Unknown #${it.foodId}`}</span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.66rem', color: 'var(--gray-500)' }}>{it.amount}g</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+
+        <div style={{ display: 'flex', gap: '8px', marginTop: '8px', position: 'sticky', bottom: 0, background: 'var(--purple-900)', paddingTop: '8px' }}>
+          <button
+            type="button"
+            onClick={handleApply}
+            disabled={selected.size === 0}
+            style={{ ...smallBtn('gold'), flex: 2, padding: '11px', justifyContent: 'center', opacity: selected.size === 0 ? 0.4 : 1 }}
+          >
+            Apply {selected.size} Meal{selected.size !== 1 ? 's' : ''} to My Plan
+          </button>
+          <button type="button" onClick={() => setAiSuggestion(null)} style={{ ...smallBtn('ghost'), flex: 1, padding: '11px', justifyContent: 'center' }}>
+            Discard
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Normal edit view ───────────────────────────────────────────────────────
   return (
     <div>
-      {/* Gemini button */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', marginTop: '8px' }}>
-        <button type="button" onClick={handleAskGemini} disabled={dietLoading} style={smallBtn('gold')}>
-          <Brain size={14} /> {dietLoading ? 'Thinking…' : 'Ask Gemini'}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', marginTop: '10px' }}>
+        <button type="button" onClick={handleGenerate} disabled={aiLoading} style={{ ...smallBtn('gold'), gap: '6px' }}>
+          <Brain size={14} /> {aiLoading ? 'Generating…' : 'Generate AI Plan'}
         </button>
+        {aiLoading && <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.7rem', color: 'var(--gray-400)' }}>Asking Gemini…</span>}
+        {aiError && <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.7rem', color: '#ef4444' }}>{aiError}</span>}
       </div>
 
-      <RecBox text={dietRec} loading={dietLoading} />
-
-      {/* Meal list */}
       {meals.map(meal => {
-        const af = getAddFood(meal.id);
-        const mealTotals = meal.items.reduce((acc, it) => {
+        const af = getAF(meal.id);
+        const mt = meal.items.reduce((acc, it) => {
           const f = foodDatabase.find(fd => fd.id === it.foodId);
           if (!f) return acc;
-          const ratio = it.amount / 100;
-          return {
-            cal: acc.cal + f.calories * ratio,
-            p: acc.p + f.protein * ratio,
-          };
+          const r = it.amount / 100;
+          return { cal: acc.cal + f.calories * r, p: acc.p + f.protein * r };
         }, { cal: 0, p: 0 });
 
         return (
           <div key={meal.id} style={mealCard}>
-            {/* Meal header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-              <input
-                type="text"
-                placeholder="e.g. Pre-Workout"
-                value={meal.name}
-                onChange={e => updateMealName(meal.id, e.target.value)}
-                style={{
-                  flex: 1,
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  fontFamily: 'var(--font-heading)',
-                  fontWeight: 700,
-                  fontSize: '0.88rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  color: 'var(--gold-500)',
-                }}
-              />
-              <button type="button" onClick={() => deleteMeal(meal.id)} style={{ ...smallBtn('ghost'), padding: '4px 6px', color: 'var(--gray-500)', flexShrink: 0 }}>
-                <X size={13} />
-              </button>
+            {/* Fixed category header — not editable */}
+            <div style={{ marginBottom: '6px' }}>
+              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--gold-500)' }}>
+                {meal.name}
+              </div>
+              {meal.hint && (
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.67rem', color: 'var(--gray-500)', marginTop: '2px' }}>
+                  {meal.hint}
+                </div>
+              )}
             </div>
 
-            {/* Meal totals */}
             {meal.items.length > 0 && (
               <div style={{ display: 'flex', gap: '10px', marginBottom: '8px' }}>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'var(--gold-400)' }}>
-                  {Math.round(mealTotals.cal)} kcal
-                </span>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'var(--gray-500)' }}>
-                  P {mealTotals.p.toFixed(1)}g
-                </span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'var(--gold-400)' }}>{Math.round(mt.cal)} kcal</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'var(--gray-500)' }}>P {mt.p.toFixed(1)}g</span>
               </div>
             )}
 
-            {/* Food items */}
             {meal.items.map(it => {
               const food = foodDatabase.find(f => f.id === it.foodId);
-              const cal = food && it.amount ? Math.round(food.calories * Number(it.amount) / 100) : 0;
+              const cal  = food && it.amount ? Math.round(food.calories * Number(it.amount) / 100) : 0;
               return (
-                <div key={it.tempId} style={{
-                  display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '5px',
-                  padding: '4px 8px', borderRadius: 'var(--r-md)',
-                  background: 'rgba(255,255,255,0.03)',
-                }}>
-                  <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--gray-200)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {food?.name}
-                  </span>
+                <div key={it.tempId} style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '5px', padding: '4px 8px', borderRadius: 'var(--r-md)', background: 'rgba(255,255,255,0.03)' }}>
+                  <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--gray-200)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{food?.name}</span>
                   <input
                     type="number"
                     value={it.amount}
@@ -316,41 +371,30 @@ const DietPlanTab = ({ meals, setMeals, formState }) => {
                     aria-label={`${food?.name} amount in grams`}
                     style={{ width: '48px', padding: '2px 5px', background: 'rgba(10,6,18,0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', color: 'var(--white)', fontFamily: 'var(--font-mono)', fontSize: '0.7rem', outline: 'none', textAlign: 'right', flexShrink: 0 }}
                   />
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: 'var(--gray-500)', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                    g · {cal} kcal
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => removeFoodItem(meal.id, it.tempId)}
-                    aria-label={`Remove ${food?.name}`}
-                    style={iconDeleteBtn}
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: 'var(--gray-500)', whiteSpace: 'nowrap', flexShrink: 0 }}>g · {cal} kcal</span>
+                  <button type="button" onClick={() => removeFoodItem(meal.id, it.tempId)} aria-label={`Remove ${food?.name}`} style={iconDeleteBtn}
                     onMouseEnter={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = 'rgba(239,68,68,0.1)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.25)'; e.currentTarget.style.background = 'transparent'; }}
-                  >
+                    onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.25)'; e.currentTarget.style.background = 'transparent'; }}>
                     <Trash2 size={12} />
                   </button>
                 </div>
               );
             })}
 
-            {/* Add food row */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '8px' }}>
-              <SearchSelect
-                items={foodItems}
-                selectedId={af.foodId}
-                onSelect={val => setAddFoodField(meal.id, 'foodId', val)}
-                placeholder="Search food…"
-              />
+              <SearchSelect items={foodItems} selectedId={af.foodId} onSelect={val => setAFField(meal.id, 'foodId', val)} placeholder="Search food…" />
               <div style={{ display: 'flex', gap: '6px' }}>
                 <input
                   type="number"
                   placeholder="amount (g)"
                   min="1"
                   value={af.amount}
-                  onChange={e => setAddFoodField(meal.id, 'amount', e.target.value)}
-                  style={{ flex: 1, padding: '9px 12px', background: 'rgba(10,6,18,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 'var(--r-md)', color: 'var(--white)', fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none' }}
+                  onChange={e => setAFField(meal.id, 'amount', e.target.value)}
+                  style={{ flex: 1, minWidth: 0, width: 0, padding: '9px 12px', background: 'rgba(10,6,18,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 'var(--r-md)', color: 'var(--white)', fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box' }}
+                  onFocus={e => (e.target.style.borderColor = 'var(--gold-500)')}
+                  onBlur={e  => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
                 />
-                <button type="button" onClick={() => addFoodToMeal(meal.id)} style={{ ...smallBtn('gold'), padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <button type="button" onClick={() => addFoodToMeal(meal.id)} style={{ ...smallBtn('gold'), padding: '9px 18px', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <Plus size={14} /> Add
                 </button>
               </div>
@@ -358,24 +402,21 @@ const DietPlanTab = ({ meals, setMeals, formState }) => {
           </div>
         );
       })}
-
-      {/* Add meal button */}
-      <button type="button" onClick={addMeal} style={{ ...smallBtn('secondary'), width: '100%', padding: '10px', marginTop: '4px' }}>
-        <Plus size={13} /> Add Meal
-      </button>
     </div>
   );
 };
 
 // ── Tab 3: Training Plan ──────────────────────────────────────────────────────
 const TrainingTab = ({ days, setDays, formState }) => {
-  const [workoutRec, setWorkoutRec] = useState('');
-  const [workoutLoading, setWorkoutLoading] = useState(false);
-  const [addExercise, setAddExercise] = useState({});
+  const [aiSuggestion, setAiSuggestion] = useState(null);
+  const [aiLoading, setAiLoading]       = useState(false);
+  const [aiError, setAiError]           = useState('');
+  const [selected, setSelected]         = useState(new Set());
+  const [addExercise, setAddExercise]   = useState({});
 
-  const handleAskGemini = async () => {
-    setWorkoutLoading(true);
-    setWorkoutRec('');
+  const handleGenerate = async () => {
+    setAiLoading(true);
+    setAiError('');
     try {
       const { calorieGoal, age, weightKg } = formState;
       const res = await fetch(`${apiBase}/recommend-workout`, {
@@ -387,72 +428,159 @@ const TrainingTab = ({ days, setDays, formState }) => {
           calorie_goal: parseInt(calorieGoal) || 2870,
         }),
       });
+      if (!res.ok) throw new Error('server');
       const data = await res.json();
-      setWorkoutRec(data.recommendation || 'No recommendation received.');
-    } catch (err) {
-      setWorkoutRec('Failed to get recommendation. Check your connection.');
+      if (!data.days?.length) throw new Error('empty');
+      setAiSuggestion(data);
+      setSelected(new Set(data.days.map((_, i) => i)));
+    } catch {
+      setAiError('Generation failed. Check your connection and try again.');
     } finally {
-      setWorkoutLoading(false);
+      setAiLoading(false);
     }
   };
 
-  const addDay = () => {
-    setDays(prev => [...prev, { id: Date.now(), name: '', items: [] }]);
+  const toggleSelect = (i) =>
+    setSelected(prev => { const n = new Set(prev); n.has(i) ? n.delete(i) : n.add(i); return n; });
+
+  const handleApply = () => {
+    const chosen = aiSuggestion.days
+      .filter((_, i) => selected.has(i))
+      .map((d, i) => ({
+        id: Date.now() + i,
+        name: d.name,
+        items: d.items
+          .filter(it => workoutDatabase.find(w => w.id === it.exerciseId))
+          .map((it, j) => ({ tempId: Date.now() + i * 1000 + j, exerciseId: it.exerciseId, sets: it.sets })),
+      }));
+    setDays(chosen);
+    setAiSuggestion(null);
   };
 
-  const deleteDay = (dayId) => {
-    setDays(prev => prev.filter(d => d.id !== dayId));
-  };
-
-  const updateDayName = (dayId, name) => {
-    setDays(prev => prev.map(d => d.id === dayId ? { ...d, name } : d));
-  };
-
-  const getAddEx = (dayId) => addExercise[dayId] || { exerciseId: workoutDatabase[0].id, sets: '' };
-
-  const setAddExField = (dayId, field, val) => {
-    setAddExercise(prev => ({ ...prev, [dayId]: { ...getAddEx(dayId), [field]: val } }));
-  };
-
+  // edit helpers
+  const addDay = () => setDays(prev => [...prev, { id: Date.now(), name: '', items: [] }]);
+  const deleteDay = (dayId) => setDays(prev => prev.filter(d => d.id !== dayId));
+  const updateDayName = (dayId, name) => setDays(prev => prev.map(d => d.id === dayId ? { ...d, name } : d));
+  const getAE = (dayId) => addExercise[dayId] || { exerciseId: workoutDatabase[0].id, sets: '' };
+  const setAEField = (dayId, field, val) => setAddExercise(prev => ({ ...prev, [dayId]: { ...getAE(dayId), [field]: val } }));
   const addExToDay = (dayId) => {
-    const { exerciseId, sets } = getAddEx(dayId);
+    const { exerciseId, sets } = getAE(dayId);
     if (!sets || Number(sets) <= 0) return;
-    setDays(prev => prev.map(d =>
-      d.id === dayId
-        ? { ...d, items: [...d.items, { tempId: Date.now(), exerciseId: Number(exerciseId), sets: Number(sets) }] }
-        : d
-    ));
-    setAddExField(dayId, 'sets', '');
+    setDays(prev => prev.map(d => d.id === dayId ? { ...d, items: [...d.items, { tempId: Date.now(), exerciseId: Number(exerciseId), sets: Number(sets) }] } : d));
+    setAEField(dayId, 'sets', '');
   };
+  const removeExItem = (dayId, tempId) => setDays(prev => prev.map(d => d.id === dayId ? { ...d, items: d.items.filter(it => it.tempId !== tempId) } : d));
+  const updateExItemSets = (dayId, tempId, val) => setDays(prev => prev.map(d => d.id === dayId ? { ...d, items: d.items.map(it => it.tempId === tempId ? { ...it, sets: val === '' ? '' : Number(val) } : it) } : d));
 
-  const removeExItem = (dayId, tempId) => {
-    setDays(prev => prev.map(d =>
-      d.id === dayId ? { ...d, items: d.items.filter(it => it.tempId !== tempId) } : d
-    ));
-  };
+  // ── AI suggestion panel ────────────────────────────────────────────────────
+  if (aiSuggestion) {
+    const totalSets = aiSuggestion.days
+      .filter((_, i) => selected.has(i))
+      .flatMap(d => d.items)
+      .reduce((s, it) => s + (it.sets || 0), 0);
 
-  const updateExItemSets = (dayId, tempId, val) => {
-    setDays(prev => prev.map(d =>
-      d.id === dayId
-        ? { ...d, items: d.items.map(it => it.tempId === tempId ? { ...it, sets: val === '' ? '' : Number(val) } : it) }
-        : d
-    ));
-  };
+    return (
+      <div style={{ marginTop: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+          <span style={{ ...sectionLabel, marginTop: 0, marginBottom: 0 }}>AI Suggested Plan</span>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem', color: 'var(--gold-400)' }}>
+            {totalSets} sets selected
+          </span>
+        </div>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.73rem', color: 'var(--gray-400)', marginBottom: '10px', lineHeight: 1.5 }}>
+          Tap days to toggle. Apply to replace your current plan, then fine-tune.
+        </p>
 
+        {aiSuggestion.days.map((day, i) => {
+          const on = selected.has(i);
+          const daySets = day.items.reduce((s, it) => s + (it.sets || 0), 0);
+          const estCal  = day.items.reduce((s, it) => {
+            const ex = workoutDatabase.find(w => w.id === it.exerciseId);
+            return s + (ex ? ex.calPerSet * it.sets : 0);
+          }, 0);
+
+          return (
+            <div
+              key={i}
+              onClick={() => toggleSelect(i)}
+              style={{
+                ...mealCard,
+                cursor: 'pointer',
+                border: on ? '1px solid var(--gold-500)' : '1px solid rgba(255,255,255,0.06)',
+                opacity: on ? 1 : 0.4,
+                transition: 'all 0.15s',
+                userSelect: 'none',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                <div style={{
+                  width: 15, height: 15, borderRadius: 3, flexShrink: 0,
+                  border: on ? 'none' : '1px solid rgba(255,255,255,0.2)',
+                  background: on ? 'var(--gradient-cta)' : 'transparent',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  {on && <span style={{ fontSize: '9px', color: 'var(--purple-900)', lineHeight: 1, fontWeight: 700 }}>✓</span>}
+                </div>
+                <span style={{ flex: 1, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--gold-400)' }}>
+                  {day.name}
+                </span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: 'var(--gold-400)', whiteSpace: 'nowrap' }}>
+                  {daySets} sets · ~{Math.round(estCal)} kcal
+                </span>
+              </div>
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '6px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                {day.items.map((it, j) => {
+                  const ex = workoutDatabase.find(w => w.id === it.exerciseId);
+                  return (
+                    <div key={j} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.71rem', color: 'var(--gray-300)' }}>{ex?.name ?? `Exercise #${it.exerciseId}`}</span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.66rem', color: 'var(--gray-500)' }}>{it.sets} sets</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+
+        <div style={{ display: 'flex', gap: '8px', marginTop: '8px', position: 'sticky', bottom: 0, background: 'var(--purple-900)', paddingTop: '8px' }}>
+          <button
+            type="button"
+            onClick={handleApply}
+            disabled={selected.size === 0}
+            style={{ ...smallBtn('gold'), flex: 2, padding: '11px', justifyContent: 'center', opacity: selected.size === 0 ? 0.4 : 1 }}
+          >
+            Apply {selected.size} Day{selected.size !== 1 ? 's' : ''} to My Plan
+          </button>
+          <button type="button" onClick={() => setAiSuggestion(null)} style={{ ...smallBtn('ghost'), flex: 1, padding: '11px', justifyContent: 'center' }}>
+            Discard
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Normal edit view ───────────────────────────────────────────────────────
   return (
     <div>
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', marginTop: '8px' }}>
-        <button type="button" onClick={handleAskGemini} disabled={workoutLoading} style={smallBtn('gold')}>
-          <Brain size={14} /> {workoutLoading ? 'Thinking…' : 'Ask Gemini'}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', marginTop: '10px' }}>
+        <button type="button" onClick={handleGenerate} disabled={aiLoading} style={{ ...smallBtn('gold'), gap: '6px' }}>
+          <Brain size={14} /> {aiLoading ? 'Generating…' : 'Generate AI Plan'}
         </button>
+        {aiLoading && <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.7rem', color: 'var(--gray-400)' }}>Asking Gemini…</span>}
+        {aiError && <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.7rem', color: '#ef4444' }}>{aiError}</span>}
       </div>
 
-      <RecBox text={workoutRec} loading={workoutLoading} />
+      {days.length === 0 && (
+        <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--gray-500)', fontFamily: 'var(--font-body)', fontSize: '0.78rem' }}>
+          No training days yet. Generate an AI plan or add manually.
+        </div>
+      )}
 
       {days.map(day => {
-        const ae = getAddEx(day.id);
-        const totalSets = day.items.reduce((s, it) => s + it.sets, 0);
-        const estCal = day.items.reduce((s, it) => {
+        const ae = getAE(day.id);
+        const totalSets = day.items.reduce((s, it) => s + (Number(it.sets) || 0), 0);
+        const estCal    = day.items.reduce((s, it) => {
           const ex = workoutDatabase.find(w => w.id === it.exerciseId);
           return s + (ex ? ex.calPerSet * it.sets : 0);
         }, 0);
@@ -465,18 +593,7 @@ const TrainingTab = ({ days, setDays, formState }) => {
                 placeholder="e.g. Push Day"
                 value={day.name}
                 onChange={e => updateDayName(day.id, e.target.value)}
-                style={{
-                  flex: 1,
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  fontFamily: 'var(--font-heading)',
-                  fontWeight: 700,
-                  fontSize: '0.88rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  color: 'var(--gold-500)',
-                }}
+                style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.88rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--gold-500)' }}
               />
               <button type="button" onClick={() => deleteDay(day.id)} style={{ ...smallBtn('ghost'), padding: '4px 6px', color: 'var(--gray-500)', flexShrink: 0 }}>
                 <X size={13} />
@@ -485,70 +602,39 @@ const TrainingTab = ({ days, setDays, formState }) => {
 
             {day.items.length > 0 && (
               <div style={{ display: 'flex', gap: '10px', marginBottom: '8px' }}>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'var(--gold-400)' }}>
-                  {totalSets} total sets
-                </span>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'var(--gray-500)' }}>
-                  ~{Math.round(estCal)} kcal burned
-                </span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'var(--gold-400)' }}>{totalSets} sets</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'var(--gray-500)' }}>~{Math.round(estCal)} kcal</span>
               </div>
             )}
 
             {day.items.map(it => {
               const ex = workoutDatabase.find(w => w.id === it.exerciseId);
               return (
-                <div key={it.tempId} style={{
-                  display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '5px',
-                  padding: '4px 8px', borderRadius: 'var(--r-md)',
-                  background: 'rgba(255,255,255,0.03)',
-                }}>
-                  <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--gray-200)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {ex?.name}
-                  </span>
+                <div key={it.tempId} style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '5px', padding: '4px 8px', borderRadius: 'var(--r-md)', background: 'rgba(255,255,255,0.03)' }}>
+                  <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--gray-200)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ex?.name}</span>
                   <input
                     type="number"
                     value={it.sets}
                     onChange={e => updateExItemSets(day.id, it.tempId, e.target.value)}
-                    min="1"
-                    max="20"
+                    min="1" max="20"
                     aria-label={`${ex?.name} sets`}
                     style={{ width: '40px', padding: '2px 5px', background: 'rgba(10,6,18,0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', color: 'var(--white)', fontFamily: 'var(--font-mono)', fontSize: '0.7rem', outline: 'none', textAlign: 'right', flexShrink: 0 }}
                   />
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: 'var(--gray-500)', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                    sets
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => removeExItem(day.id, it.tempId)}
-                    aria-label={`Remove ${ex?.name}`}
-                    style={iconDeleteBtn}
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: 'var(--gray-500)', whiteSpace: 'nowrap', flexShrink: 0 }}>sets</span>
+                  <button type="button" onClick={() => removeExItem(day.id, it.tempId)} aria-label={`Remove ${ex?.name}`} style={iconDeleteBtn}
                     onMouseEnter={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = 'rgba(239,68,68,0.1)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.25)'; e.currentTarget.style.background = 'transparent'; }}
-                  >
+                    onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.25)'; e.currentTarget.style.background = 'transparent'; }}>
                     <Trash2 size={12} />
                   </button>
                 </div>
               );
             })}
 
-            {/* Add exercise row */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '8px' }}>
-              <SearchSelect
-                items={workoutItems}
-                selectedId={ae.exerciseId}
-                onSelect={val => setAddExField(day.id, 'exerciseId', val)}
-                placeholder="Search exercise…"
-              />
+              <SearchSelect items={workoutItems} selectedId={ae.exerciseId} onSelect={val => setAEField(day.id, 'exerciseId', val)} placeholder="Search exercise…" />
               <div style={{ display: 'flex', gap: '6px' }}>
-                <input
-                  type="number"
-                  placeholder="sets"
-                  min="1"
-                  max="10"
-                  value={ae.sets}
-                  onChange={e => setAddExField(day.id, 'sets', e.target.value)}
-                  style={{ flex: 1, padding: '9px 12px', background: 'rgba(10,6,18,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 'var(--r-md)', color: 'var(--white)', fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none' }}
-                />
+                <input type="number" placeholder="sets" min="1" max="10" value={ae.sets} onChange={e => setAEField(day.id, 'sets', e.target.value)}
+                  style={{ flex: 1, padding: '9px 12px', background: 'rgba(10,6,18,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 'var(--r-md)', color: 'var(--white)', fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none' }} />
                 <button type="button" onClick={() => addExToDay(day.id)} style={{ ...smallBtn('gold'), padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <Plus size={14} /> Add
                 </button>
@@ -579,12 +665,12 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
   const [weightKg, setWeightKg] = useState(String(settings.weight_kg));
   const [stepGoal, setStepGoal] = useState(String(settings.step_goal || 10000));
 
-  // Diet & Training plan state — seed from fixedMeals/fixedWorkouts if user has no custom plan yet
-  const [meals, setMeals] = useState(
-    settings.diet_plan?.meals?.length ? settings.diet_plan.meals : seedMeals()
-  );
+  // Diet plan: always 5 fixed categories, items loaded from saved data
+  const [meals, setMeals] = useState(() => normalizeMeals(settings.diet_plan?.meals));
+  // Training plan: seed defaults for new users, honour saved data for returning users
+  const isNewUser = !settings._persisted;
   const [days, setDays] = useState(
-    settings.workout_plan?.days?.length ? settings.workout_plan.days : seedDays()
+    isNewUser && !settings.workout_plan?.days?.length ? seedDays() : (settings.workout_plan?.days ?? [])
   );
 
   const formState = { calorieGoal, proteinGoal, carbsGoal, fatsGoal, age, heightCm, weightKg };

@@ -15,6 +15,25 @@ export const DEFAULT_SETTINGS = {
   workout_plan:  { days: [] },
 };
 
+// ── localStorage helpers ──────────────────────────────────────────────────────
+const lsSettingsKey = (userId) => `steparc_settings_${userId}`;
+const lsLogsKey     = (userId) => `steparc_logs_${userId}_${today()}`;
+
+const lsSet = (key, value) => {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch (_) {}
+};
+const lsGet = (key) => {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; } catch (_) { return null; }
+};
+
+export function clearLocalCache(userId) {
+  try {
+    localStorage.removeItem(lsSettingsKey(userId));
+    const prefix = `steparc_logs_${userId}_`;
+    Object.keys(localStorage).filter(k => k.startsWith(prefix)).forEach(k => localStorage.removeItem(k));
+  } catch (_) {}
+}
+
 // SQL to run in Supabase SQL Editor (one-time migration):
 // ALTER TABLE user_settings ADD COLUMN IF NOT EXISTS step_goal integer DEFAULT 10000;
 // ALTER TABLE user_settings ADD COLUMN IF NOT EXISTS diet_plan jsonb DEFAULT '{"meals":[]}'::jsonb;
@@ -42,10 +61,20 @@ export async function loadSettings(userId) {
     .select('*')
     .eq('user_id', userId)
     .maybeSingle();
-  return data ? { ...DEFAULT_SETTINGS, ...data } : { ...DEFAULT_SETTINGS };
+  if (data) {
+    // _persisted marks that this user has at least one saved row — never written to DB
+    const merged = { ...DEFAULT_SETTINGS, ...data, _persisted: true };
+    lsSet(lsSettingsKey(userId), merged);
+    return merged;
+  }
+  // Supabase returned nothing — fall back to locally cached copy
+  const cached = lsGet(lsSettingsKey(userId));
+  return cached ?? { ...DEFAULT_SETTINGS };
 }
 
 export async function saveSettings(userId, settings) {
+  // Persist locally first so reopening the app never loses data
+  lsSet(lsSettingsKey(userId), { ...settings, _persisted: true });
   const {
     calorie_goal, protein_goal, carbs_goal, fats_goal,
     age, height_cm, weight_kg,
@@ -75,10 +104,18 @@ export async function loadTodayLogs(userId) {
     .eq('user_id', userId)
     .eq('log_date', today())
     .maybeSingle();
-  return data || { food_logs: [], workout_logs: [], cardio_logs: [], steps: 0 };
+  if (data) {
+    lsSet(lsLogsKey(userId), data);
+    return data;
+  }
+  // Fall back to locally cached today's logs
+  const cached = lsGet(lsLogsKey(userId));
+  return cached ?? { food_logs: [], workout_logs: [], cardio_logs: [], steps: 0 };
 }
 
 export async function saveTodayLogs(userId, logs) {
+  // Persist locally first
+  lsSet(lsLogsKey(userId), logs);
   const { error } = await supabase
     .from('daily_logs')
     .upsert(
