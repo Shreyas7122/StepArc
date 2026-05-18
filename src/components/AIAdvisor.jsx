@@ -1,6 +1,7 @@
 import { Brain, AlertTriangle, CheckCircle, X } from 'lucide-react';
 import { useState } from 'react';
 import { foodDatabase, workoutDatabase, STEP_CALORIES_MULTIPLIER } from '../data';
+import { getApiBase } from '../utils';
 
 const statusMeta = {
   on_track: { color: 'var(--gold-500)', bg: 'rgba(255,184,0,0.12)', border: 'rgba(255,184,0,0.25)', label: 'On Track' },
@@ -54,7 +55,7 @@ const AIAdvisor = ({ foodLogs, workoutLogs, cardioLogs, steps, totals, userProfi
     }, 0) + cardioLogs.reduce((acc, log) => acc + (log.aiCalories || 0), 0);
 
     try {
-      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const apiBase = getApiBase();
       const res = await fetch(`${apiBase}/ai-advice`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

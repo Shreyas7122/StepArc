@@ -95,69 +95,75 @@ export const dailyTargets = {
 // Bulk target: maintenance 2570 + 300 surplus (matches backend BULK_TARGET_KCAL)
 export const DAILY_BULK_TARGET = 2870;
 
+export const userProfile = {
+  age: 23,        // years — update as needed
+  heightCm: 175,  // cm    — update as needed
+  weightKg: 75.5,   // kg    — update as needed
+};
+
 export const cardioDatabase = [
   { id: 201, name: "Incline Walk (10 incl, 4.5 spd)", calPerMin: 10.4 },
-  { id: 202, name: "Brisk Walk (flat, 5.5 spd)",       calPerMin: 6.0  },
-  { id: 203, name: "Treadmill Run (8-9 km/h)",          calPerMin: 10.5 },
-  { id: 204, name: "Stationary Cycle (moderate)",       calPerMin: 8.0  },
-  { id: 205, name: "Stair Climber",                     calPerMin: 11.0 },
-  { id: 206, name: "Rowing Machine",                    calPerMin: 9.5  },
-  { id: 207, name: "Elliptical",                        calPerMin: 8.5  },
-  { id: 208, name: "Jump Rope",                         calPerMin: 12.0 },
+  { id: 202, name: "Brisk Walk (flat, 5.5 spd)", calPerMin: 6.0 },
+  { id: 203, name: "Treadmill Run (8-9 km/h)", calPerMin: 10.5 },
+  { id: 204, name: "Stationary Cycle (moderate)", calPerMin: 8.0 },
+  { id: 205, name: "Stair Climber", calPerMin: 11.0 },
+  { id: 206, name: "Rowing Machine", calPerMin: 9.5 },
+  { id: 207, name: "Elliptical", calPerMin: 8.5 },
+  { id: 208, name: "Jump Rope", calPerMin: 12.0 },
 ];
 
 export const fixedMeals = [
   {
     name: "Meal 1: Pre-Workout (9:15 AM)",
     items: [
-      { foodId: 2, amount: 100 }, 
-      { foodId: 1, amount: 150 }  
+      { foodId: 2, amount: 100 },
+      { foodId: 1, amount: 150 }
     ]
   },
   {
     name: "Meal 2: Post-Workout (12:30 PM)",
     items: [
-      { foodId: 27, amount: 35 }, 
-      { foodId: 3, amount: 60 },  
-      { foodId: 1, amount: 200 }, 
-      { foodId: 5, amount: 10 },  
-      { foodId: 6, amount: 50 },  
-      { foodId: 4, amount: 20 },  
-      { foodId: 26, amount: 66 }  
+      { foodId: 27, amount: 35 },
+      { foodId: 3, amount: 60 },
+      { foodId: 1, amount: 200 },
+      { foodId: 5, amount: 10 },
+      { foodId: 6, amount: 50 },
+      { foodId: 4, amount: 20 },
+      { foodId: 26, amount: 66 }
     ]
   },
   {
     name: "Meal 3: Lunch (3:00 PM)",
     items: [
-      { foodId: 8, amount: 70 },  
-      { foodId: 9, amount: 100 }, 
-      { foodId: 10, amount: 75 }, 
+      { foodId: 8, amount: 70 },
+      { foodId: 9, amount: 100 },
+      { foodId: 10, amount: 75 },
       { foodId: 28, amount: 100 },
-      { foodId: 12, amount: 50 }, 
-      { foodId: 13, amount: 50 }, 
+      { foodId: 12, amount: 50 },
+      { foodId: 13, amount: 50 },
       { foodId: 29, amount: 100 },
       { foodId: 17, amount: 100 },
-      { foodId: 16, amount: 3 },  
-      { foodId: 33, amount: 100 } 
+      { foodId: 16, amount: 3 },
+      { foodId: 33, amount: 100 }
     ]
   },
   {
     name: "Meal 4: Evening Snack (5:30 PM)",
     items: [
-      { foodId: 26, amount: 66 }, 
-      { foodId: 22, amount: 200 } 
+      { foodId: 26, amount: 66 },
+      { foodId: 22, amount: 200 }
     ]
   },
   {
     name: "Meal 5: Dinner (8:30 PM)",
     items: [
-      { foodId: 8, amount: 35 },  
-      { foodId: 9, amount: 100 }, 
+      { foodId: 8, amount: 35 },
+      { foodId: 9, amount: 100 },
       { foodId: 24, amount: 100 },
       { foodId: 29, amount: 100 },
       { foodId: 17, amount: 100 },
       { foodId: 16, amount: 7.5 },
-      { foodId: 32, amount: 100 } 
+      { foodId: 32, amount: 100 }
     ]
   }
 ];

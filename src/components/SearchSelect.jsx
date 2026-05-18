@@ -6,10 +6,10 @@ const SearchSelect = ({ items, selectedId, onSelect, placeholder }) => {
   const [query, setQuery] = useState(
     () => items.find(i => i.id === selectedId)?.label || ''
   );
-  const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState({ top: 0, left: 0, width: 0 });
+  const [open, setOpen]   = useState(false);
+  const [pos, setPos]     = useState({ top: 0, left: 0, width: 0 });
   const containerRef = useRef(null);
-  const dropdownRef = useRef(null);
+  const dropdownRef  = useRef(null);
 
   const filtered = query.trim()
     ? items.filter(i => i.label.toLowerCase().includes(query.toLowerCase())).slice(0, 6)
@@ -22,7 +22,7 @@ const SearchSelect = ({ items, selectedId, onSelect, placeholder }) => {
     }
   };
 
-  const handleOpen = () => { updatePos(); setOpen(true); };
+  const handleOpen   = () => { updatePos(); setOpen(true); };
   const handleSelect = (item) => { setQuery(item.label); onSelect(item.id); setOpen(false); };
 
   useEffect(() => {
@@ -48,7 +48,17 @@ const SearchSelect = ({ items, selectedId, onSelect, placeholder }) => {
   return (
     <div ref={containerRef}>
       <div style={{ position: 'relative' }}>
-        <Search size={15} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)', pointerEvents: 'none' }} />
+        <Search
+          size={15}
+          style={{
+            position: 'absolute',
+            left: 13,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            color: 'var(--gold-500)',
+            pointerEvents: 'none',
+          }}
+        />
         <input
           type="text"
           placeholder={placeholder || 'Search…'}
@@ -67,9 +77,33 @@ const SearchSelect = ({ items, selectedId, onSelect, placeholder }) => {
           style={{ position: 'fixed', top: pos.top, left: pos.left, width: pos.width }}
         >
           {filtered.map(item => (
-            <div key={item.id} className="search-option" onClick={() => handleSelect(item)}>
-              <div style={{ fontWeight: 500, fontSize: '0.9rem' }}>{item.label}</div>
-              {item.sub && <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: 2 }}>{item.sub}</div>}
+            <div
+              key={item.id}
+              className="search-option"
+              onClick={() => handleSelect(item)}
+            >
+              <div
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontWeight: 500,
+                  fontSize: '0.9rem',
+                  color: 'var(--white)',
+                }}
+              >
+                {item.label}
+              </div>
+              {item.sub && (
+                <div
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '0.72rem',
+                    color: 'var(--gray-500)',
+                    marginTop: 2,
+                  }}
+                >
+                  {item.sub}
+                </div>
+              )}
             </div>
           ))}
         </div>,

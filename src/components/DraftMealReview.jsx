@@ -25,24 +25,88 @@ const DraftMealReview = ({
 
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h2 style={{ fontSize: '1.15rem', margin: 0 }}>Review: {draftMeal.name}</h2>
-        <button onClick={onCancel} style={{ background: 'transparent', padding: 0, width: 'auto', color: 'var(--text-secondary)' }}>
-          <X size={24} />
+        <div>
+          <div
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 600,
+              fontSize: '0.65rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.2em',
+              color: 'var(--gold-500)',
+              marginBottom: '3px',
+            }}
+          >
+            REVIEW MEAL
+          </div>
+          <div
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 600,
+              fontSize: '1rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              color: 'var(--white)',
+            }}
+          >
+            {draftMeal.name}
+          </div>
+        </div>
+        <button
+          onClick={onCancel}
+          style={{
+            background: 'transparent',
+            padding: '6px',
+            width: 'auto',
+            color: 'var(--gray-500)',
+            borderRadius: 'var(--r-md)',
+          }}
+        >
+          <X size={22} />
         </button>
       </div>
 
       {/* Item list */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
         {draftMeal.items.map((it) => {
           const foodDef = foodDatabase.find((f) => f.id === it.foodId);
+          const cal = foodDef ? Math.round((foodDef.calories * (it.amount || 0)) / 100) : 0;
           return (
-            <div key={it.tempId} style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(0,0,0,0.2)', padding: '10px 12px', borderRadius: '12px' }}>
+            <div
+              key={it.tempId}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                background: 'rgba(10,6,18,0.4)',
+                padding: '10px 12px',
+                borderRadius: 'var(--r-md)',
+                border: '1px solid rgba(255,255,255,0.04)',
+              }}
+            >
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: '0.88rem', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <div
+                  style={{
+                    fontSize: '0.88rem',
+                    fontWeight: 500,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    color: 'var(--white)',
+                  }}
+                >
                   {foodDef?.name}
                 </div>
-                <div style={{ fontSize: '0.72rem', color: 'var(--calories-color)', marginTop: 2 }}>
-                  {foodDef ? Math.round((foodDef.calories * (it.amount || 0)) / 100) : 0} kcal
+                <div
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.72rem',
+                    color: 'var(--gold-500)',
+                    marginTop: 2,
+                    fontWeight: 600,
+                  }}
+                >
+                  {cal} kcal
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
@@ -52,9 +116,19 @@ const DraftMealReview = ({
                   onChange={(e) => onUpdateAmount(it.tempId, e.target.value)}
                   style={{ width: '64px', padding: '7px', margin: 0, textAlign: 'center', fontSize: '0.9rem' }}
                 />
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>g</span>
-                <button onClick={() => onRemoveItem(it.tempId)} style={{ background: 'rgba(239,68,68,0.2)', padding: '7px', width: 'auto', borderRadius: '8px', color: '#ef4444' }}>
-                  <X size={14} />
+                <span style={{ fontSize: '0.72rem', color: 'var(--gray-500)' }}>g</span>
+                <button
+                  onClick={() => onRemoveItem(it.tempId)}
+                  style={{
+                    background: 'rgba(239,68,68,0.15)',
+                    padding: '7px',
+                    width: 'auto',
+                    borderRadius: 'var(--r-md)',
+                    color: '#ef4444',
+                    border: '1px solid rgba(239,68,68,0.2)',
+                  }}
+                >
+                  <X size={13} />
                 </button>
               </div>
             </div>
@@ -63,8 +137,27 @@ const DraftMealReview = ({
       </div>
 
       {/* Add extra item */}
-      <form onSubmit={onAddItem} style={{ borderTop: '1px solid var(--surface-border)', paddingTop: '16px', marginBottom: '24px' }}>
-        <h3 style={{ fontSize: '0.95rem', marginBottom: '10px', color: 'var(--text-secondary)' }}>Add Extra Item</h3>
+      <form
+        onSubmit={onAddItem}
+        style={{
+          borderTop: '1px solid rgba(255,255,255,0.06)',
+          paddingTop: '16px',
+          marginBottom: '20px',
+        }}
+      >
+        <div
+          style={{
+            fontFamily: 'var(--font-heading)',
+            fontWeight: 600,
+            fontSize: '0.65rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.18em',
+            color: 'var(--gray-500)',
+            marginBottom: '10px',
+          }}
+        >
+          Add Extra Item
+        </div>
         <div className="input-group">
           <SearchSelect
             items={foodItems}
@@ -81,14 +174,33 @@ const DraftMealReview = ({
             onChange={(e) => setDraftAddAmount(e.target.value)}
             style={{ flex: 1, margin: 0 }}
           />
-          <button type="submit" style={{ width: 'auto', padding: '12px 18px', flexShrink: 0, background: 'var(--surface-border)', color: 'var(--text-primary)' }}>
-            <Plus size={18} />
+          <button
+            type="submit"
+            style={{
+              width: 'auto',
+              padding: '11px 16px',
+              flexShrink: 0,
+              background: 'rgba(255,255,255,0.08)',
+              color: 'var(--white)',
+              borderRadius: 'var(--r-md)',
+              border: '1px solid rgba(255,255,255,0.1)',
+            }}
+          >
+            <Plus size={17} />
           </button>
         </div>
       </form>
 
-      <button onClick={onConfirm} style={{ background: '#10b981', color: 'white' }}>
-        <Check size={18} /> Confirm &amp; Log Meal
+      {/* Confirm button */}
+      <button
+        onClick={onConfirm}
+        style={{
+          background: 'var(--gradient-cta)',
+          color: 'var(--purple-900)',
+          borderRadius: 'var(--r-pill)',
+        }}
+      >
+        <Check size={17} /> CONFIRM &amp; LOG MEAL
       </button>
     </div>
   </div>

@@ -2,6 +2,7 @@ import { User, X, Save, Brain, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import SearchSelect from './SearchSelect';
 import { foodDatabase, workoutDatabase, fixedMeals, fixedWorkouts } from '../data';
+import { getApiBase } from '../utils';
 
 // Convert fixedMeals / fixedWorkouts into editable plan format
 const seedMeals = () =>
@@ -18,7 +19,7 @@ const seedDays = () =>
     items: w.items.map((it, j) => ({ tempId: Date.now() + i * 1000 + j, exerciseId: it.exerciseId, sets: it.sets })),
   }));
 
-const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const apiBase = getApiBase();
 
 // ── Food / workout SearchSelect item lists ────────────────────────────────────
 const foodItems = foodDatabase.map(f => ({
@@ -97,7 +98,7 @@ const Field = ({ label, value, onChange, min, max, step, unit }) => (
         {label}
       </span>
       {unit && (
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem', color: 'var(--gray-500)' }}>{unit}</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem', color: 'var(--gray-300)' }}>{unit}</span>
       )}
     </div>
     <input
@@ -107,6 +108,7 @@ const Field = ({ label, value, onChange, min, max, step, unit }) => (
       step={step || 1}
       value={value}
       onChange={e => onChange(e.target.value)}
+      aria-label={label}
       style={inputStyle}
       onFocus={e => (e.target.style.borderColor = 'var(--gold-500)')}
       onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
@@ -136,13 +138,29 @@ const RecBox = ({ text, loading }) => {
   );
 };
 
+// ── Compact icon-only delete button ──────────────────────────────────────────
+const iconDeleteBtn = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '24px',
+  height: '24px',
+  padding: 0,
+  background: 'transparent',
+  border: 'none',
+  color: 'rgba(255,255,255,0.25)',
+  cursor: 'pointer',
+  flexShrink: 0,
+  borderRadius: '4px',
+};
+
 // ── Tab 2: Diet Plan ──────────────────────────────────────────────────────────
 const DietPlanTab = ({ meals, setMeals, formState }) => {
-  const [dietRec,     setDietRec]     = useState('');
+  const [dietRec, setDietRec] = useState('');
   const [dietLoading, setDietLoading] = useState(false);
 
   // Per-meal add-food row state
-  const [addFood,   setAddFood]   = useState({});   // { [mealId]: { foodId, amount } }
+  const [addFood, setAddFood] = useState({});   // { [mealId]: { foodId, amount } }
 
   const handleAskGemini = async () => {
     setDietLoading(true);
@@ -158,8 +176,8 @@ const DietPlanTab = ({ meals, setMeals, formState }) => {
           height_cm: parseFloat(heightCm) || 175,
           calorie_goal: parseInt(calorieGoal) || 2870,
           protein_goal: parseInt(proteinGoal) || 200,
-          carbs_goal:   parseInt(carbsGoal)   || 300,
-          fats_goal:    parseInt(fatsGoal)    || 80,
+          carbs_goal: parseInt(carbsGoal) || 300,
+          fats_goal: parseInt(fatsGoal) || 80,
         }),
       });
       const data = await res.json();
@@ -206,6 +224,14 @@ const DietPlanTab = ({ meals, setMeals, formState }) => {
     ));
   };
 
+  const updateFoodItemAmount = (mealId, tempId, val) => {
+    setMeals(prev => prev.map(m =>
+      m.id === mealId
+        ? { ...m, items: m.items.map(it => it.tempId === tempId ? { ...it, amount: val === '' ? '' : Number(val) } : it) }
+        : m
+    ));
+  };
+
   return (
     <div>
       {/* Gemini button */}
@@ -226,7 +252,7 @@ const DietPlanTab = ({ meals, setMeals, formState }) => {
           const ratio = it.amount / 100;
           return {
             cal: acc.cal + f.calories * ratio,
-            p:   acc.p   + f.protein  * ratio,
+            p: acc.p + f.protein * ratio,
           };
         }, { cal: 0, p: 0 });
 
@@ -272,47 +298,62 @@ const DietPlanTab = ({ meals, setMeals, formState }) => {
             {/* Food items */}
             {meal.items.map(it => {
               const food = foodDatabase.find(f => f.id === it.foodId);
-              const cal = food ? Math.round(food.calories * it.amount / 100) : 0;
+              const cal = food && it.amount ? Math.round(food.calories * Number(it.amount) / 100) : 0;
               return (
                 <div key={it.tempId} style={{
                   display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '5px',
-                  padding: '5px 8px', borderRadius: 'var(--r-md)',
+                  padding: '4px 8px', borderRadius: 'var(--r-md)',
                   background: 'rgba(255,255,255,0.03)',
                 }}>
-                  <span style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.8rem', color: 'var(--gray-200)' }}>
+                  <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--gray-200)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {food?.name}
                   </span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'var(--gray-500)', whiteSpace: 'nowrap' }}>
-                    {it.amount}g · {cal} kcal
+                  <input
+                    type="number"
+                    value={it.amount}
+                    onChange={e => updateFoodItemAmount(meal.id, it.tempId, e.target.value)}
+                    min="1"
+                    aria-label={`${food?.name} amount in grams`}
+                    style={{ width: '48px', padding: '2px 5px', background: 'rgba(10,6,18,0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', color: 'var(--white)', fontFamily: 'var(--font-mono)', fontSize: '0.7rem', outline: 'none', textAlign: 'right', flexShrink: 0 }}
+                  />
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: 'var(--gray-500)', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                    g · {cal} kcal
                   </span>
-                  <button type="button" onClick={() => removeFoodItem(meal.id, it.tempId)} style={{ ...smallBtn('ghost'), padding: '3px 5px', color: 'var(--gray-600)', flexShrink: 0 }}>
-                    <Trash2 size={11} />
+                  <button
+                    type="button"
+                    onClick={() => removeFoodItem(meal.id, it.tempId)}
+                    aria-label={`Remove ${food?.name}`}
+                    style={iconDeleteBtn}
+                    onMouseEnter={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = 'rgba(239,68,68,0.1)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.25)'; e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    <Trash2 size={12} />
                   </button>
                 </div>
               );
             })}
 
             {/* Add food row */}
-            <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginTop: '8px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '8px' }}>
-              <div style={{ flex: 1 }}>
-                <SearchSelect
-                  items={foodItems}
-                  selectedId={af.foodId}
-                  onSelect={val => setAddFoodField(meal.id, 'foodId', val)}
-                  placeholder="Search food…"
-                />
-              </div>
-              <input
-                type="number"
-                placeholder="g"
-                min="1"
-                value={af.amount}
-                onChange={e => setAddFoodField(meal.id, 'amount', e.target.value)}
-                style={{ width: '52px', padding: '9px 6px', background: 'rgba(10,6,18,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 'var(--r-md)', color: 'var(--white)', fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none', textAlign: 'center', flexShrink: 0 }}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '8px' }}>
+              <SearchSelect
+                items={foodItems}
+                selectedId={af.foodId}
+                onSelect={val => setAddFoodField(meal.id, 'foodId', val)}
+                placeholder="Search food…"
               />
-              <button type="button" onClick={() => addFoodToMeal(meal.id)} style={{ ...smallBtn('gold'), padding: '8px 10px', flexShrink: 0 }}>
-                <Plus size={13} />
-              </button>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <input
+                  type="number"
+                  placeholder="amount (g)"
+                  min="1"
+                  value={af.amount}
+                  onChange={e => setAddFoodField(meal.id, 'amount', e.target.value)}
+                  style={{ flex: 1, padding: '9px 12px', background: 'rgba(10,6,18,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 'var(--r-md)', color: 'var(--white)', fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none' }}
+                />
+                <button type="button" onClick={() => addFoodToMeal(meal.id)} style={{ ...smallBtn('gold'), padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Plus size={14} /> Add
+                </button>
+              </div>
             </div>
           </div>
         );
@@ -328,9 +369,9 @@ const DietPlanTab = ({ meals, setMeals, formState }) => {
 
 // ── Tab 3: Training Plan ──────────────────────────────────────────────────────
 const TrainingTab = ({ days, setDays, formState }) => {
-  const [workoutRec,     setWorkoutRec]     = useState('');
+  const [workoutRec, setWorkoutRec] = useState('');
   const [workoutLoading, setWorkoutLoading] = useState(false);
-  const [addExercise,    setAddExercise]    = useState({});
+  const [addExercise, setAddExercise] = useState({});
 
   const handleAskGemini = async () => {
     setWorkoutLoading(true);
@@ -341,8 +382,8 @@ const TrainingTab = ({ days, setDays, formState }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          age:          parseInt(age)         || 20,
-          weight_kg:    parseFloat(weightKg)  || 78,
+          age: parseInt(age) || 20,
+          weight_kg: parseFloat(weightKg) || 78,
           calorie_goal: parseInt(calorieGoal) || 2870,
         }),
       });
@@ -387,6 +428,14 @@ const TrainingTab = ({ days, setDays, formState }) => {
   const removeExItem = (dayId, tempId) => {
     setDays(prev => prev.map(d =>
       d.id === dayId ? { ...d, items: d.items.filter(it => it.tempId !== tempId) } : d
+    ));
+  };
+
+  const updateExItemSets = (dayId, tempId, val) => {
+    setDays(prev => prev.map(d =>
+      d.id === dayId
+        ? { ...d, items: d.items.map(it => it.tempId === tempId ? { ...it, sets: val === '' ? '' : Number(val) } : it) }
+        : d
     ));
   };
 
@@ -450,43 +499,60 @@ const TrainingTab = ({ days, setDays, formState }) => {
               return (
                 <div key={it.tempId} style={{
                   display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '5px',
-                  padding: '5px 8px', borderRadius: 'var(--r-md)',
+                  padding: '4px 8px', borderRadius: 'var(--r-md)',
                   background: 'rgba(255,255,255,0.03)',
                 }}>
-                  <span style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '0.8rem', color: 'var(--gray-200)' }}>
+                  <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--gray-200)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {ex?.name}
                   </span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'var(--gray-500)', whiteSpace: 'nowrap' }}>
-                    {it.sets} sets
+                  <input
+                    type="number"
+                    value={it.sets}
+                    onChange={e => updateExItemSets(day.id, it.tempId, e.target.value)}
+                    min="1"
+                    max="20"
+                    aria-label={`${ex?.name} sets`}
+                    style={{ width: '40px', padding: '2px 5px', background: 'rgba(10,6,18,0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', color: 'var(--white)', fontFamily: 'var(--font-mono)', fontSize: '0.7rem', outline: 'none', textAlign: 'right', flexShrink: 0 }}
+                  />
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: 'var(--gray-500)', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                    sets
                   </span>
-                  <button type="button" onClick={() => removeExItem(day.id, it.tempId)} style={{ ...smallBtn('ghost'), padding: '3px 5px', color: 'var(--gray-600)', flexShrink: 0 }}>
-                    <Trash2 size={11} />
+                  <button
+                    type="button"
+                    onClick={() => removeExItem(day.id, it.tempId)}
+                    aria-label={`Remove ${ex?.name}`}
+                    style={iconDeleteBtn}
+                    onMouseEnter={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = 'rgba(239,68,68,0.1)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.25)'; e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    <Trash2 size={12} />
                   </button>
                 </div>
               );
             })}
 
-            <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginTop: '8px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '8px' }}>
-              <div style={{ flex: 1 }}>
-                <SearchSelect
-                  items={workoutItems}
-                  selectedId={ae.exerciseId}
-                  onSelect={val => setAddExField(day.id, 'exerciseId', val)}
-                  placeholder="Search exercise…"
-                />
-              </div>
-              <input
-                type="number"
-                placeholder="sets"
-                min="1"
-                max="10"
-                value={ae.sets}
-                onChange={e => setAddExField(day.id, 'sets', e.target.value)}
-                style={{ width: '52px', padding: '9px 6px', background: 'rgba(10,6,18,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 'var(--r-md)', color: 'var(--white)', fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none', textAlign: 'center', flexShrink: 0 }}
+            {/* Add exercise row */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '8px' }}>
+              <SearchSelect
+                items={workoutItems}
+                selectedId={ae.exerciseId}
+                onSelect={val => setAddExField(day.id, 'exerciseId', val)}
+                placeholder="Search exercise…"
               />
-              <button type="button" onClick={() => addExToDay(day.id)} style={{ ...smallBtn('gold'), padding: '8px 10px', flexShrink: 0 }}>
-                <Plus size={13} />
-              </button>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <input
+                  type="number"
+                  placeholder="sets"
+                  min="1"
+                  max="10"
+                  value={ae.sets}
+                  onChange={e => setAddExField(day.id, 'sets', e.target.value)}
+                  style={{ flex: 1, padding: '9px 12px', background: 'rgba(10,6,18,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 'var(--r-md)', color: 'var(--white)', fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none' }}
+                />
+                <button type="button" onClick={() => addExToDay(day.id)} style={{ ...smallBtn('gold'), padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Plus size={14} /> Add
+                </button>
+              </div>
             </div>
           </div>
         );
@@ -501,17 +567,17 @@ const TrainingTab = ({ days, setDays, formState }) => {
 
 // ── Main modal ────────────────────────────────────────────────────────────────
 const UserProfileModal = ({ settings, onSave, onClose }) => {
-  const [activeTab,    setActiveTab]    = useState('goals');
+  const [activeTab, setActiveTab] = useState('goals');
 
   // Goals tab state
   const [calorieGoal, setCalorieGoal] = useState(String(settings.calorie_goal));
   const [proteinGoal, setProteinGoal] = useState(String(settings.protein_goal));
-  const [carbsGoal,   setCarbsGoal]   = useState(String(settings.carbs_goal));
-  const [fatsGoal,    setFatsGoal]    = useState(String(settings.fats_goal));
-  const [age,         setAge]         = useState(String(settings.age));
-  const [heightCm,    setHeightCm]    = useState(String(settings.height_cm));
-  const [weightKg,    setWeightKg]    = useState(String(settings.weight_kg));
-  const [stepGoal,    setStepGoal]    = useState(String(settings.step_goal || 10000));
+  const [carbsGoal, setCarbsGoal] = useState(String(settings.carbs_goal));
+  const [fatsGoal, setFatsGoal] = useState(String(settings.fats_goal));
+  const [age, setAge] = useState(String(settings.age));
+  const [heightCm, setHeightCm] = useState(String(settings.height_cm));
+  const [weightKg, setWeightKg] = useState(String(settings.weight_kg));
+  const [stepGoal, setStepGoal] = useState(String(settings.step_goal || 10000));
 
   // Diet & Training plan state — seed from fixedMeals/fixedWorkouts if user has no custom plan yet
   const [meals, setMeals] = useState(
@@ -525,33 +591,33 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
 
   const handleSave = (e) => {
     e.preventDefault();
-    const cg  = parseInt(calorieGoal);
-    const pg  = parseInt(proteinGoal);
+    const cg = parseInt(calorieGoal);
+    const pg = parseInt(proteinGoal);
     const crg = parseInt(carbsGoal);
-    const fg  = parseInt(fatsGoal);
-    const a   = parseInt(age);
-    const h   = parseFloat(heightCm);
-    const w   = parseFloat(weightKg);
-    const sg  = parseInt(stepGoal);
+    const fg = parseInt(fatsGoal);
+    const a = parseInt(age);
+    const h = parseFloat(heightCm);
+    const w = parseFloat(weightKg);
+    const sg = parseInt(stepGoal);
     if (!cg || !pg || !crg || !fg || !a || !h || !w) return;
     onSave({
       calorie_goal: cg,
       protein_goal: pg,
-      carbs_goal:   crg,
-      fats_goal:    fg,
-      age:          a,
-      height_cm:    h,
-      weight_kg:    w,
-      step_goal:    sg || 10000,
-      diet_plan:    { meals },
+      carbs_goal: crg,
+      fats_goal: fg,
+      age: a,
+      height_cm: h,
+      weight_kg: w,
+      step_goal: sg || 10000,
+      diet_plan: { meals },
       workout_plan: { days },
     });
   };
 
   const tabs = [
-    { id: 'goals',    label: 'Goals'    },
-    { id: 'diet',     label: 'Diet Plan' },
-    { id: 'training', label: 'Training'  },
+    { id: 'goals', label: 'Goals' },
+    { id: 'diet', label: 'Diet Plan' },
+    { id: 'training', label: 'Training' },
   ];
 
   const tabActive = {
@@ -586,9 +652,9 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
           borderRadius: 'var(--r-xl)',
           boxShadow: '0 24px 80px rgba(0,0,0,0.7)',
           maxHeight: '90vh',
-          overflowY: 'auto',
           display: 'flex',
           flexDirection: 'column',
+          overflow: 'hidden',
         }}
       >
         {/* Header */}
@@ -606,6 +672,7 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
           </div>
           <button
             type="button"
+            aria-label="Close profile settings"
             onClick={onClose}
             style={{
               width: '36px', height: '36px', flexShrink: 0,
@@ -654,7 +721,7 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSave} style={{ padding: '4px 20px 24px' }}>
+        <form onSubmit={handleSave} style={{ padding: '4px 20px 24px', overflowY: 'auto', flex: 1 }}>
 
           {/* ── GOALS TAB ── */}
           {activeTab === 'goals' && (
@@ -664,14 +731,14 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
 
               <div style={{ ...sectionLabel, marginTop: '22px' }}>Daily Goals</div>
               <Field label="Calorie Goal" value={calorieGoal} onChange={setCalorieGoal} min={1000} max={6000} unit="kcal/day" />
-              <Field label="Protein Goal" value={proteinGoal} onChange={setProteinGoal} min={50}   max={400}  unit="g/day" />
-              <Field label="Carbs Goal"   value={carbsGoal}   onChange={setCarbsGoal}   min={50}   max={700}  unit="g/day" />
-              <Field label="Fats Goal"    value={fatsGoal}    onChange={setFatsGoal}    min={20}   max={300}  unit="g/day" />
+              <Field label="Protein Goal" value={proteinGoal} onChange={setProteinGoal} min={50} max={400} unit="g/day" />
+              <Field label="Carbs Goal" value={carbsGoal} onChange={setCarbsGoal} min={50} max={700} unit="g/day" />
+              <Field label="Fats Goal" value={fatsGoal} onChange={setFatsGoal} min={20} max={300} unit="g/day" />
 
               <div style={{ ...sectionLabel, marginTop: '22px' }}>Body Stats</div>
-              <Field label="Age"    value={age}      onChange={setAge}      min={10}  max={100}        unit="years" />
+              <Field label="Age" value={age} onChange={setAge} min={10} max={100} unit="years" />
               <Field label="Height" value={heightCm} onChange={setHeightCm} min={100} max={250} step={0.1} unit="cm" />
-              <Field label="Weight" value={weightKg} onChange={setWeightKg} min={30}  max={250} step={0.1} unit="kg" />
+              <Field label="Weight" value={weightKg} onChange={setWeightKg} min={30} max={250} step={0.1} unit="kg" />
             </>
           )}
 

@@ -1,7 +1,8 @@
-import { LayoutDashboard, Utensils, Dumbbell, ClipboardList } from 'lucide-react';
+import { LayoutDashboard, BarChart2, Utensils, Dumbbell, ClipboardList } from 'lucide-react';
 
 const TABS = [
-  { id: 'dashboard', label: 'Overview',  Icon: LayoutDashboard },
+  { id: 'dashboard', label: 'Today',     Icon: LayoutDashboard },
+  { id: 'history',   label: 'History',   Icon: BarChart2 },
   { id: 'food',      label: 'Nutrition', Icon: Utensils },
   { id: 'workout',   label: 'Training',  Icon: Dumbbell },
   { id: 'logs',      label: 'Logs',      Icon: ClipboardList },
@@ -14,18 +15,68 @@ const TabBar = ({ activeTab, setActiveTab, onResetDrafts }) => {
   };
 
   return (
-    <div className="tabs animate-slide-up delay-1">
-      {TABS.map(({ id, label, Icon }) => (
-        <div
-          key={id}
-          className={`tab ${activeTab === id ? 'active' : ''}`}
-          onClick={() => handleTabClick(id)}
-        >
-          <Icon size={15} strokeWidth={2} />
-          <span>{label}</span>
-        </div>
-      ))}
-    </div>
+    <nav
+      className="animate-slide-up delay-1"
+      role="tablist"
+      aria-label="Main Navigation"
+      style={{
+        display: 'flex',
+        gap: '4px',
+        background: 'rgba(10,6,18,0.7)',
+        border: '1px solid rgba(255,255,255,0.06)',
+        borderRadius: 'var(--r-lg)',
+        padding: '6px',
+      }}
+    >
+      {TABS.map(({ id, label, Icon }) => {
+        const isActive = activeTab === id;
+        return (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            aria-selected={isActive}
+            aria-label={`${label} tab`}
+            onClick={() => handleTabClick(id)}
+            style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '4px',
+              padding: '8px 4px',
+              cursor: 'pointer',
+              position: 'relative',
+              background: isActive ? 'var(--gradient-cta)' : 'transparent',
+              color: isActive ? 'var(--purple-900)' : 'var(--gray-500)',
+              borderRadius: 'var(--r-md)',
+              clipPath: isActive ? 'polygon(6% 0, 100% 0, 94% 100%, 0 100%)' : 'none',
+              boxShadow: isActive ? 'var(--glow-gold)' : 'none',
+              transition: 'background 0.2s, color 0.2s, box-shadow 0.2s',
+              userSelect: 'none',
+              WebkitTapHighlightColor: 'transparent',
+              border: 'none',
+              outline: 'none',
+            }}
+          >
+            <Icon size={14} strokeWidth={isActive ? 2.5 : 2} />
+            <span
+              style={{
+                fontFamily: 'var(--font-heading)',
+                fontWeight: isActive ? 700 : 600,
+                fontSize: '0.52rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                lineHeight: 1,
+              }}
+            >
+              {label}
+            </span>
+          </button>
+        );
+      })}
+    </nav>
   );
 };
 

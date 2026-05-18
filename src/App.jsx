@@ -232,54 +232,57 @@ export default function App() {
       />
       <TabBar activeTab={activeTab} setActiveTab={setActiveTab} onResetDrafts={handleResetDrafts} />
 
-      {activeTab === 'dashboard' && (
-        <>
-          <Dashboard totals={totals} steps={steps} goals={goals} />
-          <AIAdvisor foodLogs={foodLogs} workoutLogs={workoutLogs} cardioLogs={cardioLogs} steps={steps} totals={totals} userProfile={userProfile} goals={goals} />
-          <AIInput caloriesLoggedToday={totals.calIn} calorieGoal={goals.calories} onLogMeal={handleAILog} />
-        </>
-      )}
+      <main style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1, width: '100%' }}>
+        {activeTab === 'dashboard' && (
+          <>
+            <Dashboard totals={totals} steps={steps} goals={goals} />
+            <AIAdvisor foodLogs={foodLogs} workoutLogs={workoutLogs} cardioLogs={cardioLogs} steps={steps} totals={totals} userProfile={userProfile} goals={goals} />
+            <AIInput caloriesLoggedToday={totals.calIn} calorieGoal={goals.calories} onLogMeal={handleAILog} />
+          </>
+        )}
 
-      {activeTab === 'history' && <HistoryTab userId={authUser.id} goals={goals} />}
+        {activeTab === 'history' && <HistoryTab userId={authUser.id} goals={goals} />}
 
-      {activeTab === 'logs' && (
-        <LogList foodLogs={foodLogs} workoutLogs={workoutLogs} cardioLogs={cardioLogs}
-          onUpdateFoodLog={handleUpdateFoodLog} onDeleteFoodLog={handleDeleteFoodLog}
-          onUpdateWorkoutLog={handleUpdateWorkoutLog} onDeleteWorkoutLog={handleDeleteWorkoutLog}
-          onDeleteCardioLog={handleDeleteCardioLog} />
-      )}
+        {activeTab === 'logs' && (
+          <LogList foodLogs={foodLogs} workoutLogs={workoutLogs} cardioLogs={cardioLogs}
+            onUpdateFoodLog={handleUpdateFoodLog} onDeleteFoodLog={handleDeleteFoodLog}
+            onUpdateWorkoutLog={handleUpdateWorkoutLog} onDeleteWorkoutLog={handleDeleteWorkoutLog}
+            onDeleteCardioLog={handleDeleteCardioLog} />
+        )}
 
-      {activeTab === 'food' && !draftMeal && (
-        <FoodTab onStartQuickLog={handleStartQuickLog} selectedFoodId={selectedFoodId}
-          setSelectedFoodId={setSelectedFoodId} foodAmount={foodAmount}
-          setFoodAmount={setFoodAmount} onAddFood={handleAddFood}
-          customMeals={settings.diet_plan?.meals} />
-      )}
+        {activeTab === 'food' && !draftMeal && (
+          <FoodTab onStartQuickLog={handleStartQuickLog} selectedFoodId={selectedFoodId}
+            setSelectedFoodId={setSelectedFoodId} foodAmount={foodAmount}
+            setFoodAmount={setFoodAmount} onAddFood={handleAddFood}
+            customMeals={settings.diet_plan?.meals} />
+        )}
 
-      {activeTab === 'food' && draftMeal && (
-        <DraftMealReview draftMeal={draftMeal} draftAddId={draftAddId} draftAddAmount={draftAddAmount}
-          setDraftAddId={setDraftAddId} setDraftAddAmount={setDraftAddAmount}
-          onCancel={() => setDraftMeal(null)} onUpdateAmount={handleUpdateDraftAmount}
-          onRemoveItem={handleRemoveDraftItem} onAddItem={handleAddDraftItem} onConfirm={handleConfirmDraftMeal} />
-      )}
+        {activeTab === 'food' && draftMeal && (
+          <DraftMealReview draftMeal={draftMeal} draftAddId={draftAddId} draftAddAmount={draftAddAmount}
+            setDraftAddId={setDraftAddId} setDraftAddAmount={setDraftAddAmount}
+            onCancel={() => setDraftMeal(null)} onUpdateAmount={handleUpdateDraftAmount}
+            onRemoveItem={handleRemoveDraftItem} onAddItem={handleAddDraftItem} onConfirm={handleConfirmDraftMeal} />
+        )}
 
-      {activeTab === 'workout' && !draftWorkout && (
-        <WorkoutTab onStartQuickLogWorkout={handleStartQuickLogWorkout} stepsInput={stepsInput}
-          setStepsInput={setStepsInput} onUpdateSteps={handleUpdateSteps}
-          selectedWorkoutId={selectedWorkoutId} setSelectedWorkoutId={setSelectedWorkoutId}
-          workoutSets={workoutSets} setWorkoutSets={setWorkoutSets}
-          onAddWorkout={handleAddWorkout} onLogCardio={handleAICardioLog}
-          customDays={settings.workout_plan?.days}
-          stepGoal={settings.step_goal} />
-      )}
+        {activeTab === 'workout' && !draftWorkout && (
+          <WorkoutTab onStartQuickLogWorkout={handleStartQuickLogWorkout} stepsInput={stepsInput}
+            setStepsInput={setStepsInput} onUpdateSteps={handleUpdateSteps}
+            selectedWorkoutId={selectedWorkoutId} setSelectedWorkoutId={setSelectedWorkoutId}
+            workoutSets={workoutSets} setWorkoutSets={setWorkoutSets}
+            onAddWorkout={handleAddWorkout} onLogCardio={handleAICardioLog}
+            customDays={settings.workout_plan?.days}
+            stepGoal={settings.step_goal}
+            steps={steps} />
+        )}
 
-      {activeTab === 'workout' && draftWorkout && (
-        <DraftWorkoutReview draftWorkout={draftWorkout} draftAddWorkoutId={draftAddWorkoutId}
-          draftAddWorkoutSets={draftAddWorkoutSets} setDraftAddWorkoutId={setDraftAddWorkoutId}
-          setDraftAddWorkoutSets={setDraftAddWorkoutSets} onCancel={() => setDraftWorkout(null)}
-          onUpdateSets={handleUpdateDraftWorkoutSets} onRemoveItem={handleRemoveDraftWorkoutItem}
-          onAddItem={handleAddDraftWorkoutItem} onConfirm={handleConfirmDraftWorkout} />
-      )}
+        {activeTab === 'workout' && draftWorkout && (
+          <DraftWorkoutReview draftWorkout={draftWorkout} draftAddWorkoutId={draftAddWorkoutId}
+            draftAddWorkoutSets={draftAddWorkoutSets} setDraftAddWorkoutId={setDraftAddWorkoutId}
+            setDraftAddWorkoutSets={setDraftAddWorkoutSets} onCancel={() => setDraftWorkout(null)}
+            onUpdateSets={handleUpdateDraftWorkoutSets} onRemoveItem={handleRemoveDraftWorkoutItem}
+            onAddItem={handleAddDraftWorkoutItem} onConfirm={handleConfirmDraftWorkout} />
+        )}
+      </main>
 
       {showProfileModal && (
         <UserProfileModal key={profileModalKey} settings={settings} onSave={handleSaveProfile} onClose={() => setShowProfileModal(false)} />

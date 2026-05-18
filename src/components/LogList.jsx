@@ -1,6 +1,86 @@
-import { X, Edit2, Check, Timer } from 'lucide-react';
+import { X, Edit2, Check, Timer, Utensils, Dumbbell } from 'lucide-react';
 import { useState } from 'react';
 import { foodDatabase, workoutDatabase, cardioDatabase } from '../data';
+
+const SectionLabel = ({ color, icon, text }) => (
+  <div
+    style={{
+      fontFamily: 'var(--font-heading)',
+      fontWeight: 600,
+      fontSize: '0.6rem',
+      textTransform: 'uppercase',
+      letterSpacing: '0.26em',
+      color: color,
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
+      marginBottom: '4px',
+    }}
+  >
+    {icon}
+    {text}
+  </div>
+);
+
+const SectionTitle = ({ text }) => (
+  <div
+    style={{
+      fontFamily: 'var(--font-heading)',
+      fontWeight: 700,
+      fontSize: '1rem',
+      textTransform: 'uppercase',
+      letterSpacing: '0.08em',
+      color: 'var(--white)',
+      marginBottom: '12px',
+    }}
+  >
+    {text}
+  </div>
+);
+
+const emptyStyle = {
+  color: 'var(--gray-500)',
+  fontFamily: 'var(--font-body)',
+  fontSize: '0.85rem',
+  fontStyle: 'italic',
+};
+
+const MonoBadge = ({ color, children }) => (
+  <span
+    style={{
+      fontFamily: 'var(--font-mono)',
+      fontSize: '0.65rem',
+      fontWeight: 600,
+      color: color,
+      background: `${color}18`,
+      border: `1px solid ${color}33`,
+      borderRadius: 'var(--r-pill)',
+      padding: '2px 7px',
+    }}
+  >
+    {children}
+  </span>
+);
+
+const GhostIconBtn = ({ onClick, children, danger }) => (
+  <button
+    onClick={onClick}
+    style={{
+      padding: '5px',
+      width: 'auto',
+      background: danger ? 'rgba(239,68,68,0.1)' : 'transparent',
+      color: danger ? '#ef4444' : 'var(--gray-500)',
+      borderRadius: 'var(--r-md)',
+      border: danger ? '1px solid rgba(239,68,68,0.18)' : '1px solid transparent',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      transition: 'background 0.15s, color 0.15s',
+    }}
+  >
+    {children}
+  </button>
+);
 
 const LogList = ({
   foodLogs, workoutLogs, cardioLogs,
@@ -24,13 +104,14 @@ const LogList = ({
   };
 
   return (
-    <div className="animate-slide-up delay-1" style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '8px' }}>
+    <div className="animate-slide-up delay-1" style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '4px' }}>
 
       {/* Food Logs */}
       <div className="glass-card">
-        <h3 style={{ fontSize: '1.1rem', marginBottom: '12px' }}>Today's Food</h3>
+        <SectionLabel color="var(--gold-500)" icon={<Utensils size={12} color="var(--gold-500)" />} text="TODAY'S FOOD" />
+        <SectionTitle text="Food Log" />
         {foodLogs.length === 0 ? (
-          <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontStyle: 'italic' }}>No food logged yet.</div>
+          <div style={emptyStyle}>No food logged yet.</div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {foodLogs.map(log => {
@@ -42,31 +123,76 @@ const LogList = ({
                 : foodItem ? Math.round((foodItem.calories * log.amount) / 100) : 0;
 
               return (
-                <div key={log.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(0,0,0,0.2)', padding: '10px 12px', borderRadius: '12px' }}>
+                <div
+                  key={log.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    background: 'rgba(10,6,18,0.4)',
+                    padding: '10px 12px 10px 14px',
+                    borderRadius: 'var(--r-md)',
+                    borderLeft: '3px solid var(--gold-500)',
+                    border: '1px solid rgba(255,255,255,0.04)',
+                    borderLeftWidth: 3,
+                    borderLeftColor: 'var(--gold-500)',
+                    borderLeftStyle: 'solid',
+                  }}
+                >
                   <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{log.name || foodItem?.name}</span>
-                      {isAI && <span style={{ fontSize: '0.6rem', background: 'rgba(99,102,241,0.2)', color: 'var(--primary-color)', padding: '1px 6px', borderRadius: '999px', fontWeight: 700 }}>AI</span>}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: 3 }}>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.9rem', fontWeight: 500, color: 'var(--white)' }}>
+                        {log.name || foodItem?.name}
+                      </span>
+                      {isAI && (
+                        <MonoBadge color="var(--gold-500)">AI</MonoBadge>
+                      )}
                     </div>
                     {!isEditing && (
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: 2 }}>
-                        {isAI
-                          ? <>P {log.aiMacros.protein.toFixed(1)}g · C {log.aiMacros.carbs.toFixed(1)}g · F {log.aiMacros.fats.toFixed(1)}g · <span style={{ color: 'var(--calories-color)' }}>{cal} kcal</span></>
-                          : <>{log.amount}g · <span style={{ color: 'var(--calories-color)' }}>{cal} kcal</span></>
-                        }
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: 4 }}>
+                        {isAI ? (
+                          <>
+                            <MonoBadge color="var(--protein-color)">P {log.aiMacros.protein.toFixed(1)}g</MonoBadge>
+                            <MonoBadge color="var(--carbs-color)">C {log.aiMacros.carbs.toFixed(1)}g</MonoBadge>
+                            <MonoBadge color="var(--fats-color)">F {log.aiMacros.fats.toFixed(1)}g</MonoBadge>
+                            <MonoBadge color="var(--gold-500)">{cal} kcal</MonoBadge>
+                          </>
+                        ) : (
+                          <>
+                            <MonoBadge color="var(--gray-500)">{log.amount}g</MonoBadge>
+                            <MonoBadge color="var(--gold-500)">{cal} kcal</MonoBadge>
+                          </>
+                        )}
                       </div>
                     )}
                   </div>
+
                   {isEditing ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <input type="number" value={editFoodAmount} onChange={e => setEditFoodAmount(e.target.value)} style={{ width: 70, padding: '6px', margin: 0, fontSize: '0.9rem' }} autoFocus />
-                      <button onClick={() => saveEditFood(log.id)} style={{ padding: '6px', width: 'auto', background: '#10b981' }}><Check size={14} /></button>
-                      <button onClick={() => setEditingFoodId(null)} style={{ padding: '6px', width: 'auto', background: 'var(--surface-border)' }}><X size={14} /></button>
+                      <input
+                        type="number"
+                        value={editFoodAmount}
+                        onChange={e => setEditFoodAmount(e.target.value)}
+                        style={{ width: 70, padding: '6px', margin: 0, fontSize: '0.9rem' }}
+                        autoFocus
+                      />
+                      <GhostIconBtn onClick={() => saveEditFood(log.id)}>
+                        <Check size={13} color="var(--gold-500)" />
+                      </GhostIconBtn>
+                      <GhostIconBtn onClick={() => setEditingFoodId(null)}>
+                        <X size={13} />
+                      </GhostIconBtn>
                     </div>
                   ) : (
-                    <div style={{ display: 'flex', gap: '6px' }}>
-                      {!isAI && <button onClick={() => { setEditingFoodId(log.id); setEditFoodAmount(log.amount); }} style={{ padding: '6px', width: 'auto', background: 'transparent', color: 'var(--text-secondary)' }}><Edit2 size={16} /></button>}
-                      <button onClick={() => onDeleteFoodLog(log.id)} style={{ padding: '6px', width: 'auto', background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}><X size={16} /></button>
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      {!isAI && (
+                        <GhostIconBtn onClick={() => { setEditingFoodId(log.id); setEditFoodAmount(log.amount); }}>
+                          <Edit2 size={14} />
+                        </GhostIconBtn>
+                      )}
+                      <GhostIconBtn onClick={() => onDeleteFoodLog(log.id)} danger>
+                        <X size={14} />
+                      </GhostIconBtn>
                     </div>
                   )}
                 </div>
@@ -78,26 +204,48 @@ const LogList = ({
 
       {/* Cardio Logs */}
       <div className="glass-card">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-          <Timer size={16} color="#38bdf8" />
-          <h3 style={{ fontSize: '1.1rem', margin: 0 }}>Today's Cardio</h3>
-        </div>
+        <SectionLabel color="#38bdf8" icon={<Timer size={12} color="#38bdf8" />} text="TODAY'S CARDIO" />
+        <SectionTitle text="Cardio Log" />
         {cardioLogs.length === 0 ? (
-          <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontStyle: 'italic' }}>No cardio logged yet.</div>
+          <div style={emptyStyle}>No cardio logged yet.</div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {cardioLogs.map(log => {
-              const item = cardioDatabase.find(c => c.id === log.cardioId);
-              const cal = item ? Math.round(item.calPerMin * log.durationMins) : 0;
+              const cal = log.aiCalories
+                ? Math.round(log.aiCalories)
+                : (() => {
+                    const item = cardioDatabase.find(c => c.id === log.cardioId);
+                    return item ? Math.round(item.calPerMin * log.durationMins) : 0;
+                  })();
               return (
-                <div key={log.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(0,0,0,0.2)', padding: '10px 12px', borderRadius: '12px' }}>
+                <div
+                  key={log.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    background: 'rgba(10,6,18,0.4)',
+                    padding: '10px 12px',
+                    borderRadius: 'var(--r-md)',
+                    borderLeft: '3px solid #38bdf8',
+                    border: '1px solid rgba(255,255,255,0.04)',
+                    borderLeftWidth: 3,
+                    borderLeftColor: '#38bdf8',
+                    borderLeftStyle: 'solid',
+                  }}
+                >
                   <div>
-                    <div style={{ fontSize: '0.9rem', fontWeight: 500 }}>{log.name}</div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: 2 }}>
-                      {log.durationMins} min · <span style={{ color: '#38bdf8' }}>{cal} kcal burned</span>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.9rem', fontWeight: 500, color: 'var(--white)', marginBottom: 4 }}>
+                      {log.name}
+                    </div>
+                    <div style={{ display: 'flex', gap: '5px' }}>
+                      <MonoBadge color="var(--gray-500)">{log.durationMins} min</MonoBadge>
+                      <MonoBadge color="#38bdf8">{cal} kcal burned</MonoBadge>
                     </div>
                   </div>
-                  <button onClick={() => onDeleteCardioLog(log.id)} style={{ padding: '6px', width: 'auto', background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}><X size={16} /></button>
+                  <GhostIconBtn onClick={() => onDeleteCardioLog(log.id)} danger>
+                    <X size={14} />
+                  </GhostIconBtn>
                 </div>
               );
             })}
@@ -107,9 +255,10 @@ const LogList = ({
 
       {/* Workout Logs */}
       <div className="glass-card">
-        <h3 style={{ fontSize: '1.1rem', marginBottom: '12px' }}>Today's Workout</h3>
+        <SectionLabel color="var(--purple-300)" icon={<Dumbbell size={12} color="var(--purple-300)" />} text="TODAY'S WORKOUT" />
+        <SectionTitle text="Workout Log" />
         {workoutLogs.length === 0 ? (
-          <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontStyle: 'italic' }}>No workout logged yet.</div>
+          <div style={emptyStyle}>No workout logged yet.</div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {workoutLogs.map(log => {
@@ -117,21 +266,58 @@ const LogList = ({
               const workoutItem = workoutDatabase.find(w => w.id === log.workoutId);
               const cal = workoutItem ? Math.round(workoutItem.calPerSet * log.sets) : 0;
               return (
-                <div key={log.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(0,0,0,0.2)', padding: '10px 12px', borderRadius: '12px' }}>
+                <div
+                  key={log.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    background: 'rgba(10,6,18,0.4)',
+                    padding: '10px 12px',
+                    borderRadius: 'var(--r-md)',
+                    borderLeft: '3px solid var(--purple-400)',
+                    border: '1px solid rgba(255,255,255,0.04)',
+                    borderLeftWidth: 3,
+                    borderLeftColor: 'var(--purple-400)',
+                    borderLeftStyle: 'solid',
+                  }}
+                >
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '0.9rem', fontWeight: 500 }}>{workoutItem?.name}</div>
-                    {!isEditing && <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: 2 }}>{log.sets} sets · <span style={{ color: 'var(--primary-color)' }}>{cal} kcal burned</span></div>}
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.9rem', fontWeight: 500, color: 'var(--white)', marginBottom: 4 }}>
+                      {workoutItem?.name}
+                    </div>
+                    {!isEditing && (
+                      <div style={{ display: 'flex', gap: '5px' }}>
+                        <MonoBadge color="var(--purple-300)">{log.sets} sets</MonoBadge>
+                        <MonoBadge color="var(--gold-500)">{cal} kcal burned</MonoBadge>
+                      </div>
+                    )}
                   </div>
+
                   {isEditing ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <input type="number" value={editWorkoutSets} onChange={e => setEditWorkoutSets(e.target.value)} style={{ width: 60, padding: '6px', margin: 0, fontSize: '0.9rem' }} autoFocus />
-                      <button onClick={() => saveEditWorkout(log.id)} style={{ padding: '6px', width: 'auto', background: 'var(--primary-color)' }}><Check size={14} /></button>
-                      <button onClick={() => setEditingWorkoutId(null)} style={{ padding: '6px', width: 'auto', background: 'var(--surface-border)' }}><X size={14} /></button>
+                      <input
+                        type="number"
+                        value={editWorkoutSets}
+                        onChange={e => setEditWorkoutSets(e.target.value)}
+                        style={{ width: 60, padding: '6px', margin: 0, fontSize: '0.9rem' }}
+                        autoFocus
+                      />
+                      <GhostIconBtn onClick={() => saveEditWorkout(log.id)}>
+                        <Check size={13} color="var(--gold-500)" />
+                      </GhostIconBtn>
+                      <GhostIconBtn onClick={() => setEditingWorkoutId(null)}>
+                        <X size={13} />
+                      </GhostIconBtn>
                     </div>
                   ) : (
-                    <div style={{ display: 'flex', gap: '6px' }}>
-                      <button onClick={() => { setEditingWorkoutId(log.id); setEditWorkoutSets(log.sets); }} style={{ padding: '6px', width: 'auto', background: 'transparent', color: 'var(--text-secondary)' }}><Edit2 size={16} /></button>
-                      <button onClick={() => onDeleteWorkoutLog(log.id)} style={{ padding: '6px', width: 'auto', background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}><X size={16} /></button>
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      <GhostIconBtn onClick={() => { setEditingWorkoutId(log.id); setEditWorkoutSets(log.sets); }}>
+                        <Edit2 size={14} />
+                      </GhostIconBtn>
+                      <GhostIconBtn onClick={() => onDeleteWorkoutLog(log.id)} danger>
+                        <X size={14} />
+                      </GhostIconBtn>
                     </div>
                   )}
                 </div>

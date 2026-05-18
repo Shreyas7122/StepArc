@@ -38,6 +38,7 @@ const WorkoutTab = ({
   onLogCardio,
   customDays,
   stepGoal,
+  steps,
 }) => {
   const selectedExercise = workoutDatabase.find(w => w.id === Number(selectedWorkoutId));
   const quickWorkouts = customDays?.length
@@ -174,8 +175,25 @@ const WorkoutTab = ({
             Step Count
           </div>
         </div>
+        {steps > 0 && (
+          <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 12px', background: 'rgba(56,189,248,0.06)', border: '1px solid rgba(56,189,248,0.15)', borderRadius: 'var(--r-md)' }}>
+            <Footprints size={13} color="#38bdf8" />
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--gray-400)' }}>
+              Logged today:&nbsp;
+              <span style={{ color: '#38bdf8', fontWeight: 700 }}>{steps.toLocaleString()}</span>
+              &nbsp;steps
+            </span>
+            <button
+              type="button"
+              onClick={() => setStepsInput(String(steps))}
+              style={{ marginLeft: 'auto', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#38bdf8', background: 'transparent', border: '1px solid rgba(56,189,248,0.25)', borderRadius: 'var(--r-md)', padding: '3px 8px', cursor: 'pointer' }}
+            >
+              Edit
+            </button>
+          </div>
+        )}
         <div className="input-group">
-          <label>Total Steps Today</label>
+          <label>{steps > 0 ? 'Update Step Count' : 'Total Steps Today'}</label>
           <input
             type="number"
             placeholder="e.g. 14000"

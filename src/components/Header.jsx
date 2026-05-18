@@ -17,10 +17,10 @@ const Header = ({ onOpenProfile, onSignOut, userEmail }) => {
       style={{
         background: 'var(--gradient-hero)',
         borderRadius: 'var(--r-xl)',
-        padding: '24px 20px 20px',
+        padding: 'calc(24px + env(safe-area-inset-top, 0px)) 20px 20px',
         boxShadow: 'var(--shadow-lift)',
         position: 'relative',
-        overflow: 'hidden',
+        zIndex: 50,
       }}
     >
       {/* Radial glow overlay */}
@@ -31,13 +31,15 @@ const Header = ({ onOpenProfile, onSignOut, userEmail }) => {
           inset: 0,
           background: 'radial-gradient(ellipse at 70% 50%, rgba(168,85,247,0.35) 0%, transparent 65%)',
           pointerEvents: 'none',
+          borderRadius: 'inherit',
         }}
       />
 
       {/* User button — top right */}
-      <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 100 }}>
+      <div style={{ position: 'absolute', top: 'calc(16px + env(safe-area-inset-top, 0px))', right: 16, zIndex: 100 }}>
         <button
           type="button"
+          aria-label="Toggle user profile and settings menu"
           onClick={() => setShowMenu(v => !v)}
           style={{
             width: 'auto',
@@ -66,39 +68,39 @@ const Header = ({ onOpenProfile, onSignOut, userEmail }) => {
               onClick={() => setShowMenu(false)}
               style={{ position: 'fixed', inset: 0, zIndex: 98 }}
             />
-          <div
-            style={{
-              position: 'fixed', top: '68px', right: '16px',
-              background: 'var(--purple-800)', border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: 'var(--r-md)', boxShadow: 'var(--shadow-lift)',
-              width: 260, overflow: 'hidden', zIndex: 99,
-            }}
-          >
-            {userEmail && (
-              <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--gray-500)', marginBottom: 4, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Signed in as</div>
-                <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--gray-200)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userEmail}</div>
-              </div>
-            )}
-            <button
-              type="button"
-              onClick={() => { setShowMenu(false); onOpenProfile(); }}
-              style={{ width: '100%', padding: '11px 14px', background: 'transparent', border: 'none', color: 'var(--white)', borderRadius: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '8px', fontSize: '0.85rem', fontFamily: 'var(--font-body)', textTransform: 'none', letterSpacing: 0, fontWeight: 500, cursor: 'pointer', transition: 'background 0.2s' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            <div
+              style={{
+                position: 'fixed', top: 'calc(68px + env(safe-area-inset-top, 0px))', right: '16px',
+                background: 'var(--purple-800)', border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 'var(--r-md)', boxShadow: 'var(--shadow-lift)',
+                width: 260, overflow: 'hidden', zIndex: 99,
+              }}
             >
-              <User size={15} /> Edit Profile
-            </button>
-            <button
-              type="button"
-              onClick={() => { setShowMenu(false); onSignOut(); }}
-              style={{ width: '100%', padding: '11px 14px', background: 'transparent', border: 'none', borderTop: '1px solid rgba(255,255,255,0.06)', color: '#ef4444', borderRadius: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '8px', fontSize: '0.85rem', fontFamily: 'var(--font-body)', textTransform: 'none', letterSpacing: 0, fontWeight: 500, cursor: 'pointer', transition: 'background 0.2s' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(239,68,68,0.1)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-            >
-              <LogOut size={15} /> Sign Out
-            </button>
-          </div>
+              {userEmail && (
+                <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--gray-500)', marginBottom: 4, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Signed in as</div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--gray-200)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userEmail}</div>
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={() => { setShowMenu(false); onOpenProfile(); }}
+                style={{ width: '100%', padding: '11px 14px', background: 'transparent', border: 'none', color: 'var(--white)', borderRadius: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '8px', fontSize: '0.85rem', fontFamily: 'var(--font-body)', textTransform: 'none', letterSpacing: 0, fontWeight: 500, cursor: 'pointer', transition: 'background 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                <User size={15} /> Edit Profile
+              </button>
+              <button
+                type="button"
+                onClick={() => { setShowMenu(false); onSignOut(); }}
+                style={{ width: '100%', padding: '11px 14px', background: 'transparent', border: 'none', borderTop: '1px solid rgba(255,255,255,0.06)', color: '#ef4444', borderRadius: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '8px', fontSize: '0.85rem', fontFamily: 'var(--font-body)', textTransform: 'none', letterSpacing: 0, fontWeight: 500, cursor: 'pointer', transition: 'background 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(239,68,68,0.1)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                <LogOut size={15} /> Sign Out
+              </button>
+            </div>
           </>
         )}
       </div>
@@ -124,7 +126,7 @@ const Header = ({ onOpenProfile, onSignOut, userEmail }) => {
       <h1
         style={{
           fontFamily: 'var(--font-display)',
-          fontSize: '3.2rem',
+          fontSize: 'clamp(2.2rem, 12vw, 3.2rem)',
           lineHeight: 1,
           fontWeight: 400,
           color: 'var(--white)',

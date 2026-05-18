@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StepArc A11y Report — 5/18/2026, 6:09:26 PM</title>
+  <style>
+    :root {
+      --bg: #0a0612; --surface: #120820; --card: #1a0b2e;
+      --border: rgba(255,255,255,0.07);
+      --gold: #f59e0b; --gold-dim: rgba(245,158,11,0.12);
+      --purple: #a855f7;
+      --green: #22c55e; --green-dim: rgba(34,197,94,0.12);
+      --red: #ef4444; --red-dim: rgba(239,68,68,0.12);
+      --text: #e5e7eb; --muted: #6b7280;
+      --mono: 'JetBrains Mono','Fira Code','Cascadia Code',monospace;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;font-size:14px;line-height:1.6;padding:32px 16px;}
+    .wrap{max-width:960px;margin:0 auto;}
+
+    /* Header */
+    .rpt-header{background:linear-gradient(135deg,#1a0b2e 0%,#0f0a1e 100%);border:1px solid var(--border);border-radius:16px;padding:32px;margin-bottom:24px;position:relative;overflow:hidden;}
+    .rpt-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(168,85,247,.2) 0%,transparent 65%);pointer-events:none;}
+    .rpt-title{font-size:28px;font-weight:700;letter-spacing:-.02em;color:#fff;margin-bottom:8px;}
+    .rpt-title span{color:var(--gold);}
+    .rpt-meta{color:var(--muted);font-size:11px;letter-spacing:.1em;text-transform:uppercase;}
+    .rpt-meta strong{color:var(--gold);}
+
+    /* Summary bar */
+    .summary{display:flex;gap:16px;margin-bottom:28px;flex-wrap:wrap;}
+    .sum-card{flex:1;min-width:130px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;}
+    .sum-card .num{font-size:30px;font-weight:700;line-height:1;}
+    .sum-card .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-top:4px;}
+    .num-fail{color:var(--red);}
+    .num-ok{color:var(--green);}
+
+    /* State sections */
+    .state{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px;}
+    .state.pass{border-left:4px solid var(--green);}
+    .state.fail{border-left:4px solid var(--red);}
+    .state-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+    .state-header h2{font-size:15px;font-weight:600;color:#fff;flex:1;}
+    .state-icon{font-size:18px;}
+    .badge{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:20px;}
+    .pass-badge{background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3);}
+    .fail-badge{background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,.3);}
+    .pass-msg{color:var(--muted);font-size:13px;}
+
+    /* Violations */
+    .violation{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px;}
+    .violation-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+    .rule-num{background:var(--gold-dim);color:var(--gold);font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;}
+    .rule-id code{font-family:var(--mono);font-size:12px;color:var(--purple);background:rgba(168,85,247,.1);padding:2px 6px;border-radius:4px;}
+    .rule-help{font-size:13px;color:var(--text);flex:1;}
+    .impact-badge{font-size:10px;font-weight:700;letter-spacing:.08em;padding:2px 8px;border-radius:12px;}
+    .violation-desc{font-size:13px;color:var(--muted);margin-bottom:10px;}
+    .violation-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+    .tag{font-size:10px;background:rgba(168,85,247,.1);color:var(--purple);border:1px solid rgba(168,85,247,.2);padding:2px 8px;border-radius:10px;font-family:var(--mono);}
+    .help-link{font-size:12px;color:var(--gold);text-decoration:none;opacity:.8;}
+    .help-link:hover{opacity:1;text-decoration:underline;}
+
+    /* Nodes */
+    .nodes-list h3{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin:20px 0 12px;}
+    .node{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px;}
+    .node-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+    .node-num{font-size:11px;color:var(--muted);font-family:var(--mono);}
+    .node-html{font-family:var(--mono);font-size:12px;color:#94a3b8;background:rgba(0,0,0,.5);padding:8px 12px;border-radius:6px;margin-bottom:10px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;}
+    .remediation{font-size:13px;color:var(--text);line-height:1.7;}
+    .remediation code{font-family:var(--mono);font-size:11px;background:rgba(168,85,247,.15);color:#c4b5fd;padding:1px 5px;border-radius:3px;}
+
+    /* Footer */
+    .rpt-footer{text-align:center;color:var(--muted);font-size:11px;letter-spacing:.08em;margin-top:32px;padding-top:24px;border-top:1px solid var(--border);}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="rpt-header">
+    <div class="rpt-title">STEP<span>ARC</span> Accessibility Report</div>
+    <div class="rpt-meta">Run Date: <strong>5/18/2026, 6:09:26 PM</strong> &nbsp;·&nbsp; Playwright + Axe-Core &nbsp;·&nbsp; WCAG 2.1 AA</div>
+  </header>
+
+  <div class="summary">
+    <div class="sum-card">
+      <div class="num num-ok">0</div>
+      <div class="lbl">Total Violations</div>
+    </div>
+    <div class="sum-card">
+      <div class="num" style="color:var(--gold)">WCAG 2.1</div>
+      <div class="lbl">Standard</div>
+    </div>
+    <div class="sum-card">
+      <div class="num num-ok">✅</div>
+      <div class="lbl">AA Compliance</div>
+    </div>
+  </div>
+
+  <main>
+    
+    <section class="state pass">
+      <div class="state-header">
+        <span class="state-icon">✅</span>
+        <h2>History Tab — Full Axe Accessibility Scan</h2>
+        <span class="badge pass-badge">PASS — No Violations</span>
+      </div>
+      <p class="pass-msg">All evaluated elements meet WCAG 2.1 AA guidelines. Clean audit! 🌟</p>
+    </section>
+  </main>
+
+  <footer class="rpt-footer">
+    Generated by StepArc E2E Accessibility Test Suite · Playwright + Axe-Core
+  </footer>
+</div>
+</body>
+</html>
