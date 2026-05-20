@@ -19,7 +19,7 @@ const AIAdvisor = ({ foodLogs, workoutLogs, cardioLogs, steps, totals, userProfi
   const buildFoodText = () => {
     if (!foodLogs.length) return 'None';
     return foodLogs.map(log => {
-      if (log.aiMacros) return `${log.name} (${Math.round(log.aiMacros.calories)} kcal, P${log.aiMacros.protein.toFixed(0)}g C${log.aiMacros.carbs.toFixed(0)}g F${log.aiMacros.fats.toFixed(0)}g)`;
+      if (log.aiMacros) return `${log.name} (${Math.round(log.aiMacros.calories)} kcal, P${log.aiMacros.protein.toFixed(0)}g C${log.aiMacros.carbs.toFixed(0)}g F${log.aiMacros.fats.toFixed(0)}g Fb${(log.aiMacros.fibre ?? 0).toFixed(0)}g)`;
       const item = foodDatabase.find(f => f.id === log.foodId);
       if (!item) return log.name || 'Unknown';
       const cal = Math.round((item.calories * log.amount) / 100);
@@ -67,10 +67,12 @@ const AIAdvisor = ({ foodLogs, workoutLogs, cardioLogs, steps, totals, userProfi
           goal_protein:     goals.protein,
           goal_carbs:       goals.carbs,
           goal_fat:         goals.fats,
+          goal_fibre:       goals.fibre,
           calories_eaten:   totals.calIn,
           protein_eaten:    totals.p,
           carbs_eaten:      totals.c,
           fat_eaten:        totals.f,
+          fibre_eaten:      totals.fibre || 0,
           steps,
           steps_calories:   Math.round(steps * STEP_CALORIES_MULTIPLIER),
           workout_calories: Math.round(workoutCal),

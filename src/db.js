@@ -3,17 +3,25 @@ import { supabase } from './supabase';
 const today = () => new Date().toISOString().slice(0, 10);
 
 export const DEFAULT_SETTINGS = {
+  // Body stats
+  gender:        'male',
+  age:           20,
+  height_cm:     175,
+  weight_kg:     78,
+  // Goal type drives calorie/macro targets via Mifflin-St Jeor
+  goal_type:     'maintenance',
+  step_goal:     10000,
+  // Stored as cache so legacy reads still work; always overwritten on save
   calorie_goal:  2870,
   protein_goal:  200,
   carbs_goal:    300,
   fats_goal:     80,
-  age:           20,
-  height_cm:     175,
-  weight_kg:     78,
-  step_goal:     10000,
   diet_plan:     { meals: [] },
   workout_plan:  { days: [] },
 };
+// SQL migration (run once in Supabase SQL editor):
+// ALTER TABLE user_settings ADD COLUMN IF NOT EXISTS gender text DEFAULT 'male';
+// ALTER TABLE user_settings ADD COLUMN IF NOT EXISTS goal_type text DEFAULT 'maintenance';
 
 // ── localStorage helpers ──────────────────────────────────────────────────────
 const lsSettingsKey = (userId) => `steparc_settings_${userId}`;
@@ -76,6 +84,7 @@ export async function saveSettings(userId, settings) {
   // Persist locally first so reopening the app never loses data
   lsSet(lsSettingsKey(userId), { ...settings, _persisted: true });
   const {
+    gender, goal_type,
     calorie_goal, protein_goal, carbs_goal, fats_goal,
     age, height_cm, weight_kg,
     step_goal, diet_plan, workout_plan,
@@ -85,6 +94,8 @@ export async function saveSettings(userId, settings) {
     .upsert(
       {
         user_id: userId,
+        gender:       gender       ?? 'male',
+        goal_type:    goal_type    ?? 'maintenance',
         calorie_goal, protein_goal, carbs_goal, fats_goal,
         age, height_cm, weight_kg,
         step_goal:    step_goal    ?? 10000,

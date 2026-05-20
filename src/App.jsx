@@ -5,6 +5,7 @@ import './index.css';
 import { supabase } from './supabase';
 import { loadSettings, saveSettings, loadTodayLogs, saveTodayLogs, pruneOldLogs, clearLocalCache, DEFAULT_SETTINGS } from './db';
 import { computeTotals } from './utils';
+import { calcBMR, calcGoalCalories, calcMacros, calcAdjustedBurn } from './calc';
 
 import AuthScreen from './components/AuthScreen';
 import Header from './components/Header';
@@ -90,7 +91,32 @@ export default function App() {
     [foodLogs, workoutLogs, cardioLogs, steps]
   );
 
-  const goals       = { calories: settings.calorie_goal, protein: settings.protein_goal, carbs: settings.carbs_goal, fats: settings.fats_goal };
+  // ── Mifflin-St Jeor engine ─────────────────────────────────────────────────
+  const bmr = useMemo(
+    () => calcBMR(settings.gender, settings.weight_kg, settings.height_cm, settings.age),
+    [settings.gender, settings.weight_kg, settings.height_cm, settings.age]
+  );
+  const baseGoal = useMemo(
+    () => bmr ? calcGoalCalories(bmr, settings.goal_type) : settings.calorie_goal,
+    [bmr, settings.goal_type, settings.calorie_goal]
+  );
+  const computedMacros = useMemo(
+    () => bmr ? calcMacros(baseGoal, settings.weight_kg) : { protein: settings.protein_goal, fat: settings.fats_goal, carbs: settings.carbs_goal },
+    [bmr, baseGoal, settings.weight_kg, settings.protein_goal, settings.fats_goal, settings.carbs_goal]
+  );
+  const activityBurn   = calcAdjustedBurn(totals.calOut);   // raw calOut × 0.8
+  const adjustedGoal   = baseGoal + activityBurn;
+
+  const goals = {
+    calories:     adjustedGoal,
+    baseGoal,
+    bmr,
+    activityBurn,
+    protein:      computedMacros.protein,
+    carbs:        computedMacros.carbs,
+    fats:         computedMacros.fat,
+    fibre:        Math.round(adjustedGoal / 1000 * 14), // 14g per 1000 kcal (DRI)
+  };
   const userProfile = { age: settings.age, heightCm: settings.height_cm, weightKg: settings.weight_kg };
 
   const handleSignOut = async () => {
@@ -255,6 +281,7 @@ export default function App() {
           <FoodTab onStartQuickLog={handleStartQuickLog} selectedFoodId={selectedFoodId}
             setSelectedFoodId={setSelectedFoodId} foodAmount={foodAmount}
             setFoodAmount={setFoodAmount} onAddFood={handleAddFood}
+            onCustomFood={handleAILog}
             customMeals={settings.diet_plan?.meals} />
         )}
 

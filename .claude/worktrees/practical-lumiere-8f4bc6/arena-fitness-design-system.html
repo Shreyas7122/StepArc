@@ -1,0 +1,933 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Arena Fitness — Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  /* ================================================================
+     TOKENS
+     ================================================================ */
+  :root {
+    --purple-900: #1A0B2E;
+    --purple-800: #2D1B4E;
+    --purple-700: #4A1D8C;
+    --purple-600: #5B1F9E;
+    --purple-500: #7B2FBE;
+    --purple-400: #9B4DDB;
+    --purple-300: #B57BE8;
+    --violet-glow: #A855F7;
+
+    --gold-500: #FFB800;
+    --gold-400: #FFC83D;
+
+    --white: #FFFFFF;
+    --off-white: #F4F4F5;
+    --gray-300: #D4D4D8;
+    --gray-500: #71717A;
+    --black: #0A0612;
+
+    --success: #22C55E;
+    --danger: #EF4444;
+
+    --gradient-hero: linear-gradient(135deg, #2D1B4E 0%, #5B1F9E 50%, #8B3FD4 100%);
+    --gradient-card: linear-gradient(180deg, #4A1D8C 0%, #1A0B2E 100%);
+    --gradient-glow: radial-gradient(circle at 50% 50%, #A855F7 0%, transparent 70%);
+    --gradient-cta:  linear-gradient(90deg, #FFB800 0%, #FFC83D 100%);
+
+    --shadow-card:  0 10px 30px rgba(0, 0, 0, 0.4);
+    --shadow-lift:  0 20px 60px rgba(91, 31, 158, 0.4);
+    --glow-purple:  0 0 40px rgba(168, 85, 247, 0.5);
+    --glow-gold:    0 0 24px rgba(255, 184, 0, 0.45);
+
+    --r-sm: 4px;
+    --r-md: 8px;
+    --r-lg: 16px;
+    --r-xl: 24px;
+    --r-pill: 999px;
+
+    --font-display: 'Anton', 'Bebas Neue', Impact, sans-serif;
+    --font-heading: 'Oswald', 'Arial Narrow', sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  /* ================================================================
+     RESET + BASE
+     ================================================================ */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-body);
+    background: var(--purple-900);
+    color: var(--white);
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+  a { color: inherit; }
+
+  .page {
+    background-image:
+      radial-gradient(circle at 10% 10%, rgba(168,85,247,0.15), transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(91,31,158,0.25), transparent 50%);
+    min-height: 100vh;
+    padding: 48px 24px 80px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  /* ================================================================
+     SECTION CHROME
+     ================================================================ */
+  section { margin-bottom: 80px; }
+  .eyebrow {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--gold-500);
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 48px;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    margin: 0 0 8px;
+    line-height: 1;
+  }
+  .section-desc {
+    color: var(--gray-300);
+    max-width: 60ch;
+    margin: 0 0 32px;
+  }
+  .sub-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 13px;
+    color: var(--gray-300);
+    margin: 32px 0 12px;
+  }
+  .grid { display: grid; gap: 24px; }
+  .grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .grid-4 { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+
+  /* ================================================================
+     HERO
+     ================================================================ */
+  .hero {
+    background: var(--gradient-hero);
+    border-radius: var(--r-xl);
+    padding: 64px 48px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 64px;
+    box-shadow: var(--shadow-lift);
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-glow);
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  .hero-inner { position: relative; z-index: 1; }
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(64px, 10vw, 128px);
+    line-height: 0.9;
+    margin: 8px 0 8px;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+  .hero-title .gold { color: var(--gold-500); }
+  .hero-sub {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--off-white);
+    margin: 0;
+  }
+
+  /* ================================================================
+     SWATCH
+     ================================================================ */
+  .swatch {
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    background: var(--purple-800);
+    box-shadow: var(--shadow-card);
+  }
+  .swatch-chip { height: 110px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .swatch-info { padding: 12px 14px; font-size: 12px; }
+  .swatch-name { font-family: var(--font-mono); color: var(--white); margin-bottom: 2px; }
+  .swatch-hex { font-family: var(--font-mono); color: var(--gray-300); }
+
+  /* ================================================================
+     TYPOGRAPHY DEMO
+     ================================================================ */
+  .type-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: baseline;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .type-meta { font-family: var(--font-mono); font-size: 12px; color: var(--gray-500); min-width: 200px; }
+  .type-meta b { color: var(--gold-500); font-weight: 600; }
+  .t-display { font-family: var(--font-display); text-transform: uppercase; line-height: 0.95; letter-spacing: -0.02em; }
+  .t-heading { font-family: var(--font-heading); font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; }
+  .t-body { font-family: var(--font-body); }
+
+  /* ================================================================
+     SPACING + SHADOW DEMO
+     ================================================================ */
+  .spacing-row { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .spacing-bar { background: var(--gradient-cta); height: 12px; border-radius: var(--r-sm); box-shadow: var(--glow-gold); }
+  .spacing-meta { font-family: var(--font-mono); font-size: 12px; color: var(--gray-300); min-width: 140px; }
+
+  .shadow-tile {
+    height: 120px;
+    border-radius: var(--r-lg);
+    background: var(--purple-600);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 12px; color: var(--white);
+  }
+  .sh-card { box-shadow: var(--shadow-card); }
+  .sh-lift { box-shadow: var(--shadow-lift); }
+  .sh-glow-p { box-shadow: var(--glow-purple); }
+  .sh-glow-g { box-shadow: var(--glow-gold); background: var(--gold-500); color: var(--purple-900); }
+
+  /* ================================================================
+     ATOMS
+     ================================================================ */
+  .btn {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 14px;
+    padding: 14px 28px;
+    border: none;
+    border-radius: var(--r-pill);
+    cursor: pointer;
+    transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn-primary   { background: var(--gradient-cta); color: var(--purple-900); box-shadow: var(--glow-gold); }
+  .btn-secondary { background: var(--purple-600); color: var(--white); }
+  .btn-secondary:hover { background: var(--purple-500); }
+  .btn-ghost     { background: transparent; color: var(--white); border: 1px solid rgba(255,255,255,0.3); }
+  .btn-ghost:hover { border-color: var(--white); }
+  .btn-angular   {
+    background: var(--white); color: var(--purple-900);
+    padding: 14px 32px; border-radius: 0; font-weight: 700;
+    clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
+  }
+  .btn-sm { padding: 8px 16px; font-size: 11px; }
+  .btn-lg { padding: 20px 40px; font-size: 18px; }
+
+  .input {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: var(--r-md);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 14px;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 120ms ease, box-shadow 120ms ease;
+  }
+  .input:focus { border-color: var(--gold-500); box-shadow: 0 0 0 3px rgba(255,184,0,0.15); }
+  .input::placeholder { color: var(--gray-500); }
+  .label {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 11px;
+    color: var(--gray-300);
+    display: block;
+    margin-bottom: 6px;
+  }
+  .check { display: inline-flex; align-items: center; gap: 8px; color: var(--white); font-size: 14px; }
+  .check input { accent-color: var(--gold-500); width: 18px; height: 18px; }
+  .toggle {
+    width: 44px; height: 24px; background: var(--purple-700);
+    border-radius: 999px; position: relative; cursor: pointer; display: inline-block;
+    transition: background 150ms;
+  }
+  .toggle::after {
+    content: ''; position: absolute; left: 3px; top: 3px;
+    width: 18px; height: 18px; background: var(--white);
+    border-radius: 50%; transition: left 150ms;
+  }
+  .toggle.on { background: var(--gold-500); }
+  .toggle.on::after { left: 23px; }
+
+  .pill {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 11px;
+    font-weight: 600;
+    margin: 0 6px 6px 0;
+  }
+  .pill-gold    { background: var(--gold-500); color: var(--purple-900); }
+  .pill-white   { background: var(--white); color: var(--purple-900); }
+  .pill-purple  { background: var(--purple-600); color: var(--white); }
+  .pill-ghost   { background: transparent; color: var(--white); border: 1px solid rgba(255,255,255,0.3); }
+  .pill-success { background: var(--success); color: var(--white); }
+  .pill-danger  { background: var(--danger); color: var(--white); }
+
+  .icon { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .icon-tile {
+    display: inline-flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 14px; background: var(--purple-800); border-radius: var(--r-md);
+    min-width: 88px; font-family: var(--font-mono); font-size: 10px; color: var(--gray-300);
+    margin: 4px 4px 0 0;
+  }
+  .icon-tile .icon { color: var(--white); width: 28px; height: 28px; }
+
+  .avatar {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--gradient-hero); color: var(--white);
+    font-family: var(--font-heading); font-weight: 700;
+    border-radius: 50%; margin-right: 12px; vertical-align: middle;
+  }
+  .avatar-ring { box-shadow: 0 0 0 2px var(--gold-500), 0 0 0 4px var(--purple-900); }
+  .av-32 { width: 32px; height: 32px; font-size: 12px; }
+  .av-48 { width: 48px; height: 48px; font-size: 16px; }
+  .av-64 { width: 64px; height: 64px; font-size: 22px; }
+  .av-80 { width: 80px; height: 80px; font-size: 28px; }
+
+  .div-thin { height: 1px; background: rgba(255,255,255,0.1); margin: 8px 0; }
+  .div-gold { height: 2px; background: var(--gradient-cta); border-radius: 2px; width: 80px; margin: 8px 0; }
+  .div-glow { height: 1px; background: linear-gradient(90deg, transparent, var(--violet-glow), transparent); margin: 8px 0; }
+
+  .bar { height: 8px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; margin-bottom: 10px; }
+  .bar > span { display: block; height: 100%; background: var(--gradient-cta); border-radius: 999px; }
+  .ring { width: 72px; height: 72px; }
+
+  /* ================================================================
+     MOLECULES
+     ================================================================ */
+  .tile {
+    background: var(--purple-800);
+    border-radius: var(--r-lg);
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .tile-label {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 11px;
+    color: var(--gold-500);
+    margin-bottom: 14px;
+  }
+  .stat-num { font-family: var(--font-display); font-size: 48px; line-height: 1; }
+  .stat-delta { color: var(--success); font-family: var(--font-mono); font-size: 12px; }
+  .stat-label { color: var(--gray-300); font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
+
+  /* ================================================================
+     ORGANISMS
+     ================================================================ */
+  .card {
+    background: var(--gradient-card);
+    border-radius: var(--r-lg);
+    padding: 28px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .card-tag {
+    display: inline-block;
+    background: var(--gold-500);
+    color: var(--purple-900);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: var(--r-sm);
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 36px;
+    text-transform: uppercase;
+    line-height: 1;
+    margin: 0 0 12px;
+  }
+  .card-body { color: var(--gray-300); font-size: 14px; margin: 0 0 20px; }
+  .feature-list { list-style: none; padding: 0; margin: 0 0 20px; color: var(--gray-300); font-size: 14px; }
+  .feature-list li { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .feature-list li:last-child { border-bottom: 0; }
+
+  .pricing {
+    background: var(--black);
+    border: 1px solid var(--purple-600);
+    border-radius: var(--r-lg);
+    padding: 24px;
+    box-shadow: var(--glow-purple);
+    text-align: center;
+  }
+  .pricing-label {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 11px;
+    color: var(--gold-500);
+    margin-bottom: 8px;
+  }
+  .pricing-amount { font-family: var(--font-display); font-size: 88px; line-height: 1; color: var(--white); }
+  .pricing-amount sup { font-size: 20px; vertical-align: top; color: var(--gold-500); margin-right: 4px; }
+  .pricing-amount .dec { font-size: 32px; color: var(--gray-300); }
+  .pricing-period { font-family: var(--font-mono); font-size: 12px; color: var(--gray-500); margin-top: 4px; }
+
+  .nav {
+    background: var(--purple-900);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--r-lg);
+    padding: 16px 24px;
+    display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+  }
+  .nav-brand {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-heading); font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase;
+  }
+  .nav-links { display: flex; gap: 20px; flex: 1; font-family: var(--font-heading); font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; font-size: 13px; }
+  .nav-links a { text-decoration: none; }
+  .nav-links a.active { color: var(--gold-500); }
+
+  .footer-org {
+    background: var(--purple-900);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--r-lg);
+    padding: 32px;
+  }
+  .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 24px; margin-bottom: 24px; }
+  .footer-brand { font-family: var(--font-heading); font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold-500); margin-bottom: 12px; }
+  .footer-text { color: var(--gray-300); font-size: 13px; line-height: 2; }
+  .footer-legal {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding-top: 16px;
+    color: var(--gray-500);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  }
+
+  /* ================================================================
+     TEMPLATES
+     ================================================================ */
+  .tmpl {
+    border: 1px dashed rgba(255,255,255,0.15);
+    border-radius: var(--r-lg);
+    padding: 16px;
+    margin-bottom: 24px;
+    background: rgba(0,0,0,0.2);
+  }
+  .tmpl-label {
+    font-family: var(--font-mono);
+    font-size: 11px; color: var(--gray-500);
+    margin-bottom: 10px;
+    text-transform: uppercase; letter-spacing: 0.15em;
+  }
+  .ph {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: var(--r-md);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gray-500); font-family: var(--font-mono); font-size: 11px;
+  }
+
+  .page-foot {
+    text-align: center; padding: 32px;
+    color: var(--gray-500); font-family: var(--font-mono); font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="container">
+
+    <!-- ============================================================== HERO -->
+    <header class="hero">
+      <div class="hero-inner">
+        <div class="eyebrow">Design System · v1.0</div>
+        <h1 class="hero-title">Arena<br /><span class="gold">Fitness</span></h1>
+        <p class="hero-sub">Shape your body — no more excuses</p>
+      </div>
+    </header>
+
+    <!-- ============================================================== 01 · COLOR -->
+    <section>
+      <div class="eyebrow">01 · Foundations</div>
+      <h2 class="section-title">Color</h2>
+      <p class="section-desc">Saturated purples carry the brand. Gold is the single accent — reserved for CTAs and emphasis. Neutrals stay cool and dark.</p>
+
+      <div class="sub-title">Purple scale</div>
+      <div class="grid grid-4">
+        <div class="swatch"><div class="swatch-chip" style="background:#1A0B2E"></div><div class="swatch-info"><div class="swatch-name">--purple-900</div><div class="swatch-hex">#1A0B2E</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#2D1B4E"></div><div class="swatch-info"><div class="swatch-name">--purple-800</div><div class="swatch-hex">#2D1B4E</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#4A1D8C"></div><div class="swatch-info"><div class="swatch-name">--purple-700</div><div class="swatch-hex">#4A1D8C</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#5B1F9E"></div><div class="swatch-info"><div class="swatch-name">--purple-600</div><div class="swatch-hex">#5B1F9E</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#7B2FBE"></div><div class="swatch-info"><div class="swatch-name">--purple-500</div><div class="swatch-hex">#7B2FBE</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#9B4DDB"></div><div class="swatch-info"><div class="swatch-name">--purple-400</div><div class="swatch-hex">#9B4DDB</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#B57BE8"></div><div class="swatch-info"><div class="swatch-name">--purple-300</div><div class="swatch-hex">#B57BE8</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#A855F7;box-shadow:inset 0 0 40px #fff3"></div><div class="swatch-info"><div class="swatch-name">--violet-glow</div><div class="swatch-hex">#A855F7</div></div></div>
+      </div>
+
+      <div class="sub-title">Accent + neutrals</div>
+      <div class="grid grid-4">
+        <div class="swatch"><div class="swatch-chip" style="background:#FFB800"></div><div class="swatch-info"><div class="swatch-name">--gold-500</div><div class="swatch-hex">#FFB800</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#FFC83D"></div><div class="swatch-info"><div class="swatch-name">--gold-400</div><div class="swatch-hex">#FFC83D</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#FFFFFF"></div><div class="swatch-info"><div class="swatch-name">--white</div><div class="swatch-hex">#FFFFFF</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#D4D4D8"></div><div class="swatch-info"><div class="swatch-name">--gray-300</div><div class="swatch-hex">#D4D4D8</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#71717A"></div><div class="swatch-info"><div class="swatch-name">--gray-500</div><div class="swatch-hex">#71717A</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#0A0612"></div><div class="swatch-info"><div class="swatch-name">--black</div><div class="swatch-hex">#0A0612</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#22C55E"></div><div class="swatch-info"><div class="swatch-name">--success</div><div class="swatch-hex">#22C55E</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#EF4444"></div><div class="swatch-info"><div class="swatch-name">--danger</div><div class="swatch-hex">#EF4444</div></div></div>
+      </div>
+
+      <div class="sub-title">Gradients</div>
+      <div class="grid grid-4">
+        <div class="swatch"><div class="swatch-chip" style="background:var(--gradient-hero)"></div><div class="swatch-info"><div class="swatch-name">--gradient-hero</div><div class="swatch-hex">135° purple</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--gradient-card)"></div><div class="swatch-info"><div class="swatch-name">--gradient-card</div><div class="swatch-hex">180° dark</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--gradient-glow),#1A0B2E"></div><div class="swatch-info"><div class="swatch-name">--gradient-glow</div><div class="swatch-hex">radial violet</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--gradient-cta)"></div><div class="swatch-info"><div class="swatch-name">--gradient-cta</div><div class="swatch-hex">gold</div></div></div>
+      </div>
+    </section>
+
+    <!-- ============================================================== 02 · TYPOGRAPHY -->
+    <section>
+      <div class="eyebrow">02 · Foundations</div>
+      <h2 class="section-title">Typography</h2>
+      <p class="section-desc">Heavy condensed display type carries the brand voice. Body copy stays clean and modern.</p>
+
+      <div class="type-row"><div class="type-meta"><b>Display XL</b><br/>Anton · 128px · 0.9</div><div class="t-display" style="font-size:96px">FITNESS</div></div>
+      <div class="type-row"><div class="type-meta"><b>Display LG</b><br/>Anton · 72px · 0.95</div><div class="t-display" style="font-size:64px">Shape your body</div></div>
+      <div class="type-row"><div class="type-meta"><b>Display MD</b><br/>Anton · 56px · 1.0</div><div class="t-display" style="font-size:48px">No more excuses</div></div>
+      <div class="type-row"><div class="type-meta"><b>Heading H1</b><br/>Oswald 600 · 40px</div><div class="t-heading" style="font-size:36px">Join us today</div></div>
+      <div class="type-row"><div class="type-meta"><b>Heading H2</b><br/>Oswald 600 · 32px</div><div class="t-heading" style="font-size:28px">Muscle Toning</div></div>
+      <div class="type-row"><div class="type-meta"><b>Body LG</b><br/>Inter 400 · 18px</div><div class="t-body" style="font-size:18px">A complete workout plan that adapts to your goals.</div></div>
+      <div class="type-row"><div class="type-meta"><b>Body</b><br/>Inter 400 · 16px</div><div class="t-body" style="font-size:16px">Train smarter. Track your progress. Stay accountable.</div></div>
+      <div class="type-row"><div class="type-meta"><b>Caption</b><br/>Inter 500 · 12px</div><div class="t-body" style="font-size:12px;text-transform:uppercase;letter-spacing:.15em;color:var(--gray-300)">Limited offer · 30% off</div></div>
+    </section>
+
+    <!-- ============================================================== 03 · SPACING -->
+    <section>
+      <div class="eyebrow">03 · Foundations</div>
+      <h2 class="section-title">Spacing</h2>
+      <p class="section-desc">8-point base scale.</p>
+      <div class="spacing-row"><div class="spacing-meta">space-1 · 4px</div><div class="spacing-bar" style="width:4px"></div></div>
+      <div class="spacing-row"><div class="spacing-meta">space-2 · 8px</div><div class="spacing-bar" style="width:8px"></div></div>
+      <div class="spacing-row"><div class="spacing-meta">space-3 · 12px</div><div class="spacing-bar" style="width:12px"></div></div>
+      <div class="spacing-row"><div class="spacing-meta">space-4 · 16px</div><div class="spacing-bar" style="width:16px"></div></div>
+      <div class="spacing-row"><div class="spacing-meta">space-5 · 24px</div><div class="spacing-bar" style="width:24px"></div></div>
+      <div class="spacing-row"><div class="spacing-meta">space-6 · 32px</div><div class="spacing-bar" style="width:32px"></div></div>
+      <div class="spacing-row"><div class="spacing-meta">space-7 · 48px</div><div class="spacing-bar" style="width:48px"></div></div>
+      <div class="spacing-row"><div class="spacing-meta">space-8 · 64px</div><div class="spacing-bar" style="width:64px"></div></div>
+      <div class="spacing-row"><div class="spacing-meta">space-9 · 96px</div><div class="spacing-bar" style="width:96px"></div></div>
+    </section>
+
+    <!-- ============================================================== 04 · ELEVATION -->
+    <section>
+      <div class="eyebrow">04 · Foundations</div>
+      <h2 class="section-title">Elevation & Glow</h2>
+      <p class="section-desc">Soft purple drop-shadows for depth. Neon glows highlight hero elements and CTAs.</p>
+      <div class="grid grid-4">
+        <div class="shadow-tile sh-card">--shadow-card</div>
+        <div class="shadow-tile sh-lift">--shadow-lift</div>
+        <div class="shadow-tile sh-glow-p">--glow-purple</div>
+        <div class="shadow-tile sh-glow-g">--glow-gold</div>
+      </div>
+    </section>
+
+    <!-- ============================================================== 05 · ATOMS -->
+    <section>
+      <div class="eyebrow">05 · Atoms</div>
+      <h2 class="section-title">Atoms</h2>
+      <p class="section-desc">The smallest, indivisible building blocks. Each atom does one thing.</p>
+
+      <div class="sub-title">Buttons</div>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center">
+        <button class="btn btn-primary">Start now</button>
+        <button class="btn btn-secondary">Join trial</button>
+        <button class="btn btn-ghost">Learn more</button>
+        <button class="btn btn-angular">Free Trial</button>
+        <button class="btn btn-primary btn-sm">Small</button>
+        <button class="btn btn-primary btn-lg">Large</button>
+      </div>
+
+      <div class="sub-title">Inputs</div>
+      <div class="grid grid-2">
+        <div>
+          <label class="label">Email</label>
+          <input class="input" type="email" placeholder="you@arenafitness.com" />
+        </div>
+        <div>
+          <label class="label">Plan</label>
+          <select class="input">
+            <option>Basic — $49.90</option>
+            <option>Pro — $79.90</option>
+          </select>
+        </div>
+        <div>
+          <label class="label">Search</label>
+          <input class="input" placeholder="Find a workout..." />
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:24px">
+          <label class="check"><input type="checkbox" checked /> Remember me</label>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="label" style="margin:0">Notify</span>
+            <span class="toggle on"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-title">Badges, pills & tags</div>
+      <div>
+        <span class="pill pill-gold">30% off</span>
+        <span class="pill pill-white">Free trial</span>
+        <span class="pill pill-purple">Premium</span>
+        <span class="pill pill-ghost">New</span>
+        <span class="pill pill-success">Active</span>
+        <span class="pill pill-danger">Sold out</span>
+      </div>
+
+      <div class="sub-title">Icons</div>
+      <div>
+        <div class="icon-tile"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm10 0h2v12h-2zM4 9h2v6H4zm14 0h2v6h-2zM8 11h8v2H8z"/></svg><span>dumbbell</span></div>
+        <div class="icon-tile"><svg class="icon" viewBox="0 0 24 24"><path d="M12 21s-7-4.5-7-11a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 6.5-7 11-7 11z"/></svg><span>heart</span></div>
+        <div class="icon-tile"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>timer</span></div>
+        <div class="icon-tile"><svg class="icon" viewBox="0 0 24 24"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg><span>pulse</span></div>
+        <div class="icon-tile"><svg class="icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span>location</span></div>
+        <div class="icon-tile"><svg class="icon" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M11 18h2"/></svg><span>phone</span></div>
+        <div class="icon-tile"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20"/></svg><span>plus</span></div>
+        <div class="icon-tile"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span>check</span></div>
+      </div>
+
+      <div class="sub-title">Avatars</div>
+      <div>
+        <span class="avatar av-32">JM</span>
+        <span class="avatar av-48">AR</span>
+        <span class="avatar av-64 avatar-ring">PT</span>
+        <span class="avatar av-80">LV</span>
+      </div>
+
+      <div class="sub-title">Dividers</div>
+      <div class="div-thin"></div>
+      <div class="div-gold"></div>
+      <div class="div-glow"></div>
+
+      <div class="sub-title">Progress</div>
+      <div style="display:flex;gap:32px;align-items:center;flex-wrap:wrap">
+        <div style="flex:1;min-width:240px">
+          <div class="bar"><span style="width:25%"></span></div>
+          <div class="bar"><span style="width:60%"></span></div>
+          <div class="bar"><span style="width:90%"></span></div>
+        </div>
+        <svg class="ring" viewBox="0 0 36 36">
+          <circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="3"/>
+          <circle cx="18" cy="18" r="15" fill="none" stroke="#FFB800" stroke-width="3" stroke-dasharray="70 100" stroke-linecap="round" transform="rotate(-90 18 18)"/>
+          <text x="18" y="21" text-anchor="middle" fill="#fff" font-family="JetBrains Mono" font-size="9">70%</text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ============================================================== 06 · MOLECULES -->
+    <section>
+      <div class="eyebrow">06 · Molecules</div>
+      <h2 class="section-title">Molecules</h2>
+      <p class="section-desc">Atoms wired together into small, reusable units.</p>
+
+      <div class="grid grid-2">
+        <div class="tile">
+          <div class="tile-label">Search bar</div>
+          <div style="display:flex;gap:8px">
+            <input class="input" placeholder="Search workouts..." />
+            <button class="btn btn-primary">Go</button>
+          </div>
+        </div>
+
+        <div class="tile">
+          <div class="tile-label">Stat</div>
+          <div style="display:flex;align-items:baseline;gap:8px">
+            <div class="stat-num">12,480</div>
+            <div class="stat-delta">↑ 8.2%</div>
+          </div>
+          <div class="stat-label">Active members</div>
+        </div>
+
+        <div class="tile">
+          <div class="tile-label">Form group</div>
+          <label class="label">Full name</label>
+          <input class="input" placeholder="Jane Doe" />
+          <div style="color:var(--gray-500);font-size:12px;margin-top:6px">Used on your member card.</div>
+        </div>
+
+        <div class="tile">
+          <div class="tile-label">Profile chip</div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span class="avatar av-48">AR</span>
+            <div>
+              <div style="font-weight:600">Alex Rivera</div>
+              <div style="color:var(--gray-300);font-size:12px">Pro member · 248 sessions</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tile" style="border-color:var(--gold-500);background:linear-gradient(180deg,rgba(255,184,0,.08),rgba(255,184,0,.02))">
+          <div class="tile-label">Alert</div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <svg class="icon" viewBox="0 0 24 24" style="color:#FFB800;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            <div>
+              <div style="font-weight:600">Free trial ends in 3 days</div>
+              <div style="color:var(--gray-300);font-size:13px">Upgrade to keep your plan and progress.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tile">
+          <div class="tile-label">Breadcrumb</div>
+          <div style="font-family:var(--font-mono);font-size:13px;color:var(--gray-300)">
+            <a style="color:var(--gray-300);text-decoration:none">Home</a> ›
+            <a style="color:var(--gray-300);text-decoration:none">Plans</a> ›
+            <span style="color:var(--gold-500)">Pro</span>
+          </div>
+        </div>
+
+        <div class="tile">
+          <div class="tile-label">Session row</div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:48px;height:48px;border-radius:var(--r-md);background:var(--gradient-hero);display:flex;align-items:center;justify-content:center">
+              <svg class="icon" viewBox="0 0 24 24" style="color:#fff"><path d="M6 6h2v12H6zm10 0h2v12h-2zM4 9h2v6H4zm14 0h2v6h-2zM8 11h8v2H8z"/></svg>
+            </div>
+            <div style="flex:1">
+              <div style="font-weight:600">Upper-body push</div>
+              <div style="color:var(--gray-300);font-size:12px">45 min · Intermediate</div>
+            </div>
+            <button class="btn btn-primary btn-sm">Start</button>
+          </div>
+        </div>
+
+        <div class="tile">
+          <div class="tile-label">Pagination</div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost btn-sm">‹</button>
+            <button class="btn btn-primary btn-sm">1</button>
+            <button class="btn btn-ghost btn-sm">2</button>
+            <button class="btn btn-ghost btn-sm">3</button>
+            <button class="btn btn-ghost btn-sm">›</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== 07 · ORGANISMS -->
+    <section>
+      <div class="eyebrow">07 · Organisms</div>
+      <h2 class="section-title">Organisms</h2>
+      <p class="section-desc">Self-contained sections composed of multiple molecules.</p>
+
+      <div class="sub-title">Top nav</div>
+      <div class="nav">
+        <div class="nav-brand">
+          <svg class="icon" viewBox="0 0 24 24" style="color:#FFB800;width:28px;height:28px"><path d="M6 6h2v12H6zm10 0h2v12h-2zM4 9h2v6H4zm14 0h2v6h-2zM8 11h8v2H8z"/></svg>
+          Arena
+        </div>
+        <nav class="nav-links">
+          <a class="active" href="#">Plans</a>
+          <a href="#">Workouts</a>
+          <a href="#">Coaches</a>
+          <a href="#">Shop</a>
+        </nav>
+        <button class="btn btn-ghost btn-sm">Sign in</button>
+        <button class="btn btn-primary btn-sm">Join</button>
+      </div>
+
+      <div class="sub-title">Plan comparison row</div>
+      <div class="grid grid-2">
+        <div class="card">
+          <span class="card-tag">Basic</span>
+          <h3 class="card-title">Plan 49</h3>
+          <p class="card-body">Access core workouts, progress tracking, and the community feed.</p>
+          <ul class="feature-list">
+            <li>✓ 30+ workouts</li>
+            <li>✓ Progress tracker</li>
+            <li>✓ Community access</li>
+          </ul>
+          <button class="btn btn-secondary" style="width:100%">Choose Basic</button>
+        </div>
+        <div class="card" style="border-color:var(--gold-500);box-shadow:var(--shadow-lift),0 0 30px rgba(255,184,0,.2)">
+          <span class="card-tag">Most popular</span>
+          <h3 class="card-title">Plan 79</h3>
+          <p class="card-body">Everything in Basic plus 1:1 coaching, nutrition plans, and supplement discounts.</p>
+          <ul class="feature-list">
+            <li>✓ Unlimited workouts</li>
+            <li>✓ Weekly 1:1 coaching</li>
+            <li>✓ Custom nutrition plan</li>
+            <li>✓ 15% off supplements</li>
+          </ul>
+          <button class="btn btn-primary" style="width:100%">Choose Pro</button>
+        </div>
+      </div>
+
+      <div class="sub-title">Pricing tiles</div>
+      <div class="grid grid-2">
+        <div class="pricing">
+          <div class="pricing-label">Basic Plan</div>
+          <div class="pricing-amount"><sup>$</sup>49<span class="dec">.90</span></div>
+          <div class="pricing-period">per month</div>
+        </div>
+        <div class="pricing" style="box-shadow:var(--shadow-lift),0 0 40px rgba(255,184,0,.3);border-color:var(--gold-500)">
+          <div class="pricing-label" style="color:var(--gold-500)">Pro Plan</div>
+          <div class="pricing-amount"><sup>$</sup>79<span class="dec">.90</span></div>
+          <div class="pricing-period">per month</div>
+        </div>
+      </div>
+
+      <div class="sub-title">Testimonial strip</div>
+      <div style="background:var(--gradient-card);border-radius:var(--r-lg);padding:32px;box-shadow:var(--shadow-card)">
+        <div class="eyebrow" style="margin-bottom:24px">Members say</div>
+        <div class="grid grid-2">
+          <div style="display:flex;gap:14px;align-items:flex-start">
+            <span class="avatar av-48">MC</span>
+            <div>
+              <p style="margin:0 0 8px">"Dropped 12 lbs in three months. The plans actually adapt."</p>
+              <div style="color:var(--gray-300);font-size:12px">Maya C. · Pro member</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:flex-start">
+            <span class="avatar av-48">DR</span>
+            <div>
+              <p style="margin:0 0 8px">"The coaching calls are the difference-maker. I keep showing up."</p>
+              <div style="color:var(--gray-300);font-size:12px">Diego R. · Pro member</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-title">Site footer</div>
+      <div class="footer-org">
+        <div class="footer-grid">
+          <div>
+            <div class="footer-brand">Arena Fitness</div>
+            <div class="footer-text" style="line-height:1.5">Shape your body. No more excuses.</div>
+          </div>
+          <div>
+            <div class="tile-label">Product</div>
+            <div class="footer-text">Plans<br/>Workouts<br/>Coaches</div>
+          </div>
+          <div>
+            <div class="tile-label">Company</div>
+            <div class="footer-text">About<br/>Careers<br/>Press</div>
+          </div>
+          <div>
+            <div class="tile-label">Stay in touch</div>
+            <div style="display:flex;gap:8px">
+              <input class="input" placeholder="email" />
+              <button class="btn btn-primary btn-sm">→</button>
+            </div>
+          </div>
+        </div>
+        <div class="footer-legal">
+          <span>© 2026 Arena Fitness</span>
+          <span>Privacy · Terms</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== 08 · TEMPLATES -->
+    <section>
+      <div class="eyebrow">08 · Templates</div>
+      <h2 class="section-title">Templates</h2>
+      <p class="section-desc">Full page-level compositions assembled from the system. Wireframes — replace placeholders with real content.</p>
+
+      <div class="tmpl">
+        <div class="tmpl-label">T-01 · Marketing Landing</div>
+        <div class="ph" style="height:48px;margin-bottom:8px">Nav</div>
+        <div class="ph" style="height:200px;margin-bottom:8px;background:var(--gradient-hero);color:var(--white)">Hero · headline + CTA</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px">
+          <div class="ph" style="height:90px">Feature</div>
+          <div class="ph" style="height:90px">Feature</div>
+          <div class="ph" style="height:90px">Feature</div>
+        </div>
+        <div class="ph" style="height:140px;margin-bottom:8px">Pricing row · 2 plans</div>
+        <div class="ph" style="height:80px;margin-bottom:8px">Testimonial strip</div>
+        <div class="ph" style="height:60px">Footer</div>
+      </div>
+
+      <div class="tmpl">
+        <div class="tmpl-label">T-02 · Member Dashboard</div>
+        <div style="display:grid;grid-template-columns:200px 1fr;gap:8px">
+          <div class="ph" style="height:360px">Sidebar nav</div>
+          <div style="display:grid;gap:8px">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+              <div class="ph" style="height:80px">Stat</div>
+              <div class="ph" style="height:80px">Stat</div>
+              <div class="ph" style="height:80px">Stat</div>
+            </div>
+            <div class="ph" style="height:120px">Today's session</div>
+            <div class="ph" style="height:140px">Progress chart</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tmpl">
+        <div class="tmpl-label">T-03 · Social Post (1:1)</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+          <div class="ph" style="aspect-ratio:1;background:var(--gradient-hero);color:#fff">Hero crop</div>
+          <div class="ph" style="aspect-ratio:1;background:#000;color:#fff">Product</div>
+          <div class="ph" style="aspect-ratio:1;background:var(--gradient-card);color:#fff">Pricing</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== 09 · HERO PATTERN -->
+    <section>
+      <div class="eyebrow">09 · Patterns</div>
+      <h2 class="section-title">Hero Composition</h2>
+      <p class="section-desc">The signature layout: gradient backdrop, condensed display headline, one gold word for emphasis, single CTA.</p>
+
+      <div style="background:var(--gradient-hero);border-radius:var(--r-xl);padding:64px 48px;position:relative;overflow:hidden;box-shadow:var(--shadow-lift)">
+        <div style="position:absolute;inset:0;background:var(--gradient-glow);opacity:.4"></div>
+        <div style="position:relative;z-index:1;max-width:640px">
+          <div class="eyebrow" style="margin-bottom:12px">Muscle Toning</div>
+          <h2 class="t-display" style="font-size:88px;margin:0">
+            No more <span style="color:var(--gold-500)">excuses</span><br/>
+            Join us <span style="color:var(--gold-500)">today</span>
+          </h2>
+          <div style="margin-top:32px;display:flex;gap:16px;flex-wrap:wrap">
+            <button class="btn btn-primary">Start free trial</button>
+            <button class="btn btn-ghost">See plans</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+  <div class="page-foot">Arena Fitness · Design System v1.0</div>
+</div>
+</body>
+</html>

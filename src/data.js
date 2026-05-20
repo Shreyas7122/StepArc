@@ -1,37 +1,42 @@
 export const foodDatabase = [
-  { id: 1, name: "Banana (Raw)", calories: 89, protein: 1.1, carbs: 22.8, fats: 0.3 },
-  { id: 2, name: "Whole Egg (Raw)", calories: 143, protein: 12.6, carbs: 0.7, fats: 9.5 },
-  { id: 3, name: "Oats (Dry/Raw)", calories: 389, protein: 16.9, carbs: 66.3, fats: 6.9 },
-  { id: 4, name: "Mixed Seeds", calories: 550, protein: 20.0, carbs: 20.0, fats: 45.0 },
-  { id: 5, name: "Almonds (Raw)", calories: 579, protein: 21.1, carbs: 21.6, fats: 49.9 },
-  { id: 6, name: "Blueberry (Raw)", calories: 57, protein: 0.7, carbs: 14.5, fats: 0.3 },
-  { id: 7, name: "Rice (White, Cooked)", calories: 130, protein: 2.7, carbs: 28.0, fats: 0.3 },
-  { id: 8, name: "Chapati (Whole Wheat)", calories: 297, protein: 9.0, carbs: 46.0, fats: 10.0 },
-  { id: 9, name: "Potato (Boiled/Raw)", calories: 77, protein: 2.0, carbs: 17.0, fats: 0.1 },
-  { id: 10, name: "Low Fat Paneer", calories: 180, protein: 20.0, carbs: 4.0, fats: 10.0 },
-  { id: 11, name: "Low Fat Dahi", calories: 43, protein: 4.3, carbs: 4.7, fats: 1.5 },
-  { id: 12, name: "Capsicum", calories: 20, protein: 1.0, carbs: 4.6, fats: 0.2 },
-  { id: 13, name: "Carrot", calories: 41, protein: 0.9, carbs: 9.6, fats: 0.2 },
-  { id: 14, name: "Cheese Cube (Processed)", calories: 330, protein: 20.0, carbs: 2.0, fats: 26.0 },
-  { id: 15, name: "Cheese Slice (Processed)", calories: 300, protein: 18.0, carbs: 2.0, fats: 24.0 },
-  { id: 16, name: "Ghee", calories: 900, protein: 0.0, carbs: 0.0, fats: 100.0 },
-  { id: 17, name: "French Beans", calories: 31, protein: 1.8, carbs: 7.0, fats: 0.2 },
-  { id: 18, name: "Onion", calories: 40, protein: 1.1, carbs: 9.3, fats: 0.1 },
-  { id: 19, name: "Tomato", calories: 18, protein: 0.9, carbs: 3.9, fats: 0.2 },
-  { id: 20, name: "Papaya", calories: 43, protein: 0.5, carbs: 11.0, fats: 0.3 },
-  { id: 21, name: "Pineapple", calories: 50, protein: 0.5, carbs: 13.0, fats: 0.1 },
-  { id: 22, name: "Watermelon", calories: 30, protein: 0.6, carbs: 7.6, fats: 0.2 },
-  { id: 23, name: "Mango", calories: 60, protein: 0.8, carbs: 15.0, fats: 0.4 },
-  { id: 24, name: "Tofu (Firm)", calories: 144, protein: 16.0, carbs: 2.8, fats: 8.7 },
-  { id: 25, name: "ON Whey (Gold Standard)", calories: 375, protein: 77.0, carbs: 10.0, fats: 3.3 },
-  { id: 26, name: "Egg White (Raw)", calories: 52, protein: 10.9, carbs: 0.7, fats: 0.2 },
-  { id: 27, name: "Whey Isolate (NitroTech)", calories: 370, protein: 81.0, carbs: 6.5, fats: 2.0 },
-  { id: 28, name: "Amul High Protein Dahi", calories: 80, protein: 10.0, carbs: 4.0, fats: 1.5 },
-  { id: 29, name: "Cucumber (Raw)", calories: 15, protein: 0.6, carbs: 3.6, fats: 0.1 },
-  { id: 30, name: "Mom's Subji (Green Leafy)", calories: 100, protein: 3.5, carbs: 7.0, fats: 6.0 },
-  { id: 31, name: "Mom's Subji (Starchy)", calories: 175, protein: 2.5, carbs: 22.5, fats: 8.0 },
-  { id: 32, name: "Mom's Subji (Cruciferous)", calories: 110, protein: 2.5, carbs: 9.0, fats: 6.0 },
-  { id: 33, name: "Mom's Subji (Legume-based)", calories: 140, protein: 4.5, carbs: 13.5, fats: 7.0 }
+  { id: 1,  name: "Banana (Raw)",                                        calories: 89,  protein: 1.1,  carbs: 22.8, fats: 0.3,  fibre: 2.6  },
+  { id: 2,  name: "Whole Egg (Raw)",                                     calories: 143, protein: 12.6, carbs: 0.7,  fats: 9.5,  fibre: 0.0  },
+  { id: 3,  name: "Oats (Dry/Raw)",                                      calories: 389, protein: 16.9, carbs: 66.3, fats: 6.9,  fibre: 10.6 },
+  { id: 4,  name: "Mixed Seeds",                                         calories: 550, protein: 20.0, carbs: 20.0, fats: 45.0, fibre: 8.0  },
+  { id: 5,  name: "Almonds (Raw)",                                       calories: 579, protein: 21.1, carbs: 21.6, fats: 49.9, fibre: 12.5 },
+  { id: 6,  name: "Blueberry (Raw)",                                     calories: 57,  protein: 0.7,  carbs: 14.5, fats: 0.3,  fibre: 2.4  },
+  { id: 7,  name: "Rice (White, Cooked)",                                calories: 130, protein: 2.7,  carbs: 28.0, fats: 0.3,  fibre: 0.4  },
+  { id: 8,  name: "Chapati (Whole Wheat)",                               calories: 297, protein: 9.0,  carbs: 46.0, fats: 10.0, fibre: 4.0  },
+  { id: 9,  name: "Potato (Boiled/Raw)",                                 calories: 77,  protein: 2.0,  carbs: 17.0, fats: 0.1,  fibre: 2.2  },
+  { id: 10, name: "Low Fat Paneer",                                      calories: 180, protein: 20.0, carbs: 4.0,  fats: 10.0, fibre: 0.0  },
+  { id: 11, name: "Low Fat Dahi",                                        calories: 43,  protein: 4.3,  carbs: 4.7,  fats: 1.5,  fibre: 0.0  },
+  { id: 12, name: "Capsicum",                                            calories: 20,  protein: 1.0,  carbs: 4.6,  fats: 0.2,  fibre: 1.7  },
+  { id: 13, name: "Carrot",                                              calories: 41,  protein: 0.9,  carbs: 9.6,  fats: 0.2,  fibre: 2.8  },
+  { id: 14, name: "Cheese Cube (Processed)",                            calories: 330, protein: 20.0, carbs: 2.0,  fats: 26.0, fibre: 0.0  },
+  { id: 15, name: "Cheese Slice (Processed)",                           calories: 300, protein: 18.0, carbs: 2.0,  fats: 24.0, fibre: 0.0  },
+  { id: 16, name: "Ghee",                                                calories: 900, protein: 0.0,  carbs: 0.0,  fats: 100.0,fibre: 0.0  },
+  { id: 17, name: "French Beans",                                        calories: 31,  protein: 1.8,  carbs: 7.0,  fats: 0.2,  fibre: 3.4  },
+  { id: 18, name: "Onion",                                               calories: 40,  protein: 1.1,  carbs: 9.3,  fats: 0.1,  fibre: 1.7  },
+  { id: 19, name: "Tomato",                                              calories: 18,  protein: 0.9,  carbs: 3.9,  fats: 0.2,  fibre: 1.2  },
+  { id: 20, name: "Papaya",                                              calories: 43,  protein: 0.5,  carbs: 11.0, fats: 0.3,  fibre: 1.8  },
+  { id: 21, name: "Pineapple",                                           calories: 50,  protein: 0.5,  carbs: 13.0, fats: 0.1,  fibre: 1.4  },
+  { id: 22, name: "Watermelon",                                          calories: 30,  protein: 0.6,  carbs: 7.6,  fats: 0.2,  fibre: 0.4  },
+  { id: 23, name: "Mango",                                               calories: 60,  protein: 0.8,  carbs: 15.0, fats: 0.4,  fibre: 1.6  },
+  { id: 24, name: "Tofu (Firm)",                                         calories: 144, protein: 16.0, carbs: 2.8,  fats: 8.7,  fibre: 0.3  },
+  { id: 25, name: "ON Whey (Gold Standard)",                             calories: 375, protein: 77.0, carbs: 10.0, fats: 3.3,  fibre: 0.0  },
+  { id: 26, name: "Egg White (Raw)",                                     calories: 52,  protein: 10.9, carbs: 0.7,  fats: 0.2,  fibre: 0.0  },
+  { id: 27, name: "Whey Isolate (NitroTech)",                            calories: 370, protein: 81.0, carbs: 6.5,  fats: 2.0,  fibre: 0.0  },
+  { id: 28, name: "Amul High Protein Dahi",                             calories: 80,  protein: 10.0, carbs: 4.0,  fats: 1.5,  fibre: 0.0  },
+  { id: 29, name: "Cucumber (Raw)",                                      calories: 15,  protein: 0.6,  carbs: 3.6,  fats: 0.1,  fibre: 0.5  },
+  { id: 30, name: "Mom's Subji (Green Leafy - e.g. Spinach, Methi)",    calories: 100, protein: 3.5,  carbs: 7.0,  fats: 6.0,  fibre: 3.5  },
+  { id: 31, name: "Mom's Subji (Starchy - e.g. Aloo, Green Peas)",      calories: 175, protein: 2.5,  carbs: 22.5, fats: 8.0,  fibre: 2.5  },
+  { id: 32, name: "Mom's Subji (Cruciferous - e.g. Gobi, Patta Gobi)",  calories: 110, protein: 2.5,  carbs: 9.0,  fats: 6.0,  fibre: 3.0  },
+  { id: 33, name: "Mom's Subji (Legume-based - e.g. Rajma, Chole)",     calories: 140, protein: 4.5,  carbs: 13.5, fats: 7.0,  fibre: 5.0  },
+  { id: 34, name: "White Sugar",                                         calories: 387, protein: 0.0,  carbs: 100.0,fats: 0.0,  fibre: 0.0  },
+  { id: 35, name: "Brown Sugar",                                         calories: 380, protein: 0.0,  carbs: 98.0, fats: 0.0,  fibre: 0.0  },
+  { id: 36, name: "Chicken Breast (Cooked)",                             calories: 165, protein: 31.0, carbs: 0.0,  fats: 3.6,  fibre: 0.0  },
+  { id: 37, name: "Chicken Subji (Home Style)",                          calories: 185, protein: 22.0, carbs: 4.0,  fats: 9.0,  fibre: 1.5  },
+  { id: 38, name: "Cashew (Raw)",                                        calories: 553, protein: 18.2, carbs: 30.2, fats: 43.9, fibre: 3.3  },
 ];
 
 export const workoutDatabase = [
@@ -81,15 +86,82 @@ export const workoutDatabase = [
   { id: 144, name: "Bulgarian Split Squats", calPerSet: 16.7 },
   { id: 145, name: "Hip Thrust", calPerSet: 15.0 },
   { id: 146, name: "Seated Leg Curl", calPerSet: 8.3 },
+
+  // Back
+  { id: 147, name: "Single Arm DB Row", calPerSet: 12.5 },
+  { id: 148, name: "Straight Arm Pulldown", calPerSet: 6.7 },
+  { id: 149, name: "Standing Cable Row", calPerSet: 11.7 },
+  { id: 150, name: "Back Extension", calPerSet: 7.5 },
+  { id: 151, name: "Rack Pull", calPerSet: 16.7 },
+  { id: 152, name: "Barbell Bent Over Row", calPerSet: 13.3 },
+
+  // Biceps
+  { id: 153, name: "Hammer Curl (DB)", calPerSet: 7.5 },
+  { id: 154, name: "Concentration Curl", calPerSet: 6.7 },
+  { id: 155, name: "Cable Bicep Curl", calPerSet: 7.5 },
+  { id: 156, name: "Spider Curl", calPerSet: 6.7 },
+  { id: 157, name: "Cross Body Hammer Curl", calPerSet: 6.7 },
+  { id: 158, name: "Machine Preacher Curl", calPerSet: 6.7 },
+
+  // Chest
+  { id: 159, name: "Incline DB Press", calPerSet: 12.5 },
+  { id: 160, name: "Flat DB Press", calPerSet: 12.5 },
+  { id: 161, name: "Incline DB Fly", calPerSet: 8.3 },
+  { id: 162, name: "High to Low Cable Fly", calPerSet: 8.3 },
+  { id: 163, name: "DB Pullover", calPerSet: 8.3 },
+  { id: 164, name: "Barbell Bench Press (Flat)", calPerSet: 13.3 },
+
+  // Triceps
+  { id: 165, name: "Skull Crushers (EZ Bar)", calPerSet: 10.0 },
+  { id: 166, name: "Overhead DB Tricep Extension", calPerSet: 6.7 },
+  { id: 167, name: "Single Arm Cable Pushdown", calPerSet: 5.0 },
+  { id: 168, name: "Tricep Kickback", calPerSet: 5.0 },
+
+  // Shoulders
+  { id: 169, name: "Seated DB Shoulder Press", calPerSet: 13.3 },
+  { id: 170, name: "Arnold Press", calPerSet: 11.7 },
+  { id: 171, name: "Upright Row (Barbell)", calPerSet: 8.3 },
+  { id: 172, name: "DB Lateral Raises", calPerSet: 6.7 },
+  { id: 173, name: "Cable Front Raises", calPerSet: 6.7 },
+  { id: 174, name: "Machine Lateral Raises", calPerSet: 6.7 },
+  { id: 175, name: "Bent Over Rear Delt Raises", calPerSet: 6.7 },
+  { id: 176, name: "Overhead Press (Barbell)", calPerSet: 13.3 },
+
+  // Legs
+  { id: 177, name: "Barbell Back Squat", calPerSet: 18.3 },
+  { id: 178, name: "Hack Squat (Machine)", calPerSet: 15.0 },
+  { id: 179, name: "Goblet Squat", calPerSet: 12.5 },
+  { id: 180, name: "Sumo Deadlift", calPerSet: 18.3 },
+  { id: 181, name: "Abductor Machine", calPerSet: 5.0 },
+  { id: 182, name: "Adductor Machine", calPerSet: 5.0 },
+  { id: 183, name: "Step Ups (DB)", calPerSet: 12.5 },
+  { id: 184, name: "Sissy Squat", calPerSet: 7.5 },
+  { id: 185, name: "Dumbbell Romanian Deadlift", calPerSet: 13.3 },
+  { id: 186, name: "Trap Bar Deadlift", calPerSet: 18.3 },
+
+  // Abs
+  { id: 187, name: "Hanging Leg Raises", calPerSet: 6.7 },
+  { id: 188, name: "Ab Wheel Rollout", calPerSet: 8.3 },
+  { id: 189, name: "Bicycle Crunch", calPerSet: 5.0 },
+  { id: 190, name: "V-Ups", calPerSet: 5.0 },
+  { id: 191, name: "Cable Woodchop", calPerSet: 5.0 },
+  { id: 192, name: "Hollow Hold (30s)", calPerSet: 5.0 },
+
+  // Bodyweight / Calisthenics
+  { id: 193, name: "Chin Ups", calPerSet: 10.0 },
+  { id: 194, name: "Pike Push Ups", calPerSet: 7.5 },
+  { id: 195, name: "Diamond Push Ups", calPerSet: 8.3 },
+
   { id: 200, name: "Incline Walk (25 mins, 10 Incl, 4.5 Spd)", calPerSet: 260 }
 ];
 
-export const STEP_CALORIES_MULTIPLIER = 0.0375;
+export const STEP_CALORIES_MULTIPLIER = 0.04; // 10,000 steps ≈ 400 kcal (Mifflin-aligned)
 
 export const dailyTargets = {
   protein: 160,
   carbs: 400,
-  fats: 70
+  fats: 70,
+  fibre: 35,
 };
 
 // Bulk target: maintenance 2570 + 300 surplus (matches backend BULK_TARGET_KCAL)

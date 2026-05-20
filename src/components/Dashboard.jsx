@@ -1,4 +1,4 @@
-import { Utensils, Flame, Activity, Footprints, TrendingDown } from 'lucide-react';
+import { Flame, Activity, Footprints, TrendingDown } from 'lucide-react';
 import { STEP_CALORIES_MULTIPLIER } from '../data';
 
 const Dashboard = ({ totals, steps, goals }) => {
@@ -6,9 +6,10 @@ const Dashboard = ({ totals, steps, goals }) => {
   const isOver   = calsLeft < 0;
 
   const macros = [
-    { label: 'Protein', value: totals.p, goal: goals.protein, color: 'var(--protein-color)', unit: 'g' },
-    { label: 'Carbs',   value: totals.c, goal: goals.carbs,   color: 'var(--carbs-color)',   unit: 'g' },
-    { label: 'Fats',    value: totals.f, goal: goals.fats,    color: 'var(--fats-color)',     unit: 'g' },
+    { label: 'Protein', value: totals.p,              goal: goals.protein, color: 'var(--protein-color)', unit: 'g' },
+    { label: 'Carbs',   value: totals.c,              goal: goals.carbs,   color: 'var(--carbs-color)',   unit: 'g' },
+    { label: 'Fats',    value: totals.f,              goal: goals.fats,    color: 'var(--fats-color)',     unit: 'g' },
+    { label: 'Fibre',   value: totals.fibre || 0,     goal: goals.fibre,   color: 'var(--fibre-color)',    unit: 'g' },
   ];
 
   return (
@@ -46,7 +47,7 @@ const Dashboard = ({ totals, steps, goals }) => {
           </div>
 
           {/* Progress bar */}
-          <div style={{ width: '100%', height: 5, background: 'rgba(255,255,255,0.12)', borderRadius: 'var(--r-pill)', overflow: 'hidden' }}>
+          <div style={{ width: '100%', height: 5, background: 'rgba(255,255,255,0.12)', borderRadius: 'var(--r-pill)', overflow: 'hidden', marginBottom: '12px' }}>
             <div
               style={{
                 height: '100%',
@@ -57,6 +58,22 @@ const Dashboard = ({ totals, steps, goals }) => {
               }}
             />
           </div>
+
+          {/* BMR breakdown chips */}
+          {goals.bmr > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              {[
+                { label: 'BMR',      value: `${goals.bmr.toLocaleString()} kcal` },
+                { label: 'Base goal',value: `${goals.baseGoal.toLocaleString()} kcal` },
+                { label: 'Activity', value: `+${goals.activityBurn} kcal` },
+              ].map(({ label, value }) => (
+                <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: 'var(--r-pill)', background: 'rgba(255,255,255,0.07)' }}>
+                  <span style={{ fontFamily: 'var(--font-heading)', fontSize: '0.56rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.4)' }}>{label}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem', color: 'rgba(255,255,255,0.75)' }}>{value}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

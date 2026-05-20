@@ -5,7 +5,7 @@ import SearchSelect from './SearchSelect';
 const foodItems = foodDatabase.map(f => ({
   id: f.id,
   label: f.name,
-  sub: `${f.calories} kcal/100g · P ${f.protein}g  C ${f.carbs}g  F ${f.fats}g`,
+  sub: `${f.calories} kcal/100g · P ${f.protein}g  C ${f.carbs}g  F ${f.fats}g  Fb ${f.fibre ?? 0}g`,
 }));
 
 const DraftMealReview = ({

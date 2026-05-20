@@ -81,7 +81,7 @@ test.describe('Mobile Viewport & Layout Integrity Suite', () => {
 
     // Go to Diet Plan tab
     await page.click('button:has-text("Diet Plan")');
-    await page.waitForSelector('text=Add Meal', { timeout: 3000 });
+    await page.waitForSelector('text=Generate AI Plan', { timeout: 3000 });
     
     // Measure modal container width
     const modalBox = await page.locator('text=MY PROFILE').locator('..').boundingBox();

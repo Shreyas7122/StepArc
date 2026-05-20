@@ -155,6 +155,9 @@ const LogList = ({
                             <MonoBadge color="var(--protein-color)">P {log.aiMacros.protein.toFixed(1)}g</MonoBadge>
                             <MonoBadge color="var(--carbs-color)">C {log.aiMacros.carbs.toFixed(1)}g</MonoBadge>
                             <MonoBadge color="var(--fats-color)">F {log.aiMacros.fats.toFixed(1)}g</MonoBadge>
+                            {(log.aiMacros.fibre ?? 0) > 0 && (
+                              <MonoBadge color="var(--fibre-color)">Fb {(log.aiMacros.fibre).toFixed(1)}g</MonoBadge>
+                            )}
                             <MonoBadge color="var(--gold-500)">{cal} kcal</MonoBadge>
                           </>
                         ) : (
