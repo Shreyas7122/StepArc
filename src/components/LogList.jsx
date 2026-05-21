@@ -129,13 +129,13 @@ const LogList = ({
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    background: 'rgba(10,6,18,0.4)',
+                    background: 'var(--ink-800)',
                     padding: '10px 12px 10px 14px',
                     borderRadius: 'var(--r-md)',
-                    borderLeft: '3px solid var(--gold-500)',
-                    border: '1px solid rgba(255,255,255,0.04)',
+                    borderLeft: '3px solid var(--yellow-500)',
+                    border: '1px solid var(--ink-700)',
                     borderLeftWidth: 3,
-                    borderLeftColor: 'var(--gold-500)',
+                    borderLeftColor: 'var(--yellow-500)',
                     borderLeftStyle: 'solid',
                   }}
                 >
@@ -207,7 +207,7 @@ const LogList = ({
 
       {/* Cardio Logs */}
       <div className="glass-card">
-        <SectionLabel color="#38bdf8" icon={<Timer size={12} color="#38bdf8" />} text="TODAY'S CARDIO" />
+        <SectionLabel color="var(--yellow-500)" icon={<Timer size={12} color="var(--yellow-500)" />} text="TODAY'S CARDIO" />
         <SectionTitle text="Cardio Log" />
         {cardioLogs.length === 0 ? (
           <div style={emptyStyle}>No cardio logged yet.</div>
@@ -227,13 +227,13 @@ const LogList = ({
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    background: 'rgba(10,6,18,0.4)',
+                    background: 'var(--ink-800)',
                     padding: '10px 12px',
                     borderRadius: 'var(--r-md)',
-                    borderLeft: '3px solid #38bdf8',
-                    border: '1px solid rgba(255,255,255,0.04)',
+                    borderLeft: '3px solid var(--yellow-500)',
+                    border: '1px solid var(--ink-700)',
                     borderLeftWidth: 3,
-                    borderLeftColor: '#38bdf8',
+                    borderLeftColor: 'var(--yellow-500)',
                     borderLeftStyle: 'solid',
                   }}
                 >
@@ -243,7 +243,7 @@ const LogList = ({
                     </div>
                     <div style={{ display: 'flex', gap: '5px' }}>
                       <MonoBadge color="var(--gray-500)">{log.durationMins} min</MonoBadge>
-                      <MonoBadge color="#38bdf8">{cal} kcal burned</MonoBadge>
+                      <MonoBadge color="var(--yellow-500)">{cal} kcal burned</MonoBadge>
                     </div>
                   </div>
                   <GhostIconBtn onClick={() => onDeleteCardioLog(log.id)} danger>
@@ -258,7 +258,7 @@ const LogList = ({
 
       {/* Workout Logs */}
       <div className="glass-card">
-        <SectionLabel color="var(--purple-300)" icon={<Dumbbell size={12} color="var(--purple-300)" />} text="TODAY'S WORKOUT" />
+        <SectionLabel color="var(--gray-200)" icon={<Dumbbell size={12} color="var(--gray-200)" />} text="TODAY'S WORKOUT" />
         <SectionTitle text="Workout Log" />
         {workoutLogs.length === 0 ? (
           <div style={emptyStyle}>No workout logged yet.</div>
@@ -275,13 +275,13 @@ const LogList = ({
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    background: 'rgba(10,6,18,0.4)',
+                    background: 'var(--ink-800)',
                     padding: '10px 12px',
                     borderRadius: 'var(--r-md)',
-                    borderLeft: '3px solid var(--purple-400)',
-                    border: '1px solid rgba(255,255,255,0.04)',
+                    borderLeft: '3px solid var(--gray-200)',
+                    border: '1px solid var(--ink-700)',
                     borderLeftWidth: 3,
-                    borderLeftColor: 'var(--purple-400)',
+                    borderLeftColor: 'var(--gray-200)',
                     borderLeftStyle: 'solid',
                   }}
                 >
@@ -291,7 +291,7 @@ const LogList = ({
                     </div>
                     {!isEditing && (
                       <div style={{ display: 'flex', gap: '5px' }}>
-                        <MonoBadge color="var(--purple-300)">{log.sets} sets</MonoBadge>
+                        <MonoBadge color="var(--gray-200)">{log.sets} sets</MonoBadge>
                         <MonoBadge color="var(--gold-500)">{cal} kcal burned</MonoBadge>
                       </div>
                     )}

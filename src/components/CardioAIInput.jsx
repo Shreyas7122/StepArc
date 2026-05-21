@@ -59,7 +59,7 @@ const CardioAIInput = ({ onLogCardio }) => {
       {/* Input card */}
       <div
         className="glass-card"
-        style={{ border: '1px solid rgba(14,165,233,0.2)' }}
+        style={{ border: '1px solid var(--ink-700)' }}
       >
         {/* Eyebrow */}
         <div
@@ -76,7 +76,7 @@ const CardioAIInput = ({ onLogCardio }) => {
             marginBottom: '6px',
           }}
         >
-          <Timer size={12} color="#38bdf8" />
+          <Timer size={12} color="var(--yellow-500)" />
           AI CARDIO
         </div>
 
@@ -97,8 +97,8 @@ const CardioAIInput = ({ onLogCardio }) => {
             style={{
               marginLeft: '8px',
               fontSize: '0.6rem',
-              background: 'rgba(56,189,248,0.15)',
-              color: '#38bdf8',
+              background: 'rgba(244,194,13,0.12)',
+              color: 'var(--yellow-500)',
               padding: '2px 8px',
               borderRadius: 'var(--r-pill)',
               fontFamily: 'var(--font-heading)',
@@ -128,7 +128,7 @@ const CardioAIInput = ({ onLogCardio }) => {
               width: 'auto',
               padding: '10px 16px',
               flexShrink: 0,
-              background: loading ? 'rgba(255,255,255,0.08)' : '#0ea5e9',
+              background: loading ? 'rgba(255,255,255,0.08)' : 'var(--gradient-cta)',
               color: 'var(--black)',
               borderRadius: 'var(--r-md)',
             }}
@@ -159,7 +159,7 @@ const CardioAIInput = ({ onLogCardio }) => {
       {result && (
         <div
           className="glass-card"
-          style={{ border: '1px solid rgba(14,165,233,0.25)' }}
+          style={{ border: '1px solid rgba(244,194,13,0.2)' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
             <div>
@@ -203,12 +203,12 @@ const CardioAIInput = ({ onLogCardio }) => {
               style={{
                 textAlign: 'center',
                 padding: '12px',
-                background: 'rgba(10,6,18,0.4)',
+                background: 'var(--ink-800)',
                 borderRadius: 'var(--r-md)',
-                border: '1px solid rgba(255,255,255,0.04)',
+                border: '1px solid var(--ink-700)',
               }}
             >
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: '#38bdf8', lineHeight: 1 }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: 'var(--yellow-500)', lineHeight: 1 }}>
                 {Math.round(result.total_duration_mins)}
               </div>
               <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.62rem', color: 'var(--gray-500)', marginTop: 3 }}>min total</div>
@@ -217,9 +217,9 @@ const CardioAIInput = ({ onLogCardio }) => {
               style={{
                 textAlign: 'center',
                 padding: '12px',
-                background: 'rgba(10,6,18,0.4)',
+                background: 'var(--ink-800)',
                 borderRadius: 'var(--r-md)',
-                border: '1px solid rgba(255,255,255,0.04)',
+                border: '1px solid var(--ink-700)',
               }}
             >
               <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: 'var(--gold-500)', lineHeight: 1 }}>
@@ -251,9 +251,9 @@ const CardioAIInput = ({ onLogCardio }) => {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     padding: '9px 12px',
-                    background: 'rgba(10,6,18,0.4)',
+                    background: 'var(--ink-800)',
                     borderRadius: 'var(--r-md)',
-                    border: '1px solid rgba(255,255,255,0.04)',
+                    border: '1px solid var(--ink-700)',
                   }}
                 >
                   <div>
@@ -266,7 +266,7 @@ const CardioAIInput = ({ onLogCardio }) => {
                       {seg.incline_degrees ? ` · ${seg.incline_degrees}° incline` : ''}
                     </div>
                   </div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.9rem', fontWeight: 600, color: '#38bdf8' }}>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.9rem', fontWeight: 600, color: 'var(--yellow-500)' }}>
                     {Math.round(seg.calories_burned)} kcal
                   </div>
                 </div>
@@ -277,7 +277,7 @@ const CardioAIInput = ({ onLogCardio }) => {
           <div style={{ display: 'flex', gap: '8px' }}>
             <button
               onClick={handleLog}
-              style={{ flex: 2, background: 'var(--gradient-cta)', color: 'var(--purple-900)', borderRadius: 'var(--r-pill)' }}
+              style={{ flex: 2, background: 'var(--gradient-cta)', color: 'var(--black)', borderRadius: 'var(--r-pill)' }}
             >
               <Flame size={15} /> LOG SESSION
             </button>

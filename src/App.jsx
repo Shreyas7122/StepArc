@@ -97,8 +97,8 @@ export default function App() {
     [settings.gender, settings.weight_kg, settings.height_cm, settings.age]
   );
   const baseGoal = useMemo(
-    () => bmr ? calcGoalCalories(bmr, settings.goal_type) : settings.calorie_goal,
-    [bmr, settings.goal_type, settings.calorie_goal]
+    () => bmr ? calcGoalCalories(bmr, settings.goal_type, settings.activity_level) : settings.calorie_goal,
+    [bmr, settings.goal_type, settings.activity_level, settings.calorie_goal]
   );
   const computedMacros = useMemo(
     () => bmr ? calcMacros(baseGoal, settings.weight_kg) : { protein: settings.protein_goal, fat: settings.fats_goal, carbs: settings.carbs_goal },
@@ -139,7 +139,6 @@ export default function App() {
     if (!foodAmount || isNaN(foodAmount) || Number(foodAmount) <= 0) return;
     setFoodLogs(prev => [...prev, { id: Date.now(), foodId: Number(selectedFoodId), amount: Number(foodAmount), name: foodDatabase.find(f => f.id === Number(selectedFoodId)).name }]);
     setFoodAmount('');
-    setActiveTab('dashboard');
   };
 
   const handleStartQuickLog = (meal) => {
@@ -162,7 +161,6 @@ export default function App() {
     const newLogs = validItems.map(it => ({ id: Date.now() + Math.random(), foodId: it.foodId, amount: Number(it.amount), name: `${draftMeal.name.split(':')[0]} - ${foodDatabase.find(f => f.id === it.foodId).name}` }));
     setFoodLogs(prev => [...prev, ...newLogs]);
     setDraftMeal(null);
-    setActiveTab('dashboard');
   };
 
   const handleUpdateFoodLog  = (id, newAmount) => {
@@ -170,7 +168,7 @@ export default function App() {
     setFoodLogs(prev => prev.map(log => log.id === id ? { ...log, amount: newAmount } : log));
   };
   const handleDeleteFoodLog  = (id) => setFoodLogs(prev => prev.filter(log => log.id !== id));
-  const handleAILog = ({ name, aiMacros }) => { setFoodLogs(prev => [...prev, { id: Date.now(), name, aiMacros }]); setActiveTab('dashboard'); };
+  const handleAILog = ({ name, aiMacros }) => { setFoodLogs(prev => [...prev, { id: Date.now(), name, aiMacros }]); };
 
   const handleAddWorkout = (e) => {
     e.preventDefault();
@@ -217,7 +215,6 @@ export default function App() {
   const handleDeleteWorkoutLog  = (id) => setWorkoutLogs(prev => prev.filter(log => log.id !== id));
   const handleAICardioLog = ({ name, durationMins, aiCalories }) => {
     setCardioLogs(prev => [...prev, { id: Date.now(), name, durationMins, aiCalories, cardioId: null }]);
-    setActiveTab('dashboard');
   };
   const handleDeleteCardioLog = (id) => setCardioLogs(prev => prev.filter(log => log.id !== id));
   const handleResetDrafts = () => { setDraftMeal(null); setDraftWorkout(null); };

@@ -1,0 +1,999 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ST Fitness Academia — Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:ital,wght@0,700;0,800;0,900;1,700;1,800;1,900&family=Saira:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  /* ================================================================
+     TOKENS
+     ================================================================ */
+  :root {
+    --yellow-500: #F4C20D;
+    --yellow-400: #FFD426;
+    --yellow-600: #C99A05;
+    --yellow-glow: #FFE066;
+
+    --black: #0A0A0A;
+    --ink-900: #141414;
+    --ink-800: #1F1F1F;
+    --ink-700: #2E2E2E;
+    --gray-400: #9A9A9A;
+    --gray-200: #D6D6D6;
+    --white: #FFFFFF;
+
+    --success: #3DD68C;
+    --danger: #FF4D4D;
+
+    --gradient-hero:   linear-gradient(135deg, #0A0A0A 0%, #1F1F1F 60%, #C99A05 140%);
+    --gradient-yellow: linear-gradient(90deg, #F4C20D 0%, #FFD426 100%);
+    --gradient-fade:   linear-gradient(180deg, rgba(244,194,13,0) 0%, rgba(244,194,13,0.12) 100%);
+    --gradient-glow:   radial-gradient(circle at 50% 50%, rgba(255,224,102,0.35) 0%, transparent 70%);
+
+    --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.6);
+    --shadow-lift: 0 22px 60px rgba(0, 0, 0, 0.8);
+    --glow-yellow: 0 0 32px rgba(244, 194, 13, 0.45);
+    --glow-soft:   0 0 60px rgba(255, 224, 102, 0.25);
+
+    --r-sm: 3px;
+    --r-md: 8px;
+    --r-lg: 14px;
+    --r-xl: 22px;
+    --r-pill: 999px;
+
+    --font-display: 'Saira Condensed', 'Oswald', Impact, sans-serif;
+    --font-heading: 'Saira', 'Arial Narrow', sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  /* ================================================================
+     RESET + BASE
+     ================================================================ */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-body);
+    background: var(--black);
+    color: var(--white);
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+  a { color: inherit; }
+
+  .page {
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(244,194,13,0.10), transparent 38%),
+      radial-gradient(circle at 88% 82%, rgba(244,194,13,0.07), transparent 44%);
+    min-height: 100vh;
+    padding: 48px 24px 80px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  /* ================================================================
+     SECTION CHROME
+     ================================================================ */
+  section { margin-bottom: 80px; }
+  .eyebrow {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--yellow-500);
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 900;
+    font-size: 52px;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    margin: 0 0 8px;
+    line-height: 1;
+  }
+  .section-desc {
+    color: var(--gray-200);
+    max-width: 62ch;
+    margin: 0 0 32px;
+  }
+  .sub-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 13px;
+    color: var(--gray-400);
+    margin: 32px 0 12px;
+  }
+  .grid { display: grid; gap: 24px; }
+  .grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .grid-4 { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+
+  /* highlight box — the brand word-emphasis device */
+  .hl {
+    background: var(--gradient-yellow);
+    color: var(--black);
+    padding: 0 8px;
+    border-radius: var(--r-sm);
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+  .yel { color: var(--yellow-500); }
+
+  /* ================================================================
+     HERO
+     ================================================================ */
+  .hero {
+    background: var(--gradient-hero);
+    border-radius: var(--r-xl);
+    padding: 64px 48px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 64px;
+    box-shadow: var(--shadow-lift);
+    border: 1px solid var(--ink-700);
+  }
+  .hero::before {
+    content: 'STFITNESS';
+    position: absolute;
+    right: -40px; top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 900;
+    font-size: 240px;
+    color: rgba(244,194,13,0.06);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .hero-inner { position: relative; z-index: 1; }
+  .hero-title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 900;
+    font-size: clamp(56px, 9vw, 112px);
+    line-height: 0.92;
+    margin: 8px 0 8px;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+  }
+  .hero-sub {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gray-200);
+    margin: 0;
+  }
+
+  /* ================================================================
+     SWATCH
+     ================================================================ */
+  .swatch {
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    background: var(--ink-900);
+    border: 1px solid var(--ink-700);
+  }
+  .swatch-chip { height: 110px; border-bottom: 1px solid var(--ink-700); }
+  .swatch-info { padding: 12px 14px; font-size: 12px; }
+  .swatch-name { font-family: var(--font-mono); color: var(--white); margin-bottom: 2px; }
+  .swatch-hex { font-family: var(--font-mono); color: var(--gray-400); }
+
+  /* ================================================================
+     TYPOGRAPHY DEMO
+     ================================================================ */
+  .type-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: baseline;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--ink-700);
+  }
+  .type-meta { font-family: var(--font-mono); font-size: 12px; color: var(--gray-400); min-width: 210px; }
+  .type-meta b { color: var(--yellow-500); font-weight: 600; }
+  .t-display { font-family: var(--font-display); font-style: italic; font-weight: 900; text-transform: uppercase; line-height: 0.95; letter-spacing: -0.01em; }
+  .t-heading { font-family: var(--font-heading); font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+  .t-body { font-family: var(--font-body); }
+
+  /* ================================================================
+     SPACING + SHADOW DEMO
+     ================================================================ */
+  .spacing-row { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .spacing-bar { background: var(--gradient-yellow); height: 12px; border-radius: var(--r-sm); }
+  .spacing-meta { font-family: var(--font-mono); font-size: 12px; color: var(--gray-200); min-width: 140px; }
+
+  .shadow-tile {
+    height: 120px;
+    border-radius: var(--r-lg);
+    background: var(--ink-800);
+    border: 1px solid var(--ink-700);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 12px; color: var(--white);
+  }
+  .sh-card { box-shadow: var(--shadow-card); }
+  .sh-lift { box-shadow: var(--shadow-lift); }
+  .sh-glow-y { box-shadow: var(--glow-yellow); }
+  .sh-glow-s { box-shadow: var(--glow-soft); background: var(--yellow-500); color: var(--black); }
+
+  /* ================================================================
+     ATOMS
+     ================================================================ */
+  .btn {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 14px;
+    padding: 14px 28px;
+    border: none;
+    border-radius: var(--r-pill);
+    cursor: pointer;
+    transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn-primary   { background: var(--gradient-yellow); color: var(--black); box-shadow: var(--glow-yellow); }
+  .btn-primary:hover { background: var(--yellow-400); }
+  .btn-secondary { background: transparent; color: var(--yellow-500); border: 1px solid var(--yellow-500); }
+  .btn-secondary:hover { background: rgba(244,194,13,0.1); }
+  .btn-ghost     { background: transparent; color: var(--white); border: 1px solid var(--ink-700); }
+  .btn-ghost:hover { border-color: var(--gray-400); }
+  .btn-dark      { background: var(--ink-800); color: var(--white); border: 1px solid var(--ink-700); }
+  .btn-dark:hover { background: var(--ink-700); }
+  .btn-sm { padding: 8px 16px; font-size: 11px; }
+  .btn-lg { padding: 20px 40px; font-size: 18px; }
+
+  .input {
+    width: 100%;
+    background: var(--ink-800);
+    border: 1px solid var(--ink-700);
+    border-radius: var(--r-md);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 14px;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 120ms ease, box-shadow 120ms ease;
+  }
+  .input:focus { border-color: var(--yellow-500); box-shadow: 0 0 0 3px rgba(244,194,13,0.18); }
+  .input::placeholder { color: var(--gray-400); }
+  .label {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 11px;
+    color: var(--gray-400);
+    display: block;
+    margin-bottom: 6px;
+  }
+  .check { display: inline-flex; align-items: center; gap: 8px; color: var(--white); font-size: 14px; }
+  .check input { accent-color: var(--yellow-500); width: 18px; height: 18px; }
+  .toggle {
+    width: 44px; height: 24px; background: var(--ink-700);
+    border-radius: 999px; position: relative; cursor: pointer; display: inline-block;
+    transition: background 150ms;
+  }
+  .toggle::after {
+    content: ''; position: absolute; left: 3px; top: 3px;
+    width: 18px; height: 18px; background: var(--white);
+    border-radius: 50%; transition: left 150ms;
+  }
+  .toggle.on { background: var(--yellow-500); }
+  .toggle.on::after { left: 23px; background: var(--black); }
+
+  .pill {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 11px;
+    font-weight: 700;
+    margin: 0 6px 6px 0;
+  }
+  .pill-yellow  { background: var(--yellow-500); color: var(--black); }
+  .pill-outline { background: transparent; color: var(--yellow-500); border: 1px solid var(--yellow-500); }
+  .pill-dark    { background: var(--ink-800); color: var(--white); border: 1px solid var(--ink-700); }
+  .pill-success { background: var(--success); color: var(--black); }
+  .pill-danger  { background: var(--danger); color: var(--white); }
+
+  .icon { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .icon-tile {
+    display: inline-flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 14px; background: var(--ink-900); border: 1px solid var(--ink-700); border-radius: var(--r-md);
+    min-width: 88px; font-family: var(--font-mono); font-size: 10px; color: var(--gray-400);
+    margin: 4px 4px 0 0;
+  }
+  .icon-tile .icon { color: var(--yellow-500); width: 28px; height: 28px; }
+
+  .avatar {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--ink-800); color: var(--yellow-500);
+    font-family: var(--font-heading); font-weight: 700;
+    border-radius: 50%; margin-right: 12px; vertical-align: middle;
+    border: 1px solid var(--ink-700);
+  }
+  .avatar-ring { box-shadow: 0 0 0 2px var(--yellow-500), 0 0 0 4px var(--black); }
+  .av-32 { width: 32px; height: 32px; font-size: 12px; }
+  .av-48 { width: 48px; height: 48px; font-size: 16px; }
+  .av-64 { width: 64px; height: 64px; font-size: 22px; }
+  .av-80 { width: 80px; height: 80px; font-size: 28px; }
+
+  .div-thin { height: 1px; background: var(--ink-700); margin: 8px 0; }
+  .div-yellow { height: 3px; background: var(--gradient-yellow); border-radius: 2px; width: 80px; margin: 8px 0; }
+  .div-glow { height: 1px; background: linear-gradient(90deg, transparent, var(--yellow-500), transparent); margin: 8px 0; }
+
+  .bar { height: 8px; background: var(--ink-800); border-radius: 999px; overflow: hidden; margin-bottom: 10px; }
+  .bar > span { display: block; height: 100%; background: var(--gradient-yellow); border-radius: 999px; }
+  .ring { width: 72px; height: 72px; }
+
+  /* ================================================================
+     MOLECULES
+     ================================================================ */
+  .tile {
+    background: var(--ink-900);
+    border-radius: var(--r-lg);
+    padding: 20px;
+    border: 1px solid var(--ink-700);
+  }
+  .tile-label {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 11px;
+    color: var(--yellow-500);
+    margin-bottom: 14px;
+  }
+  .stat-num { font-family: var(--font-display); font-style: italic; font-weight: 900; font-size: 48px; line-height: 1; }
+  .stat-delta { color: var(--success); font-family: var(--font-mono); font-size: 12px; }
+  .stat-label { color: var(--gray-200); font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
+
+  .qa-eyebrow { color: var(--gray-200); font-size: 14px; }
+  .qa-headline { font-family: var(--font-display); font-style: italic; font-weight: 900; text-transform: uppercase; font-size: 30px; line-height: 1; margin-top: 6px; }
+
+  /* ================================================================
+     ORGANISMS
+     ================================================================ */
+  .card {
+    background: var(--ink-900);
+    border-radius: var(--r-lg);
+    padding: 28px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--ink-700);
+  }
+  .card-tag {
+    display: inline-block;
+    background: var(--yellow-500);
+    color: var(--black);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: var(--r-sm);
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 900;
+    font-size: 36px;
+    text-transform: uppercase;
+    line-height: 1;
+    margin: 0 0 12px;
+  }
+  .card-body { color: var(--gray-200); font-size: 14px; margin: 0 0 20px; }
+  .feature-list { list-style: none; padding: 0; margin: 0 0 20px; color: var(--gray-200); font-size: 14px; }
+  .feature-list li { padding: 6px 0; border-bottom: 1px solid var(--ink-700); }
+  .feature-list li:last-child { border-bottom: 0; }
+
+  .pricing {
+    background: var(--ink-900);
+    border: 1px solid var(--ink-700);
+    border-radius: var(--r-lg);
+    padding: 24px;
+    text-align: center;
+  }
+  .pricing-label {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 11px;
+    color: var(--yellow-500);
+    margin-bottom: 8px;
+  }
+  .pricing-amount { font-family: var(--font-display); font-style: italic; font-weight: 900; font-size: 88px; line-height: 1; color: var(--white); }
+  .pricing-amount sup { font-size: 20px; vertical-align: top; color: var(--yellow-500); margin-right: 4px; }
+  .pricing-amount .dec { font-size: 32px; color: var(--gray-400); }
+  .pricing-period { font-family: var(--font-mono); font-size: 12px; color: var(--gray-400); margin-top: 4px; }
+
+  .nav {
+    background: var(--ink-900);
+    border: 1px solid var(--ink-700);
+    border-radius: var(--r-lg);
+    padding: 16px 24px;
+    display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+  }
+  .nav-brand {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-display); font-style: italic; font-weight: 900;
+    letter-spacing: 0.02em; text-transform: uppercase; font-size: 22px;
+  }
+  .nav-links { display: flex; gap: 20px; flex: 1; font-family: var(--font-heading); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; font-size: 13px; }
+  .nav-links a { text-decoration: none; color: var(--gray-200); }
+  .nav-links a.active { color: var(--yellow-500); }
+
+  /* Q&A post card — signature organism */
+  .qa-post {
+    background: var(--black);
+    border: 1px solid var(--ink-700);
+    border-radius: var(--r-lg);
+    padding: 32px;
+    aspect-ratio: 1;
+    position: relative;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .qa-post::before {
+    content: attr(data-ghost);
+    position: absolute;
+    left: -20px; bottom: -30px;
+    font-family: var(--font-display);
+    font-style: italic; font-weight: 900;
+    font-size: 160px;
+    color: rgba(244,194,13,0.07);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .qa-post-brand {
+    font-family: var(--font-display); font-style: italic; font-weight: 900;
+    text-transform: uppercase; font-size: 16px; color: var(--white);
+    position: relative; z-index: 1;
+  }
+  .qa-post-brand .yel { color: var(--yellow-500); }
+  .qa-post-body { position: relative; z-index: 1; margin-top: auto; }
+  .qa-post-q { color: var(--gray-200); font-size: 14px; margin-bottom: 4px; }
+  .qa-post-h {
+    font-family: var(--font-display); font-style: italic; font-weight: 900;
+    text-transform: uppercase; font-size: 40px; line-height: 0.95;
+  }
+
+  .footer-org {
+    background: var(--ink-900);
+    border: 1px solid var(--ink-700);
+    border-radius: var(--r-lg);
+    padding: 32px;
+  }
+  .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 24px; margin-bottom: 24px; }
+  .footer-brand { font-family: var(--font-display); font-style: italic; font-weight: 900; text-transform: uppercase; color: var(--yellow-500); margin-bottom: 12px; font-size: 22px; }
+  .footer-text { color: var(--gray-200); font-size: 13px; line-height: 2; }
+  .footer-legal {
+    border-top: 1px solid var(--ink-700);
+    padding-top: 16px;
+    color: var(--gray-400);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  }
+
+  /* ================================================================
+     TEMPLATES
+     ================================================================ */
+  .tmpl {
+    border: 1px dashed var(--ink-700);
+    border-radius: var(--r-lg);
+    padding: 16px;
+    margin-bottom: 24px;
+    background: var(--ink-900);
+  }
+  .tmpl-label {
+    font-family: var(--font-mono);
+    font-size: 11px; color: var(--gray-400);
+    margin-bottom: 10px;
+    text-transform: uppercase; letter-spacing: 0.15em;
+  }
+  .ph {
+    background: var(--ink-800);
+    border: 1px solid var(--ink-700);
+    border-radius: var(--r-md);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gray-400); font-family: var(--font-mono); font-size: 11px;
+  }
+
+  .page-foot {
+    text-align: center; padding: 32px;
+    color: var(--gray-400); font-family: var(--font-mono); font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="container">
+
+    <!-- ============================================================== HERO -->
+    <header class="hero">
+      <div class="hero-inner">
+        <div class="eyebrow">Design System · v1.0</div>
+        <h1 class="hero-title">ST Fitness<br /><span class="yel">Academia</span></h1>
+        <p class="hero-sub">Treine forte — sem desculpas</p>
+      </div>
+    </header>
+
+    <!-- ============================================================== 01 · COLOR -->
+    <section>
+      <div class="eyebrow">01 · Foundations</div>
+      <h2 class="section-title">Color</h2>
+      <p class="section-desc">A near-black canvas with a single electric-yellow accent. No mid-tones — contrast does the work.</p>
+
+      <div class="sub-title">Brand yellow</div>
+      <div class="grid grid-4">
+        <div class="swatch"><div class="swatch-chip" style="background:#F4C20D"></div><div class="swatch-info"><div class="swatch-name">--yellow-500</div><div class="swatch-hex">#F4C20D</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#FFD426"></div><div class="swatch-info"><div class="swatch-name">--yellow-400</div><div class="swatch-hex">#FFD426</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#C99A05"></div><div class="swatch-info"><div class="swatch-name">--yellow-600</div><div class="swatch-hex">#C99A05</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#FFE066"></div><div class="swatch-info"><div class="swatch-name">--yellow-glow</div><div class="swatch-hex">#FFE066</div></div></div>
+      </div>
+
+      <div class="sub-title">Neutrals</div>
+      <div class="grid grid-4">
+        <div class="swatch"><div class="swatch-chip" style="background:#0A0A0A"></div><div class="swatch-info"><div class="swatch-name">--black</div><div class="swatch-hex">#0A0A0A</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#141414"></div><div class="swatch-info"><div class="swatch-name">--ink-900</div><div class="swatch-hex">#141414</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#1F1F1F"></div><div class="swatch-info"><div class="swatch-name">--ink-800</div><div class="swatch-hex">#1F1F1F</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#2E2E2E"></div><div class="swatch-info"><div class="swatch-name">--ink-700</div><div class="swatch-hex">#2E2E2E</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#9A9A9A"></div><div class="swatch-info"><div class="swatch-name">--gray-400</div><div class="swatch-hex">#9A9A9A</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#D6D6D6"></div><div class="swatch-info"><div class="swatch-name">--gray-200</div><div class="swatch-hex">#D6D6D6</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#FFFFFF"></div><div class="swatch-info"><div class="swatch-name">--white</div><div class="swatch-hex">#FFFFFF</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#3DD68C"></div><div class="swatch-info"><div class="swatch-name">--success</div><div class="swatch-hex">#3DD68C</div></div></div>
+      </div>
+
+      <div class="sub-title">Gradients</div>
+      <div class="grid grid-4">
+        <div class="swatch"><div class="swatch-chip" style="background:var(--gradient-hero)"></div><div class="swatch-info"><div class="swatch-name">--gradient-hero</div><div class="swatch-hex">135° ink→gold</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--gradient-yellow)"></div><div class="swatch-info"><div class="swatch-name">--gradient-yellow</div><div class="swatch-hex">90° yellow</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--gradient-fade),#141414"></div><div class="swatch-info"><div class="swatch-name">--gradient-fade</div><div class="swatch-hex">180° yellow fade</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--gradient-glow),#0A0A0A"></div><div class="swatch-info"><div class="swatch-name">--gradient-glow</div><div class="swatch-hex">radial glow</div></div></div>
+      </div>
+    </section>
+
+    <!-- ============================================================== 02 · TYPOGRAPHY -->
+    <section>
+      <div class="eyebrow">02 · Foundations</div>
+      <h2 class="section-title">Typography</h2>
+      <p class="section-desc">Heavy italic condensed display type is the signature — it leans forward for motion and urgency.</p>
+
+      <div class="type-row"><div class="type-meta"><b>Display XL</b><br/>Saira Cond. 900i · 104px</div><div class="t-display" style="font-size:88px">Resultados</div></div>
+      <div class="type-row"><div class="type-meta"><b>Display LG</b><br/>Saira Cond. 900i · 72px</div><div class="t-display" style="font-size:64px">Iniciar um treino</div></div>
+      <div class="type-row"><div class="type-meta"><b>Display MD</b><br/>Saira Cond. 800i · 52px</div><div class="t-display" style="font-size:46px">Saúde mental</div></div>
+      <div class="type-row"><div class="type-meta"><b>Heading H1</b><br/>Saira 700 · 38px</div><div class="t-heading" style="font-size:34px">Antes ou depois</div></div>
+      <div class="type-row"><div class="type-meta"><b>Heading H2</b><br/>Saira 700 · 30px</div><div class="t-heading" style="font-size:26px">Flexibilidade</div></div>
+      <div class="type-row"><div class="type-meta"><b>Highlight</b><br/>display + .hl box</div><div class="t-display" style="font-size:40px">Como a <span class="hl">consistência</span></div></div>
+      <div class="type-row"><div class="type-meta"><b>Body</b><br/>Inter 400 · 16px</div><div class="t-body" style="font-size:16px">Treine com método. Acompanhe sua evolução.</div></div>
+      <div class="type-row"><div class="type-meta"><b>Caption</b><br/>Inter 500 · 12px</div><div class="t-body" style="font-size:12px;text-transform:uppercase;letter-spacing:.15em;color:var(--gray-200)">Matrículas abertas</div></div>
+    </section>
+
+    <!-- ============================================================== 03 · SPACING -->
+    <section>
+      <div class="eyebrow">03 · Foundations</div>
+      <h2 class="section-title">Spacing</h2>
+      <p class="section-desc">8-point base scale.</p>
+      <div class="spacing-row"><div class="spacing-meta">space-1 · 4px</div><div class="spacing-bar" style="width:4px"></div></div>
+      <div class="spacing-row"><div class="spacing-meta">space-2 · 8px</div><div class="spacing-bar" style="width:8px"></div></div>
+      <div class="spacing-row"><div class="spacing-meta">space-3 · 12px</div><div class="spacing-bar" style="width:12px"></div></div>
+      <div class="spacing-row"><div class="spacing-meta">space-4 · 16px</div><div class="spacing-bar" style="width:16px"></div></div>
+      <div class="spacing-row"><div class="spacing-meta">space-5 · 24px</div><div class="spacing-bar" style="width:24px"></div></div>
+      <div class="spacing-row"><div class="spacing-meta">space-6 · 32px</div><div class="spacing-bar" style="width:32px"></div></div>
+      <div class="spacing-row"><div class="spacing-meta">space-7 · 48px</div><div class="spacing-bar" style="width:48px"></div></div>
+      <div class="spacing-row"><div class="spacing-meta">space-8 · 64px</div><div class="spacing-bar" style="width:64px"></div></div>
+      <div class="spacing-row"><div class="spacing-meta">space-9 · 96px</div><div class="spacing-bar" style="width:96px"></div></div>
+    </section>
+
+    <!-- ============================================================== 04 · ELEVATION -->
+    <section>
+      <div class="eyebrow">04 · Foundations</div>
+      <h2 class="section-title">Elevation & Glow</h2>
+      <p class="section-desc">Deep black drop-shadows for depth. Yellow glow highlights hero elements and CTAs.</p>
+      <div class="grid grid-4">
+        <div class="shadow-tile sh-card">--shadow-card</div>
+        <div class="shadow-tile sh-lift">--shadow-lift</div>
+        <div class="shadow-tile sh-glow-y">--glow-yellow</div>
+        <div class="shadow-tile sh-glow-s">--glow-soft</div>
+      </div>
+    </section>
+
+    <!-- ============================================================== 05 · ATOMS -->
+    <section>
+      <div class="eyebrow">05 · Atoms</div>
+      <h2 class="section-title">Atoms</h2>
+      <p class="section-desc">The smallest, indivisible building blocks. Each atom does one thing.</p>
+
+      <div class="sub-title">Buttons</div>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center">
+        <button class="btn btn-primary">Matricule-se</button>
+        <button class="btn btn-secondary">Ver planos</button>
+        <button class="btn btn-ghost">Saiba mais</button>
+        <button class="btn btn-dark">Entrar</button>
+        <button class="btn btn-primary btn-sm">Small</button>
+        <button class="btn btn-primary btn-lg">Large</button>
+      </div>
+
+      <div class="sub-title">Inputs</div>
+      <div class="grid grid-2">
+        <div>
+          <label class="label">E-mail</label>
+          <input class="input" type="email" placeholder="voce@stfitness.com" />
+        </div>
+        <div>
+          <label class="label">Plano</label>
+          <select class="input">
+            <option>Mensal — R$ 89,90</option>
+            <option>Anual — R$ 69,90</option>
+          </select>
+        </div>
+        <div>
+          <label class="label">Buscar</label>
+          <input class="input" placeholder="Encontre um treino..." />
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:24px">
+          <label class="check"><input type="checkbox" checked /> Lembrar-me</label>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="label" style="margin:0">Avisos</span>
+            <span class="toggle on"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-title">Badges, pills & highlight box</div>
+      <div style="margin-bottom:14px">
+        <span class="pill pill-yellow">Novo</span>
+        <span class="pill pill-outline">Promo</span>
+        <span class="pill pill-dark">Premium</span>
+        <span class="pill pill-success">Ativo</span>
+        <span class="pill pill-danger">Esgotado</span>
+      </div>
+      <div class="t-display" style="font-size:32px">Como a <span class="hl">flexibilidade</span> ajuda</div>
+
+      <div class="sub-title">Icons</div>
+      <div>
+        <div class="icon-tile"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm10 0h2v12h-2zM4 9h2v6H4zm14 0h2v6h-2zM8 11h8v2H8z"/></svg><span>dumbbell</span></div>
+        <div class="icon-tile"><svg class="icon" viewBox="0 0 24 24"><path d="M9 3a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 6 0V4a3 3 0 0 0-3-1zm6 0a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-6 0"/></svg><span>brain</span></div>
+        <div class="icon-tile"><svg class="icon" viewBox="0 0 24 24"><path d="M12 21s-7-4.5-7-11a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 6.5-7 11-7 11z"/></svg><span>heart</span></div>
+        <div class="icon-tile"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2v20M8 6l4-2 4 2M6 22l6-8 6 8"/></svg><span>stretch</span></div>
+        <div class="icon-tile"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2v20M9 5h6M9 9h6M9 13h6M9 17h6"/></svg><span>spine</span></div>
+        <div class="icon-tile"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2c3 4 5 6 5 10a5 5 0 0 1-10 0c0-2 1-4 2-5 0 2 1 3 2 3 1-2 0-5-1-8z"/></svg><span>flame</span></div>
+        <div class="icon-tile"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>clock</span></div>
+        <div class="icon-tile"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span>check</span></div>
+      </div>
+
+      <div class="sub-title">Avatars</div>
+      <div>
+        <span class="avatar av-32">JS</span>
+        <span class="avatar av-48">MR</span>
+        <span class="avatar av-64 avatar-ring">PT</span>
+        <span class="avatar av-80">LV</span>
+      </div>
+
+      <div class="sub-title">Dividers</div>
+      <div class="div-thin"></div>
+      <div class="div-yellow"></div>
+      <div class="div-glow"></div>
+
+      <div class="sub-title">Progress</div>
+      <div style="display:flex;gap:32px;align-items:center;flex-wrap:wrap">
+        <div style="flex:1;min-width:240px">
+          <div class="bar"><span style="width:25%"></span></div>
+          <div class="bar"><span style="width:60%"></span></div>
+          <div class="bar"><span style="width:90%"></span></div>
+        </div>
+        <svg class="ring" viewBox="0 0 36 36">
+          <circle cx="18" cy="18" r="15" fill="none" stroke="#1F1F1F" stroke-width="3"/>
+          <circle cx="18" cy="18" r="15" fill="none" stroke="#F4C20D" stroke-width="3" stroke-dasharray="70 100" stroke-linecap="round" transform="rotate(-90 18 18)"/>
+          <text x="18" y="21" text-anchor="middle" fill="#fff" font-family="JetBrains Mono" font-size="9">70%</text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ============================================================== 06 · MOLECULES -->
+    <section>
+      <div class="eyebrow">06 · Molecules</div>
+      <h2 class="section-title">Molecules</h2>
+      <p class="section-desc">Atoms wired together into small, reusable units.</p>
+
+      <div class="grid grid-2">
+        <div class="tile">
+          <div class="tile-label">Search bar</div>
+          <div style="display:flex;gap:8px">
+            <input class="input" placeholder="Buscar treinos..." />
+            <button class="btn btn-primary">Ir</button>
+          </div>
+        </div>
+
+        <div class="tile">
+          <div class="tile-label">Stat</div>
+          <div style="display:flex;align-items:baseline;gap:8px">
+            <div class="stat-num">3.840</div>
+            <div class="stat-delta">↑ 9,1%</div>
+          </div>
+          <div class="stat-label">Alunos ativos</div>
+        </div>
+
+        <div class="tile">
+          <div class="tile-label">Form group</div>
+          <label class="label">Nome completo</label>
+          <input class="input" placeholder="Maria Silva" />
+          <div style="color:var(--gray-400);font-size:12px;margin-top:6px">Usado na sua carteirinha.</div>
+        </div>
+
+        <div class="tile">
+          <div class="tile-label">Profile chip</div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span class="avatar av-48">MR</span>
+            <div>
+              <div style="font-weight:600">Marina Rocha</div>
+              <div style="color:var(--gray-400);font-size:12px">Plano Anual · 312 treinos</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tile" style="border-color:var(--yellow-500);background:var(--gradient-fade),var(--ink-900)">
+          <div class="tile-label">Alert</div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <svg class="icon" viewBox="0 0 24 24" style="color:#F4C20D;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            <div>
+              <div style="font-weight:600">Seu plano vence em 3 dias</div>
+              <div style="color:var(--gray-200);font-size:13px">Renove para manter seu progresso.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tile">
+          <div class="tile-label">Breadcrumb</div>
+          <div style="font-family:var(--font-mono);font-size:13px;color:var(--gray-200)">
+            <a style="text-decoration:none;color:var(--gray-200)">Início</a> ›
+            <a style="text-decoration:none;color:var(--gray-200)">Planos</a> ›
+            <span style="color:var(--yellow-500)">Anual</span>
+          </div>
+        </div>
+
+        <div class="tile">
+          <div class="tile-label">Q&amp;A line</div>
+          <div class="qa-eyebrow">Como o <span class="yel">exercício físico</span> ajuda na</div>
+          <div class="qa-headline">Saúde <span class="hl">mental?</span></div>
+        </div>
+
+        <div class="tile">
+          <div class="tile-label">Class row</div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:48px;height:48px;border-radius:var(--r-md);background:var(--ink-800);display:flex;align-items:center;justify-content:center">
+              <svg class="icon" viewBox="0 0 24 24" style="color:#F4C20D"><path d="M6 6h2v12H6zm10 0h2v12h-2zM4 9h2v6H4zm14 0h2v6h-2zM8 11h8v2H8z"/></svg>
+            </div>
+            <div style="flex:1">
+              <div style="font-weight:600">Funcional intenso</div>
+              <div style="color:var(--gray-400);font-size:12px">45 min · Intermediário</div>
+            </div>
+            <button class="btn btn-primary btn-sm">Entrar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== 07 · ORGANISMS -->
+    <section>
+      <div class="eyebrow">07 · Organisms</div>
+      <h2 class="section-title">Organisms</h2>
+      <p class="section-desc">Self-contained sections composed of multiple molecules.</p>
+
+      <div class="sub-title">Top nav</div>
+      <div class="nav">
+        <div class="nav-brand">
+          <svg class="icon" viewBox="0 0 24 24" style="color:#F4C20D;width:26px;height:26px"><path d="M6 6h2v12H6zm10 0h2v12h-2zM4 9h2v6H4zm14 0h2v6h-2zM8 11h8v2H8z"/></svg>
+          ST<span class="yel">Fitness</span>
+        </div>
+        <nav class="nav-links">
+          <a class="active" href="#">Planos</a>
+          <a href="#">Treinos</a>
+          <a href="#">Aulas</a>
+          <a href="#">Blog</a>
+        </nav>
+        <button class="btn btn-ghost btn-sm">Entrar</button>
+        <button class="btn btn-primary btn-sm">Matricular</button>
+      </div>
+
+      <div class="sub-title">Plan comparison row</div>
+      <div class="grid grid-2">
+        <div class="card">
+          <span class="card-tag">Mensal</span>
+          <h3 class="card-title">Plano Start</h3>
+          <p class="card-body">Acesso à musculação, área de cardio e app de treinos.</p>
+          <ul class="feature-list">
+            <li>✓ Musculação livre</li>
+            <li>✓ App de treinos</li>
+            <li>✓ Avaliação física</li>
+          </ul>
+          <button class="btn btn-secondary" style="width:100%">Escolher Start</button>
+        </div>
+        <div class="card" style="border-color:var(--yellow-500);box-shadow:var(--shadow-lift),var(--glow-yellow)">
+          <span class="card-tag">Mais popular</span>
+          <h3 class="card-title">Plano Pro</h3>
+          <p class="card-body">Tudo do Start mais aulas coletivas, personal e nutrição.</p>
+          <ul class="feature-list">
+            <li>✓ Aulas coletivas ilimitadas</li>
+            <li>✓ Personal semanal</li>
+            <li>✓ Plano nutricional</li>
+            <li>✓ Acesso 24h</li>
+          </ul>
+          <button class="btn btn-primary" style="width:100%">Escolher Pro</button>
+        </div>
+      </div>
+
+      <div class="sub-title">Pricing tiles</div>
+      <div class="grid grid-2">
+        <div class="pricing">
+          <div class="pricing-label">Plano Start</div>
+          <div class="pricing-amount"><sup>R$</sup>89<span class="dec">,90</span></div>
+          <div class="pricing-period">por mês</div>
+        </div>
+        <div class="pricing" style="border-color:var(--yellow-500);box-shadow:var(--shadow-lift),var(--glow-yellow)">
+          <div class="pricing-label">Plano Pro</div>
+          <div class="pricing-amount"><sup>R$</sup>149<span class="dec">,90</span></div>
+          <div class="pricing-period">por mês</div>
+        </div>
+      </div>
+
+      <div class="sub-title">Q&amp;A post cards (signature)</div>
+      <div class="grid grid-3">
+        <div class="qa-post" data-ghost="ERROS">
+          <div class="qa-post-brand">ST<span class="yel">Fitness</span></div>
+          <div class="qa-post-body">
+            <div class="qa-post-q">Quais são os principais <span class="yel">erros a evitar</span> ao</div>
+            <div class="qa-post-h">Iniciar um <span class="hl">treino?</span></div>
+          </div>
+        </div>
+        <div class="qa-post" data-ghost="FLEXI">
+          <div class="qa-post-brand">ST<span class="yel">Fitness</span></div>
+          <div class="qa-post-body">
+            <div class="qa-post-q">Como a <span class="yel">flexibilidade</span> pode ser melhorada?</div>
+            <div class="qa-post-h">E por que é <span class="hl">importante?</span></div>
+          </div>
+        </div>
+        <div class="qa-post" data-ghost="MENTE">
+          <div class="qa-post-brand">ST<span class="yel">Fitness</span></div>
+          <div class="qa-post-body">
+            <div class="qa-post-q">Como o exercício físico ajuda na</div>
+            <div class="qa-post-h">Saúde <span class="hl">mental?</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-title">Testimonial strip</div>
+      <div style="background:var(--ink-900);border:1px solid var(--ink-700);border-radius:var(--r-lg);padding:32px">
+        <div class="eyebrow" style="margin-bottom:24px">Depoimentos</div>
+        <div class="grid grid-2">
+          <div style="display:flex;gap:14px;align-items:flex-start">
+            <span class="avatar av-48">MC</span>
+            <div>
+              <p style="margin:0 0 8px">"Perdi 9 kg em quatro meses. O acompanhamento faz diferença."</p>
+              <div style="color:var(--gray-400);font-size:12px">Mariana C. · Plano Pro</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:flex-start">
+            <span class="avatar av-48">DR</span>
+            <div>
+              <p style="margin:0 0 8px">"As aulas coletivas me mantêm motivado. Não falto mais."</p>
+              <div style="color:var(--gray-400);font-size:12px">Diego R. · Plano Pro</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-title">Site footer</div>
+      <div class="footer-org">
+        <div class="footer-grid">
+          <div>
+            <div class="footer-brand">ST Fitness</div>
+            <div class="footer-text" style="line-height:1.5">Treine forte. Sem desculpas.</div>
+          </div>
+          <div>
+            <div class="tile-label">Academia</div>
+            <div class="footer-text">Planos<br/>Treinos<br/>Aulas</div>
+          </div>
+          <div>
+            <div class="tile-label">Empresa</div>
+            <div class="footer-text">Sobre<br/>Unidades<br/>Trabalhe conosco</div>
+          </div>
+          <div>
+            <div class="tile-label">Receba novidades</div>
+            <div style="display:flex;gap:8px">
+              <input class="input" placeholder="e-mail" />
+              <button class="btn btn-primary btn-sm">→</button>
+            </div>
+          </div>
+        </div>
+        <div class="footer-legal">
+          <span>© 2026 ST Fitness Academia</span>
+          <span>Privacidade · Termos</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== 08 · TEMPLATES -->
+    <section>
+      <div class="eyebrow">08 · Templates</div>
+      <h2 class="section-title">Templates</h2>
+      <p class="section-desc">Full page-level compositions assembled from the system. Wireframes — replace placeholders with real content.</p>
+
+      <div class="tmpl">
+        <div class="tmpl-label">T-01 · Marketing Landing</div>
+        <div class="ph" style="height:48px;margin-bottom:8px">Nav</div>
+        <div class="ph" style="height:200px;margin-bottom:8px;background:var(--gradient-hero);color:var(--white)">Hero · headline + CTA</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px">
+          <div class="ph" style="height:90px">Feature</div>
+          <div class="ph" style="height:90px">Feature</div>
+          <div class="ph" style="height:90px">Feature</div>
+        </div>
+        <div class="ph" style="height:140px;margin-bottom:8px">Pricing row · 2 planos</div>
+        <div class="ph" style="height:80px;margin-bottom:8px">Testimonial strip</div>
+        <div class="ph" style="height:60px">Footer</div>
+      </div>
+
+      <div class="tmpl">
+        <div class="tmpl-label">T-02 · Member Dashboard</div>
+        <div style="display:grid;grid-template-columns:200px 1fr;gap:8px">
+          <div class="ph" style="height:360px">Sidebar nav</div>
+          <div style="display:grid;gap:8px">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+              <div class="ph" style="height:80px">Stat</div>
+              <div class="ph" style="height:80px">Stat</div>
+              <div class="ph" style="height:80px">Stat</div>
+            </div>
+            <div class="ph" style="height:120px">Aula de hoje</div>
+            <div class="ph" style="height:140px">Gráfico de progresso</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tmpl">
+        <div class="tmpl-label">T-03 · Q&amp;A Social Post (1:1)</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+          <div class="ph" style="aspect-ratio:1;flex-direction:column;gap:6px">
+            <span>Logo</span><span>Pergunta eyebrow</span><span style="color:var(--yellow-500)">Headline + highlight</span><span>Foto atleta</span>
+          </div>
+          <div class="ph" style="aspect-ratio:1;background:var(--gradient-hero);color:#fff">Foto recorte</div>
+          <div class="ph" style="aspect-ratio:1">Headline alt</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== 09 · POST PATTERN -->
+    <section>
+      <div class="eyebrow">09 · Patterns</div>
+      <h2 class="section-title">Q&amp;A Post Composition</h2>
+      <p class="section-desc">The signature layout: black canvas, oversized faded display word bleeding off-edge, small eyebrow question, large italic headline with one word in a yellow highlight box, logo lockup.</p>
+
+      <div style="max-width:460px">
+        <div class="qa-post" data-ghost="ALONGAR" style="aspect-ratio:1">
+          <div class="qa-post-brand">ST<span class="yel">Fitness</span> <span style="font-size:10px;font-style:normal;font-weight:400;letter-spacing:.2em;color:var(--gray-400)">ACADEMIA</span></div>
+          <div class="qa-post-body">
+            <div class="qa-post-q">É mais eficaz <span class="yel">alongar</span></div>
+            <div class="qa-post-h">Antes ou <span class="hl">depois</span><br/>do treino?</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+  <div class="page-foot">ST Fitness Academia · Design System v1.0</div>
+</div>
+</body>
+</html>

@@ -48,7 +48,7 @@ const HistoryTab = ({ userId, goals }) => {
   const statChips = [
     { label: 'AVG CALORIES', value: avgCalIn,                  unit: 'kcal',  color: 'var(--gold-500)',      pct: goals.calories ? Math.round((avgCalIn / goals.calories) * 100) : null },
     { label: 'AVG PROTEIN',  value: avgProtein,                unit: 'g',     color: 'var(--protein-color)', pct: goals.protein ? Math.round((avgProtein / goals.protein) * 100) : null },
-    { label: 'AVG STEPS',    value: avgSteps.toLocaleString(), unit: 'steps', color: '#38bdf8',              pct: null },
+    { label: 'AVG STEPS',    value: avgSteps.toLocaleString(), unit: 'steps', color: 'var(--yellow-500)',    pct: null },
     { label: 'PROTEIN DAYS', value: `${proteinDays}/7`,        unit: 'on goal', color: '#10b981',            pct: null },
   ];
 
@@ -74,14 +74,17 @@ const HistoryTab = ({ userId, goals }) => {
         <div
           style={{
             fontFamily: 'var(--font-display)',
-            fontSize: '2rem',
+            fontStyle: 'italic',
+            fontWeight: 900,
+            fontSize: '1.55rem',
+            textTransform: 'uppercase',
+            letterSpacing: '-0.01em',
             color: 'var(--white)',
             lineHeight: 1,
             marginBottom: '20px',
-            letterSpacing: '0.02em',
           }}
         >
-          7-DAY HISTORY
+          7-Day History
         </div>
 
         {/* Bar chart */}
@@ -93,7 +96,7 @@ const HistoryTab = ({ userId, goals }) => {
             const barColor = isToday
               ? 'var(--gradient-cta)'
               : atGoal
-                ? 'var(--purple-500)'
+                ? 'var(--yellow-500)'
                 : 'rgba(113,113,122,0.45)';
             return (
               <div key={day.date} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -105,7 +108,7 @@ const HistoryTab = ({ userId, goals }) => {
                     borderRadius: '3px 3px 0 0',
                     transition: 'height 0.6s ease',
                     opacity: day.totals.calIn === 0 ? 0.25 : 1,
-                    boxShadow: isToday ? 'var(--glow-gold)' : atGoal ? 'var(--glow-purple)' : 'none',
+                    boxShadow: isToday ? 'var(--glow-yellow)' : atGoal ? 'var(--glow-yellow)' : 'none',
                   }}
                 />
               </div>
@@ -137,11 +140,10 @@ const HistoryTab = ({ userId, goals }) => {
             <div
               key={stat.label}
               style={{
-                background: 'rgba(10,6,18,0.65)',
+                background: 'var(--ink-800)',
                 borderRadius: 'var(--r-md)',
                 padding: '12px 14px',
-                border: '1px solid rgba(168,85,247,0.18)',
-                boxShadow: 'inset 0 0 20px rgba(168,85,247,0.05)',
+                border: '1px solid var(--ink-700)',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
@@ -183,7 +185,7 @@ const HistoryTab = ({ userId, goals }) => {
                     style={{
                       display: 'inline-block',
                       background: 'var(--gradient-cta)',
-                      color: 'var(--purple-900)',
+                      color: 'var(--black)',
                       fontFamily: 'var(--font-heading)',
                       fontWeight: 700,
                       fontSize: '0.52rem',
@@ -239,7 +241,7 @@ const HistoryTab = ({ userId, goals }) => {
                         alignItems: 'center',
                         gap: '4px',
                         padding: '4px 10px',
-                        background: 'rgba(10,6,18,0.55)',
+                        background: 'var(--ink-800)',
                         borderRadius: 'var(--r-pill)',
                         border: `1px solid ${m.value >= m.goal * 0.9 ? m.color + '44' : 'rgba(255,255,255,0.05)'}`,
                       }}
@@ -255,22 +257,22 @@ const HistoryTab = ({ userId, goals }) => {
                         alignItems: 'center',
                         gap: '4px',
                         padding: '4px 10px',
-                        background: 'rgba(10,6,18,0.55)',
+                        background: 'var(--ink-800)',
                         borderRadius: 'var(--r-pill)',
-                        border: '1px solid rgba(56,189,248,0.2)',
+                        border: '1px solid rgba(244,194,13,0.2)',
                       }}
                     >
-                      <Footprints size={10} color="#38bdf8" />
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem', color: '#38bdf8' }}>{day.steps.toLocaleString()}</span>
+                      <Footprints size={10} color="var(--yellow-500)" />
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem', color: 'var(--yellow-500)' }}>{day.steps.toLocaleString()}</span>
                     </div>
                   )}
                 </div>
 
                 {t.calOut > 0 && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Flame size={11} color="var(--purple-300)" />
+                    <Flame size={11} color="var(--gray-400)" />
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.67rem', color: 'var(--gray-500)' }}>
-                      Burned <span style={{ color: 'var(--purple-300)' }}>{t.calOut} kcal</span>
+                      Burned <span style={{ color: 'var(--gray-200)' }}>{t.calOut} kcal</span>
                       {' · Net '}
                       <span style={{ color: t.calIn - t.calOut > 0 ? 'var(--gold-500)' : '#10b981' }}>
                         {t.calIn - t.calOut > 0 ? '+' : ''}{t.calIn - t.calOut} kcal

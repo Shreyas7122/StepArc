@@ -21,11 +21,11 @@ const TabBar = ({ activeTab, setActiveTab, onResetDrafts }) => {
       aria-label="Main Navigation"
       style={{
         display: 'flex',
-        gap: '4px',
-        background: 'rgba(10,6,18,0.7)',
-        border: '1px solid rgba(255,255,255,0.06)',
+        gap: '3px',
+        background: 'var(--ink-900)',
+        border: '1px solid var(--ink-700)',
         borderRadius: 'var(--r-lg)',
-        padding: '6px',
+        padding: '5px',
       }}
     >
       {TABS.map(({ id, label, Icon }) => {
@@ -45,15 +45,13 @@ const TabBar = ({ activeTab, setActiveTab, onResetDrafts }) => {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '4px',
-              padding: '8px 4px',
+              padding: '9px 4px',
               cursor: 'pointer',
-              position: 'relative',
               background: isActive ? 'var(--gradient-cta)' : 'transparent',
-              color: isActive ? 'var(--purple-900)' : 'var(--gray-500)',
+              color: isActive ? 'var(--black)' : 'var(--gray-400)',
               borderRadius: 'var(--r-md)',
-              clipPath: isActive ? 'polygon(6% 0, 100% 0, 94% 100%, 0 100%)' : 'none',
-              boxShadow: isActive ? 'var(--glow-gold)' : 'none',
-              transition: 'background 0.2s, color 0.2s, box-shadow 0.2s',
+              boxShadow: isActive ? 'var(--glow-yellow)' : 'none',
+              transition: 'background 0.15s, color 0.15s, box-shadow 0.15s',
               userSelect: 'none',
               WebkitTapHighlightColor: 'transparent',
               border: 'none',

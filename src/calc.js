@@ -5,7 +5,17 @@ export function calcBMR(gender, weightKg, heightCm, age) {
   return Math.round(gender === 'female' ? base - 161 : base + 5);
 }
 
-// ── Goal offsets from BMR ─────────────────────────────────────────────────────
+// ── Physical Activity Level (PAL) multipliers → TDEE ─────────────────────────
+// Standard Harris-Benedict / WHO activity factors
+export const ACTIVITY_LEVELS = {
+  sedentary:    { label: 'Sedentary',       sub: 'Desk job, little/no exercise',    pal: 1.2  },
+  light:        { label: 'Lightly Active',  sub: '1–3 days/week exercise',          pal: 1.375 },
+  moderate:     { label: 'Moderately Active',sub: '3–5 days/week exercise',         pal: 1.55 },
+  very_active:  { label: 'Very Active',     sub: '6–7 days/week hard training',     pal: 1.725 },
+  extra_active: { label: 'Extra Active',    sub: 'Twice/day or physical job + gym', pal: 1.9  },
+};
+
+// ── Goal offsets from TDEE ────────────────────────────────────────────────────
 export const GOAL_OFFSETS = {
   fat_loss_aggressive: -500,
   fat_loss:            -300,
@@ -26,15 +36,21 @@ export const GOAL_META = {
   bulk_aggressive:     { label: 'Aggressive Bulk',sub: '+500 kcal', color: 'var(--gold-500)' },
 };
 
-export function calcGoalCalories(bmr, goalType) {
+// bmr × PAL = TDEE, then apply goal offset
+export function calcGoalCalories(bmr, goalType, activityLevel = 'moderate') {
   if (!bmr) return 0;
-  return bmr + (GOAL_OFFSETS[goalType] ?? 0);
+  const pal  = ACTIVITY_LEVELS[activityLevel]?.pal ?? 1.55;
+  const tdee = Math.round(bmr * pal);
+  return tdee + (GOAL_OFFSETS[goalType] ?? 0);
 }
 
 // ── Macro targets from goal calories + body weight ────────────────────────────
+// Protein: 2.2g/kg (evidence-based standard for recomposition/performance)
+// Fat:     1.0g/kg (minimum for hormone health; adequate for all goals)
+// Carbs:   remainder after protein (4 kcal/g) and fat (9 kcal/g) are accounted for
 export function calcMacros(goalCalories, weightKg) {
-  const protein = Math.round(2 * weightKg);
-  const fat     = Math.round(0.8 * weightKg);
+  const protein = Math.round(2.2 * weightKg);
+  const fat     = Math.round(1.0 * weightKg);
   const carbs   = Math.max(0, Math.round((goalCalories - protein * 4 - fat * 9) / 4));
   return { protein, fat, carbs };
 }

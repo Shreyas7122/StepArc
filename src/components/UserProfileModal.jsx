@@ -3,7 +3,7 @@ import { useState } from 'react';
 import SearchSelect from './SearchSelect';
 import { foodDatabase, workoutDatabase, fixedWorkouts } from '../data';
 import { getApiBase } from '../utils';
-import { calcBMR, calcGoalCalories, calcMacros, GOAL_META } from '../calc';
+import { calcBMR, calcGoalCalories, calcMacros, GOAL_META, ACTIVITY_LEVELS } from '../calc';
 
 // Fixed 5 meal categories — order and names are canonical
 const FIXED_CATEGORIES = [
@@ -66,8 +66,8 @@ const sectionLabel = {
 const inputStyle = {
   width: '100%',
   padding: '11px 14px',
-  background: 'rgba(10,6,18,0.7)',
-  border: '1px solid rgba(255,255,255,0.1)',
+  background: 'var(--ink-800)',
+  border: '1px solid var(--ink-700)',
   borderRadius: 'var(--r-md)',
   color: 'var(--white)',
   fontFamily: 'var(--font-body)',
@@ -97,7 +97,7 @@ const smallBtn = (variant = 'ghost') => ({
     : variant === 'secondary'
       ? 'rgba(255,255,255,0.07)'
       : 'transparent',
-  color: variant === 'gold' ? 'var(--purple-900)' : 'var(--gray-300)',
+  color: variant === 'gold' ? 'var(--black)' : 'var(--gray-300)',
   boxShadow: variant === 'gold' ? 'var(--glow-gold)' : 'none',
 });
 
@@ -290,7 +290,7 @@ const DietPlanTab = ({ meals, setMeals, formState }) => {
 
           return (
             <div key={i} onClick={() => toggleSelect(i)} style={{
-              background: on ? 'rgba(255,184,0,0.05)' : 'rgba(10,6,18,0.4)',
+              background: on ? 'rgba(244,194,13,0.05)' : 'var(--ink-800)',
               border: on ? '1px solid rgba(255,184,0,0.35)' : '1px solid rgba(255,255,255,0.06)',
               borderRadius: 'var(--r-md)', padding: 12, marginBottom: 8,
               cursor: 'pointer', transition: 'all 0.15s', userSelect: 'none', opacity: on ? 1 : 0.5,
@@ -302,7 +302,7 @@ const DietPlanTab = ({ meals, setMeals, formState }) => {
                   background: on ? 'var(--gradient-cta)' : 'transparent',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  {on && <span style={{ fontSize: 10, color: 'var(--purple-900)', fontWeight: 800, lineHeight: 1 }}>✓</span>}
+                  {on && <span style={{ fontSize: 10, color: 'var(--black)', fontWeight: 800, lineHeight: 1 }}>✓</span>}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
@@ -336,7 +336,7 @@ const DietPlanTab = ({ meals, setMeals, formState }) => {
           );
         })}
 
-        <div style={{ display: 'flex', gap: 8, marginTop: 8, position: 'sticky', bottom: 0, background: 'var(--purple-900)', paddingTop: 8 }}>
+        <div style={{ display: 'flex', gap: 8, marginTop: 8, position: 'sticky', bottom: 0, background: 'var(--ink-900)', paddingTop: 8 }}>
           <button type="button" onClick={handleApply} disabled={selected.size === 0}
             style={{ ...smallBtn('gold'), flex: 2, padding: '11px', justifyContent: 'center', opacity: selected.size === 0 ? 0.4 : 1 }}>
             Apply {selected.size} Meal{selected.size !== 1 ? 's' : ''}
@@ -363,7 +363,7 @@ const DietPlanTab = ({ meals, setMeals, formState }) => {
 
       {/* Daily summary strip */}
       <div style={{
-        background: 'rgba(10,6,18,0.55)', border: '1px solid rgba(255,255,255,0.07)',
+        background: 'var(--ink-800)', border: '1px solid var(--ink-700)',
         borderRadius: 'var(--r-md)', padding: '11px 14px', marginBottom: 12,
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
@@ -394,7 +394,7 @@ const DietPlanTab = ({ meals, setMeals, formState }) => {
         }, { cal: 0, p: 0, c: 0, f: 0 });
 
         return (
-          <div key={meal.id} style={{ background: 'rgba(10,6,18,0.5)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 'var(--r-md)', marginBottom: 8, overflow: 'hidden' }}>
+          <div key={meal.id} style={{ background: 'var(--ink-800)', border: '1px solid var(--ink-700)', borderRadius: 'var(--r-md)', marginBottom: 8, overflow: 'hidden' }}>
             {/* Card header — always visible, click to expand */}
             <button type="button" onClick={() => toggleExpand(meal.id)} style={{
               width: '100%', display: 'flex', alignItems: 'center', gap: 8,
@@ -455,7 +455,7 @@ const DietPlanTab = ({ meals, setMeals, formState }) => {
                           type="number" value={it.amount} min="1"
                           onChange={e => updateFoodItemAmount(meal.id, it.tempId, e.target.value)}
                           aria-label={`${food?.name} grams`}
-                          style={{ width: 46, padding: '2px 5px', background: 'rgba(10,6,18,0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, color: 'var(--white)', fontFamily: 'var(--font-mono)', fontSize: '0.7rem', outline: 'none', textAlign: 'right' }}
+                          style={{ width: 46, padding: '2px 5px', background: 'var(--ink-900)', border: '1px solid var(--ink-700)', borderRadius: 4, color: 'var(--white)', fontFamily: 'var(--font-mono)', fontSize: '0.7rem', outline: 'none', textAlign: 'right' }}
                         />
                         <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.63rem', color: 'var(--gray-500)' }}>g</span>
                         <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.63rem', color: 'var(--gold-500)', minWidth: 42, textAlign: 'right', whiteSpace: 'nowrap' }}>{cal} kcal</span>
@@ -492,7 +492,7 @@ const DietPlanTab = ({ meals, setMeals, formState }) => {
                         <input
                           type="number" placeholder="grams" min="1" value={af.amount}
                           onChange={e => setAFField(meal.id, 'amount', e.target.value)}
-                          style={{ flex: 1, minWidth: 0, width: 0, padding: '9px 12px', background: 'rgba(10,6,18,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 'var(--r-md)', color: 'var(--white)', fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box' }}
+                          style={{ flex: 1, minWidth: 0, width: 0, padding: '9px 12px', background: 'var(--ink-800)', border: '1px solid var(--ink-700)', borderRadius: 'var(--r-md)', color: 'var(--white)', fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box' }}
                           onFocus={e => (e.target.style.borderColor = 'var(--gold-500)')}
                           onBlur={e  => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
                         />
@@ -631,7 +631,7 @@ const TrainingTab = ({ days, setDays, formState }) => {
 
           return (
             <div key={i} onClick={() => toggleSelect(i)} style={{
-              background: on ? 'rgba(255,184,0,0.05)' : 'rgba(10,6,18,0.4)',
+              background: on ? 'rgba(244,194,13,0.05)' : 'var(--ink-800)',
               border: on ? '1px solid rgba(255,184,0,0.35)' : '1px solid rgba(255,255,255,0.06)',
               borderRadius: 'var(--r-md)', padding: 12, marginBottom: 8,
               cursor: 'pointer', transition: 'all 0.15s', userSelect: 'none', opacity: on ? 1 : 0.5,
@@ -643,7 +643,7 @@ const TrainingTab = ({ days, setDays, formState }) => {
                   background: on ? 'var(--gradient-cta)' : 'transparent',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  {on && <span style={{ fontSize: 10, color: 'var(--purple-900)', fontWeight: 800, lineHeight: 1 }}>✓</span>}
+                  {on && <span style={{ fontSize: 10, color: 'var(--black)', fontWeight: 800, lineHeight: 1 }}>✓</span>}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
@@ -673,7 +673,7 @@ const TrainingTab = ({ days, setDays, formState }) => {
           );
         })}
 
-        <div style={{ display: 'flex', gap: 8, marginTop: 8, position: 'sticky', bottom: 0, background: 'var(--purple-900)', paddingTop: 8 }}>
+        <div style={{ display: 'flex', gap: 8, marginTop: 8, position: 'sticky', bottom: 0, background: 'var(--ink-900)', paddingTop: 8 }}>
           <button type="button" onClick={handleApply} disabled={selected.size === 0}
             style={{ ...smallBtn('gold'), flex: 2, padding: '11px', justifyContent: 'center', opacity: selected.size === 0 ? 0.4 : 1 }}>
             Apply {selected.size} Day{selected.size !== 1 ? 's' : ''}
@@ -701,7 +701,7 @@ const TrainingTab = ({ days, setDays, formState }) => {
       {/* Weekly summary strip */}
       {days.length > 0 && (
         <div style={{
-          background: 'rgba(10,6,18,0.55)', border: '1px solid rgba(255,255,255,0.07)',
+          background: 'var(--ink-800)', border: '1px solid var(--ink-700)',
           borderRadius: 'var(--r-md)', padding: '10px 14px', marginBottom: 12,
           display: 'flex', gap: 16,
         }}>
@@ -744,7 +744,7 @@ const TrainingTab = ({ days, setDays, formState }) => {
         }, 0);
 
         return (
-          <div key={day.id} style={{ background: 'rgba(10,6,18,0.5)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 'var(--r-md)', marginBottom: 8, overflow: 'hidden' }}>
+          <div key={day.id} style={{ background: 'var(--ink-800)', border: '1px solid var(--ink-700)', borderRadius: 'var(--r-md)', marginBottom: 8, overflow: 'hidden' }}>
             {/* Card header */}
             <div style={{ display: 'flex', alignItems: 'center', padding: '10px 12px', gap: 8 }}>
               {/* Day number badge */}
@@ -806,7 +806,7 @@ const TrainingTab = ({ days, setDays, formState }) => {
                             type="number" value={it.sets} min="1" max="20"
                             onChange={e => updateExItemSets(day.id, it.tempId, e.target.value)}
                             aria-label={`${ex?.name} sets`}
-                            style={{ width: 36, padding: '2px 5px', background: 'rgba(10,6,18,0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, color: 'var(--white)', fontFamily: 'var(--font-mono)', fontSize: '0.7rem', outline: 'none', textAlign: 'right' }}
+                            style={{ width: 36, padding: '2px 5px', background: 'var(--ink-900)', border: '1px solid var(--ink-700)', borderRadius: 4, color: 'var(--white)', fontFamily: 'var(--font-mono)', fontSize: '0.7rem', outline: 'none', textAlign: 'right' }}
                           />
                           <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.63rem', color: 'var(--gray-500)' }}>sets</span>
                           {itCal > 0 && (
@@ -840,7 +840,7 @@ const TrainingTab = ({ days, setDays, formState }) => {
                         <input
                           type="number" placeholder="sets" min="1" max="10" value={ae.sets}
                           onChange={e => setAEField(day.id, 'sets', e.target.value)}
-                          style={{ flex: 1, minWidth: 0, width: 0, padding: '9px 12px', background: 'rgba(10,6,18,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 'var(--r-md)', color: 'var(--white)', fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box' }}
+                          style={{ flex: 1, minWidth: 0, width: 0, padding: '9px 12px', background: 'var(--ink-800)', border: '1px solid var(--ink-700)', borderRadius: 'var(--r-md)', color: 'var(--white)', fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box' }}
                           onFocus={e => (e.target.style.borderColor = 'var(--gold-500)')}
                           onBlur={e  => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
                         />
@@ -872,8 +872,9 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
   const [activeTab, setActiveTab] = useState('goals');
 
   // Goals tab state
-  const [gender,   setGender]   = useState(settings.gender   ?? 'male');
-  const [goalType, setGoalType] = useState(settings.goal_type ?? 'maintenance');
+  const [gender,        setGender]        = useState(settings.gender          ?? 'male');
+  const [goalType,      setGoalType]      = useState(settings.goal_type       ?? 'maintenance');
+  const [activityLevel, setActivityLevel] = useState(settings.activity_level  ?? 'moderate');
   const [age,      setAge]      = useState(String(settings.age));
   const [heightCm, setHeightCm] = useState(String(settings.height_cm));
   const [weightKg, setWeightKg] = useState(String(settings.weight_kg));
@@ -892,7 +893,8 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
   const liveH   = parseFloat(heightCm) || 0;
   const liveA   = parseInt(age)        || 0;
   const liveBmr = calcBMR(gender, liveW, liveH, liveA);
-  const liveGoal = calcGoalCalories(liveBmr, goalType);
+  const liveTdee = liveBmr ? Math.round(liveBmr * (ACTIVITY_LEVELS[activityLevel]?.pal ?? 1.55)) : 0;
+  const liveGoal = calcGoalCalories(liveBmr, goalType, activityLevel);
   const liveMac  = calcMacros(liveGoal, liveW);
 
   const formState = {
@@ -911,15 +913,16 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
     const sg = parseInt(stepGoal);
     if (!a || !h || !w) return;
     const bmr      = calcBMR(gender, w, h, a);
-    const goalCal  = calcGoalCalories(bmr, goalType);
+    const goalCal  = calcGoalCalories(bmr, goalType, activityLevel);
     const { protein, fat, carbs } = calcMacros(goalCal, w);
     onSave({
       gender,
-      goal_type:    goalType,
-      age:          a,
-      height_cm:    h,
-      weight_kg:    w,
-      step_goal:    sg || 10000,
+      goal_type:     goalType,
+      activity_level: activityLevel,
+      age:           a,
+      height_cm:     h,
+      weight_kg:     w,
+      step_goal:     sg || 10000,
       // cached computed values for backward compat
       calorie_goal: goalCal,
       protein_goal: protein,
@@ -938,7 +941,7 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
 
   const tabActive = {
     background: 'var(--gradient-cta)',
-    color: 'var(--purple-900)',
+    color: 'var(--black)',
     boxShadow: 'var(--glow-gold)',
     border: 'none',
   };
@@ -963,8 +966,8 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
         onClick={e => e.stopPropagation()}
         style={{
           width: '100%', maxWidth: '460px',
-          background: 'var(--purple-900)',
-          border: '1px solid rgba(91,31,158,0.5)',
+          background: 'var(--ink-900)',
+          border: '1px solid var(--ink-700)',
           borderRadius: 'var(--r-xl)',
           boxShadow: '0 24px 80px rgba(0,0,0,0.7)',
           maxHeight: '90vh',
@@ -980,7 +983,7 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
               MY PROFILE
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <User size={16} color="var(--purple-300)" />
+              <User size={16} color="var(--yellow-500)" />
               <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--white)' }}>
                 Goals &amp; Plans
               </span>
@@ -1077,6 +1080,35 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
               <Field label="Height" value={heightCm} onChange={setHeightCm} min={100} max={250} step={0.1} unit="cm" />
               <Field label="Weight" value={weightKg} onChange={setWeightKg} min={30}  max={250} step={0.1} unit="kg" />
 
+              {/* Activity level */}
+              <div style={{ ...sectionLabel, marginTop: '22px' }}>Activity Level</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '16px' }}>
+                {Object.entries(ACTIVITY_LEVELS).map(([key, meta]) => {
+                  const active = activityLevel === key;
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setActivityLevel(key)}
+                      style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        padding: '10px 14px', borderRadius: 'var(--r-md)', cursor: 'pointer',
+                        border: active ? '1px solid var(--yellow-500)' : '1px solid rgba(255,255,255,0.07)',
+                        background: active ? 'rgba(244,194,13,0.1)' : 'rgba(255,255,255,0.03)',
+                        transition: 'all 0.15s',
+                      }}
+                    >
+                      <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: active ? 'var(--yellow-500)' : 'var(--gray-400)' }}>
+                        {meta.label}
+                      </span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem', color: active ? 'var(--yellow-500)' : 'var(--gray-500)', textAlign: 'right', maxWidth: '55%' }}>
+                        {meta.sub}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
               {/* Goal type */}
               <div style={{ ...sectionLabel, marginTop: '22px' }}>Goal</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '16px' }}>
@@ -1108,18 +1140,18 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
 
               {/* Live calculated breakdown */}
               {liveBmr > 0 && (
-                <div style={{ background: 'rgba(10,6,18,0.6)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 'var(--r-md)', padding: '14px 16px', marginBottom: '16px' }}>
+                <div style={{ background: 'var(--ink-800)', border: '1px solid var(--ink-700)', borderRadius: 'var(--r-md)', padding: '14px 16px', marginBottom: '16px' }}>
                   <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'var(--gold-500)', marginBottom: '10px' }}>
                     Calculated Targets
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                     {[
                       { label: 'BMR (at rest)', value: `${liveBmr.toLocaleString()} kcal`, sub: 'Mifflin-St Jeor' },
-                      { label: 'Base Goal',     value: `${liveGoal.toLocaleString()} kcal`, sub: `BMR ${GOAL_META[goalType]?.sub}` },
+                      { label: 'TDEE',          value: `${liveTdee.toLocaleString()} kcal`, sub: `BMR × ${ACTIVITY_LEVELS[activityLevel]?.pal}` },
+                      { label: 'Target',        value: `${liveGoal.toLocaleString()} kcal`, sub: `TDEE ${GOAL_META[goalType]?.sub}` },
                       { label: 'Protein',        value: `${liveMac.protein}g`, sub: `${liveMac.protein * 4} kcal` },
-                      { label: 'Carbs',          value: `${liveMac.carbs}g`,   sub: `${liveMac.carbs * 4} kcal` },
-                      { label: 'Fats',           value: `${liveMac.fat}g`,     sub: `${Math.round(liveMac.fat * 9)} kcal` },
-                      { label: 'Activity Burns', value: '+auto', sub: 'added daily' },
+                      { label: 'Carbs',  value: `${liveMac.carbs}g`, sub: `${liveMac.carbs * 4} kcal` },
+                      { label: 'Fats',   value: `${liveMac.fat}g`,   sub: `${Math.round(liveMac.fat * 9)} kcal` },
                     ].map(({ label, value, sub }) => (
                       <div key={label}>
                         <div style={{ fontFamily: 'var(--font-heading)', fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--gray-500)', marginBottom: '2px' }}>{label}</div>
@@ -1155,7 +1187,7 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
                 flex: 2,
                 padding: '13px 16px',
                 background: 'var(--gradient-cta)',
-                color: 'var(--purple-900)',
+                color: 'var(--black)',
                 border: 'none',
                 borderRadius: 'var(--r-pill)',
                 fontFamily: 'var(--font-heading)',

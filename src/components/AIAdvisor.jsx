@@ -108,7 +108,7 @@ const AIAdvisor = ({ foodLogs, workoutLogs, cardioLogs, steps, totals, userProfi
       <div
         className="glass-card"
         style={{
-          border: '1px solid rgba(168,85,247,0.15)',
+          border: '1px solid var(--ink-700)',
           padding: '14px 16px',
           marginBottom: '12px',
         }}
@@ -125,7 +125,7 @@ const AIAdvisor = ({ foodLogs, workoutLogs, cardioLogs, steps, totals, userProfi
           style={{
             width: '100%',
             padding: '10px 12px',
-            background: 'rgba(10,6,18,0.7)',
+            background: 'var(--ink-900)',
             border: '1px solid rgba(255,255,255,0.08)',
             borderRadius: 'var(--r-md)',
             fontFamily: 'var(--font-body)',
@@ -145,13 +145,13 @@ const AIAdvisor = ({ foodLogs, workoutLogs, cardioLogs, steps, totals, userProfi
       <div
         className="glass-card"
         style={{
-          border: '1px solid rgba(168,85,247,0.2)',
+          border: '1px solid rgba(244,194,13,0.15)',
           padding: '14px 16px',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Brain size={18} color="var(--purple-300)" />
+            <Brain size={18} color="var(--yellow-500)" />
             <div>
               <div
                 style={{
@@ -190,7 +190,7 @@ const AIAdvisor = ({ foodLogs, workoutLogs, cardioLogs, steps, totals, userProfi
               textTransform: 'uppercase',
               letterSpacing: '0.06em',
               background: loading ? 'rgba(255,255,255,0.08)' : 'var(--gradient-cta)',
-              color: loading ? 'var(--white)' : 'var(--purple-900)',
+              color: loading ? 'var(--white)' : 'var(--black)',
               borderRadius: 'var(--r-pill)',
               flexShrink: 0,
               display: 'flex',
@@ -207,12 +207,12 @@ const AIAdvisor = ({ foodLogs, workoutLogs, cardioLogs, steps, totals, userProfi
       {open && (result || error || loading) && (
         <div
           className="glass-card"
-          style={{ border: '1px solid rgba(168,85,247,0.22)', marginTop: '10px' }}
+          style={{ border: '1px solid rgba(244,194,13,0.12)', marginTop: '10px' }}
         >
           {/* Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Brain size={15} color="var(--purple-300)" />
+              <Brain size={15} color="var(--yellow-500)" />
               <span
                 style={{
                   fontFamily: 'var(--font-heading)',
@@ -281,9 +281,9 @@ const AIAdvisor = ({ foodLogs, workoutLogs, cardioLogs, steps, totals, userProfi
               <div
                 style={{
                   padding: '12px 14px',
-                  background: 'rgba(10,6,18,0.4)',
+                  background: 'var(--ink-800)',
                   borderRadius: 'var(--r-md)',
-                  border: '1px solid rgba(255,255,255,0.04)',
+                  border: '1px solid var(--ink-700)',
                   marginBottom: '14px',
                   fontFamily: 'var(--font-body)',
                   fontSize: '0.85rem',
@@ -307,9 +307,9 @@ const AIAdvisor = ({ foodLogs, workoutLogs, cardioLogs, steps, totals, userProfi
                     style={{
                       textAlign: 'center',
                       padding: '8px 4px',
-                      background: 'rgba(10,6,18,0.4)',
+                      background: 'var(--ink-800)',
                       borderRadius: 'var(--r-md)',
-                      border: '1px solid rgba(255,255,255,0.04)',
+                      border: '1px solid var(--ink-700)',
                     }}
                   >
                     <div style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', color: m.color, lineHeight: 1 }}>{m.value}</div>

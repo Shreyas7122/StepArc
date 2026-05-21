@@ -78,10 +78,10 @@ const DraftWorkoutReview = ({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
-                background: 'rgba(10,6,18,0.4)',
+                background: 'var(--ink-800)',
                 padding: '10px 12px',
                 borderRadius: 'var(--r-md)',
-                border: '1px solid rgba(255,255,255,0.04)',
+                border: '1px solid var(--ink-700)',
               }}
             >
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -140,7 +140,7 @@ const DraftWorkoutReview = ({
       <form
         onSubmit={onAddItem}
         style={{
-          borderTop: '1px solid rgba(255,255,255,0.06)',
+          borderTop: '1px solid var(--ink-700)',
           paddingTop: '16px',
           marginBottom: '20px',
         }}
@@ -196,7 +196,7 @@ const DraftWorkoutReview = ({
         onClick={onConfirm}
         style={{
           background: 'var(--gradient-cta)',
-          color: 'var(--purple-900)',
+          color: 'var(--black)',
           borderRadius: 'var(--r-pill)',
         }}
       >

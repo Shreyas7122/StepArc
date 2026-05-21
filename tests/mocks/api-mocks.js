@@ -50,6 +50,8 @@ export async function setupApiMocks(page) {
         contentType: 'application/json',
         body: JSON.stringify({
           user_id: 'mocked-user-id-12345',
+          gender: 'male',
+          goal_type: 'maintenance',
           calorie_goal: 2870,
           protein_goal: 160,
           carbs_goal: 400,

@@ -39,9 +39,9 @@ const AuthScreen = ({ onAuth }) => {
     <div
       style={{
         minHeight: '100vh',
-        background: 'var(--purple-900)',
+        background: 'var(--black)',
         backgroundImage:
-          'radial-gradient(ellipse at 20% 10%, rgba(91,31,158,0.4) 0px, transparent 55%), radial-gradient(ellipse at 80% 90%, rgba(168,85,247,0.2) 0px, transparent 50%)',
+          'radial-gradient(ellipse at 10% 10%, rgba(244,194,13,0.06) 0px, transparent 50%), radial-gradient(ellipse at 90% 90%, rgba(244,194,13,0.04) 0px, transparent 50%)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -64,13 +64,7 @@ const AuthScreen = ({ onAuth }) => {
           textAlign: 'center',
         }}
       >
-        <div
-          style={{
-            position: 'absolute', inset: 0,
-            background: 'radial-gradient(ellipse at 60% 40%, rgba(168,85,247,0.35) 0%, transparent 65%)',
-            pointerEvents: 'none',
-          }}
-        />
+        <div aria-hidden="true" style={{ position: 'absolute', right: -24, bottom: -16, fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 900, fontSize: '10rem', color: 'rgba(244,194,13,0.05)', pointerEvents: 'none', lineHeight: 1, userSelect: 'none' }}>ARC</div>
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div
             style={{
@@ -84,11 +78,13 @@ const AuthScreen = ({ onAuth }) => {
           <h1
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: '3rem', lineHeight: 1, fontWeight: 400,
+              fontStyle: 'italic', fontWeight: 900,
+              fontSize: 'clamp(2.5rem, 14vw, 4rem)', lineHeight: 0.92,
+              letterSpacing: '-0.01em', textTransform: 'uppercase',
               color: 'var(--white)', marginBottom: '6px',
             }}
           >
-            STEP<span style={{ color: 'var(--gold-500)' }}>ARC</span>
+            STEP<span style={{ color: 'var(--yellow-500)' }}>ARC</span>
           </h1>
           <div
             style={{
@@ -106,8 +102,8 @@ const AuthScreen = ({ onAuth }) => {
       <div
         style={{
           width: '100%', maxWidth: '420px',
-          background: 'var(--gradient-card)',
-          border: '1px solid rgba(255,255,255,0.07)',
+          background: 'var(--ink-900)',
+          border: '1px solid var(--ink-700)',
           borderRadius: 'var(--r-xl)',
           padding: '28px 24px',
           boxShadow: 'var(--shadow-card)',
@@ -117,7 +113,7 @@ const AuthScreen = ({ onAuth }) => {
         <div
           style={{
             display: 'flex', gap: '4px',
-            background: 'rgba(10,6,18,0.6)',
+            background: 'rgba(20,20,20,0.8)',
             padding: '4px', borderRadius: 'var(--r-pill)',
             marginBottom: '24px',
           }}
@@ -130,7 +126,7 @@ const AuthScreen = ({ onAuth }) => {
               style={{
                 flex: 1, padding: '10px',
                 background: mode === m ? 'var(--gradient-cta)' : 'transparent',
-                color: mode === m ? 'var(--purple-900)' : 'var(--gray-500)',
+                color: mode === m ? 'var(--black)' : 'var(--gray-500)',
                 borderRadius: 'var(--r-pill)',
                 fontFamily: 'var(--font-heading)', fontWeight: 700,
                 fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.08em',
@@ -229,7 +225,7 @@ const AuthScreen = ({ onAuth }) => {
             style={{
               marginTop: '4px',
               background: loading ? 'rgba(255,255,255,0.08)' : 'var(--gradient-cta)',
-              color: loading ? 'var(--white)' : 'var(--purple-900)',
+              color: loading ? 'var(--white)' : 'var(--black)',
               boxShadow: loading ? 'none' : 'var(--glow-gold)',
               display: 'flex', alignItems: 'center', gap: '8px',
             }}

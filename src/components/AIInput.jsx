@@ -7,9 +7,9 @@ const MacroChip = ({ label, value, unit, color }) => (
     style={{
       textAlign: 'center',
       padding: '10px 6px',
-      background: 'rgba(10,6,18,0.4)',
+      background: 'var(--ink-800)',
       borderRadius: 'var(--r-md)',
-      border: '1px solid rgba(255,255,255,0.04)',
+      border: '1px solid var(--ink-700)',
     }}
   >
     <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', color, lineHeight: 1 }}>{value}</div>
@@ -125,7 +125,7 @@ const AIInput = ({ caloriesLoggedToday, calorieGoal, onLogMeal }) => {
     letterSpacing: '0.06em',
     textTransform: 'uppercase',
     background: active ? 'var(--gold-500)' : 'transparent',
-    color: active ? 'var(--purple-900)' : 'var(--gray-500)',
+    color: active ? 'var(--black)' : 'var(--gray-500)',
     borderRadius: 'var(--r-sm)',
     display: 'flex',
     alignItems: 'center',
@@ -139,7 +139,7 @@ const AIInput = ({ caloriesLoggedToday, calorieGoal, onLogMeal }) => {
       {/* Input card */}
       <div
         className="glass-card ai-card"
-        style={{ border: '1px solid rgba(168,85,247,0.18)' }}
+        style={{ border: '1px solid rgba(244,194,13,0.15)' }}
       >
         {/* Header row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
@@ -161,7 +161,7 @@ const AIInput = ({ caloriesLoggedToday, calorieGoal, onLogMeal }) => {
               style={{
                 fontSize: '0.6rem',
                 background: 'var(--gold-500)',
-                color: 'var(--purple-900)',
+                color: 'var(--black)',
                 padding: '2px 8px',
                 borderRadius: 'var(--r-pill)',
                 fontFamily: 'var(--font-heading)',
@@ -177,7 +177,7 @@ const AIInput = ({ caloriesLoggedToday, calorieGoal, onLogMeal }) => {
           <div
             style={{
               display: 'flex',
-              background: 'rgba(10,6,18,0.5)',
+              background: 'var(--ink-900)',
               borderRadius: 'var(--r-sm)',
               padding: '2px',
               border: '1px solid rgba(255,255,255,0.06)',
@@ -220,11 +220,11 @@ const AIInput = ({ caloriesLoggedToday, calorieGoal, onLogMeal }) => {
                   padding: '10px 16px',
                   flexShrink: 0,
                   background: loading ? 'rgba(255,255,255,0.08)' : 'var(--gradient-cta)',
-                  color: 'var(--purple-900)',
+                  color: 'var(--black)',
                   borderRadius: 'var(--r-md)',
                 }}
               >
-                {loading ? <span className="spinner" style={{ borderTopColor: 'var(--purple-900)' }} /> : <Send size={17} />}
+                {loading ? <span className="spinner" style={{ borderTopColor: 'var(--black)' }} /> : <Send size={17} />}
               </button>
             </div>
           ) : (
@@ -300,7 +300,7 @@ const AIInput = ({ caloriesLoggedToday, calorieGoal, onLogMeal }) => {
                         flex: 2,
                         padding: '10px',
                         background: loading ? 'rgba(255,255,255,0.08)' : 'var(--gradient-cta)',
-                        color: 'var(--purple-900)',
+                        color: 'var(--black)',
                         borderRadius: 'var(--r-pill)',
                         display: 'flex',
                         alignItems: 'center',
@@ -308,7 +308,7 @@ const AIInput = ({ caloriesLoggedToday, calorieGoal, onLogMeal }) => {
                         gap: '6px',
                       }}
                     >
-                      {loading ? <span className="spinner" style={{ borderTopColor: 'var(--purple-900)' }} /> : <><Sparkles size={15} /> ANALYSE PHOTO</>}
+                      {loading ? <span className="spinner" style={{ borderTopColor: 'var(--black)' }} /> : <><Sparkles size={15} /> ANALYSE PHOTO</>}
                     </button>
                   </div>
                 </div>
@@ -457,9 +457,9 @@ const AIInput = ({ caloriesLoggedToday, calorieGoal, onLogMeal }) => {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     padding: '8px 10px',
-                    background: 'rgba(10,6,18,0.4)',
+                    background: 'var(--ink-800)',
                     borderRadius: 'var(--r-md)',
-                    border: '1px solid rgba(255,255,255,0.04)',
+                    border: '1px solid var(--ink-700)',
                   }}
                 >
                   <div>
@@ -480,7 +480,7 @@ const AIInput = ({ caloriesLoggedToday, calorieGoal, onLogMeal }) => {
           <div style={{ display: 'flex', gap: '8px' }}>
             <button
               onClick={handleLog}
-              style={{ flex: 2, background: 'var(--gradient-cta)', color: 'var(--purple-900)', borderRadius: 'var(--r-pill)' }}
+              style={{ flex: 2, background: 'var(--gradient-cta)', color: 'var(--black)', borderRadius: 'var(--r-pill)' }}
             >
               <Zap size={15} /> LOG THIS MEAL
             </button>
