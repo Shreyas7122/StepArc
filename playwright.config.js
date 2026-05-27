@@ -2,6 +2,7 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
+  testIgnore: ['**/unit/**', '**/selenium/**'],
   // Run tests sequentially to avoid state collisions
   fullyParallel: false,
   forbidOnly: !!process.env.CI,

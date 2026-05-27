@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Zap, ChevronRight, Plus, ClipboardList } from 'lucide-react';
-import { fixedMeals, foodDatabase } from '../data';
+import { fixedMeals, foodDatabase, saveCustomFood } from '../lib/data';
 import SearchSelect from './SearchSelect';
 
 const toQuickMeal = (meal) => ({
@@ -8,7 +8,7 @@ const toQuickMeal = (meal) => ({
   items: (meal.items || []).map(it => ({ foodId: it.foodId, amount: it.amount })),
 });
 
-const foodItems = foodDatabase.map(f => ({
+const buildFoodItems = () => foodDatabase.map(f => ({
   id: f.id,
   label: f.name,
   sub: f.servingUnit
@@ -114,7 +114,7 @@ const FoodQuantityInput = ({ food, gramsValue, onGramsChange }) => {
                 background: mode === m ? 'var(--yellow-500)' : 'transparent',
                 color: mode === m ? 'var(--black)' : 'var(--gray-400)',
                 borderRadius: 'var(--r-sm)',
-                transition: 'all 0.15s',
+                transition: 'background-color 150ms var(--ease-out-expo), color 150ms var(--ease-out-expo)',
               }}
             >
               {m === 'pieces' ? food.servingUnit + 's' : 'grams'}
@@ -169,6 +169,14 @@ const FoodTab = ({
   customMeals,
 }) => {
   const [customForm, setCustomForm] = useState(EMPTY_CUSTOM);
+  const [saveToDb, setSaveToDb] = useState(true);
+  const [foodItems, setFoodItems] = useState(buildFoodItems);
+
+  useEffect(() => {
+    const refresh = () => setFoodItems(buildFoodItems());
+    window.addEventListener('food-database-updated', refresh);
+    return () => window.removeEventListener('food-database-updated', refresh);
+  }, []);
 
   const quickMeals = customMeals?.length
     ? customMeals.filter(m => m.items?.length > 0).map(toQuickMeal)
@@ -181,16 +189,17 @@ const FoodTab = ({
     const name = customForm.name.trim();
     const cal  = Number(customForm.calories);
     if (!name || !cal) return;
-    onCustomFood({
-      name,
-      aiMacros: {
-        calories: cal,
-        protein:  Number(customForm.protein) || 0,
-        carbs:    Number(customForm.carbs)   || 0,
-        fats:     Number(customForm.fats)    || 0,
-        fibre:    Number(customForm.fibre)   || 0,
-      },
-    });
+    const macros = {
+      calories: cal,
+      protein:  Number(customForm.protein) || 0,
+      carbs:    Number(customForm.carbs)   || 0,
+      fats:     Number(customForm.fats)    || 0,
+      fibre:    Number(customForm.fibre)   || 0,
+    };
+    if (saveToDb) {
+      saveCustomFood({ id: Date.now(), name, ...macros });
+    }
+    onCustomFood({ name, aiMacros: macros });
     setCustomForm(EMPTY_CUSTOM);
   };
 
@@ -314,6 +323,24 @@ const FoodTab = ({
           <MacroCell label="Fats"  unit="g" color="var(--fats-color)"  value={customForm.fats}  onChange={setField('fats')}  placeholder="e.g. 10" />
           <MacroCell label="Fibre" unit="g" color="var(--fibre-color)" value={customForm.fibre} onChange={setField('fibre')} placeholder="e.g. 0"  />
         </div>
+
+        <label style={{
+          display: 'flex', alignItems: 'center', gap: '8px',
+          marginBottom: '12px', cursor: 'pointer',
+        }}>
+          <input
+            type="checkbox"
+            checked={saveToDb}
+            onChange={e => setSaveToDb(e.target.checked)}
+            style={{ accentColor: 'var(--yellow-500)', width: 14, height: 14 }}
+          />
+          <span style={{
+            fontFamily: 'var(--font-body)', fontSize: '0.72rem',
+            color: 'var(--gray-400)',
+          }}>
+            Save to my food database for future searches
+          </span>
+        </label>
 
         <button type="submit" disabled={!customForm.name.trim() || !customForm.calories}>
           <ClipboardList size={16} /> LOG CUSTOM FOOD

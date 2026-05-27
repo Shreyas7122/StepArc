@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lattice Engineering — Portal Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* ── Brand teal (built on #0097A7) ──────── */
+    --c-teal-950: #00272D;
+    --c-teal-900: #003D44;
+    --c-teal-800: #005662;
+    --c-teal-700: #006D7A;
+    --c-teal-600: #007E8C;
+    --c-teal-500: #0097A7;   /* PRIMARY */
+    --c-teal-400: #2BAEBD;
+    --c-teal-300: #5BC4D1;
+    --c-teal-200: #9DDDE6;
+    --c-teal-100: #D4F0F4;
+    --c-teal-50:  #EBF8FA;
+
+    /* ── Slate neutrals (cool, dev-tool) ────── */
+    --c-slate-950: #070A0D;
+    --c-slate-900: #0D1117;   /* dark app surface */
+    --c-slate-850: #131A22;
+    --c-slate-800: #1B232C;
+    --c-slate-700: #2A3441;
+    --c-slate-600: #44505B;
+    --c-slate-500: #5C6975;
+    --c-slate-400: #8590A0;
+    --c-slate-300: #A3ADB7;
+    --c-slate-200: #CFD5DC;
+    --c-slate-100: #E8ECF0;
+    --c-slate-50:  #F5F7F9;
+    --c-white: #FFFFFF;
+
+    /* ── Semantic ─────────────────────────────── */
+    --c-success: #10B981;
+    --c-warning: #F59E0B;
+    --c-danger:  #EF4444;
+    --c-info:    var(--c-teal-500);
+
+    /* ── Stack pill colors (tech tags) ──────── */
+    --c-go: #00ADD8;
+    --c-ts: #3178C6;
+    --c-py: #FFD43B;
+    --c-rs: #DEA584;
+    --c-k8s: #326CE5;
+    --c-aws: #FF9900;
+    --c-pg: #336791;
+    --c-rd: #DC382D;
+
+    /* ── Type ─────────────────────────────────── */
+    --font-display: 'Space Grotesk', 'Inter', -apple-system, sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+
+    /* ── 8pt grid ─────────────────────────────── */
+    --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px;
+    --s-6: 24px; --s-8: 32px; --s-12: 48px; --s-16: 64px; --s-24: 96px;
+
+    /* ── Radii (smaller — sharper feel) ─────── */
+    --r-xs: 4px; --r-sm: 6px; --r-md: 8px; --r-lg: 12px; --r-xl: 20px; --r-pill: 999px;
+
+    /* ── Shadows ──────────────────────────────── */
+    --shadow-xs: 0 1px 2px rgba(13, 17, 23, 0.04);
+    --shadow-sm: 0 1px 3px rgba(13, 17, 23, 0.08), 0 1px 2px rgba(13, 17, 23, 0.04);
+    --shadow-md: 0 4px 12px rgba(13, 17, 23, 0.08), 0 2px 4px rgba(13, 17, 23, 0.04);
+    --shadow-lg: 0 12px 32px rgba(13, 17, 23, 0.12), 0 4px 8px rgba(13, 17, 23, 0.06);
+    --shadow-focus: 0 0 0 3px rgba(0, 151, 167, 0.30);
+    --shadow-glow: 0 0 0 1px rgba(0, 151, 167, 0.20), 0 0 24px rgba(0, 151, 167, 0.25);
+
+    /* ── Motion ───────────────────────────────── */
+    --t-fast: 120ms; --t-base: 180ms; --t-slow: 280ms;
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-snap: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-body);
+    color: var(--c-slate-900);
+    background: var(--c-slate-50);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+
+  /* ── Layout ───────────────────────────────── */
+  .page { max-width: 1280px; margin: 0 auto; padding: var(--s-12) var(--s-6); }
+  .section { margin-bottom: var(--s-24); padding-top: var(--s-12); border-top: 1px solid var(--c-slate-100); }
+  .section:first-of-type { border-top: none; padding-top: 0; }
+  .section__eyebrow {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--c-teal-600); margin-bottom: var(--s-2);
+    display: inline-flex; align-items: center; gap: var(--s-2);
+  }
+  .section__eyebrow::before {
+    content: ''; width: 6px; height: 6px;
+    background: var(--c-teal-500); border-radius: 50%;
+  }
+  .section__title {
+    font-family: var(--font-display); font-size: 44px; font-weight: 600;
+    line-height: 1.05; letter-spacing: -0.025em;
+    color: var(--c-slate-900); margin-bottom: var(--s-3);
+  }
+  .section__title em { font-style: normal; color: var(--c-teal-600); }
+  .section__desc { max-width: 640px; font-size: 16px; color: var(--c-slate-500); margin-bottom: var(--s-8); }
+
+  /* ── Hero ─────────────────────────────────── */
+  .hero {
+    background: var(--c-slate-900);
+    color: var(--c-white);
+    padding: var(--s-16) var(--s-12);
+    border-radius: var(--r-xl);
+    margin-bottom: var(--s-16);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -30%; right: -10%;
+    width: 60%; height: 160%;
+    background: radial-gradient(ellipse at center, var(--c-teal-500) 0%, transparent 60%);
+    opacity: 0.4;
+    filter: blur(20px);
+  }
+  /* Subtle grid background */
+  .hero::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+  }
+  .hero__inner { position: relative; z-index: 2; max-width: 760px; }
+  .hero__logo {
+    display: inline-flex; align-items: center; gap: var(--s-3);
+    margin-bottom: var(--s-12);
+  }
+  .hero__logo-mark {
+    width: 32px; height: 32px;
+    background: var(--c-teal-500);
+    border-radius: var(--r-sm);
+    position: relative;
+    box-shadow: var(--shadow-glow);
+  }
+  .hero__logo-mark::after,
+  .hero__logo-mark::before {
+    content: ''; position: absolute;
+    background: var(--c-white);
+  }
+  .hero__logo-mark::after {
+    inset: 8px 8px auto auto;
+    width: 14px; height: 2px;
+  }
+  .hero__logo-mark::before {
+    inset: 8px auto auto 8px;
+    width: 2px; height: 14px;
+  }
+  .hero__logo-text {
+    font-family: var(--font-display); font-weight: 700; font-size: 18px;
+    letter-spacing: -0.01em; display: inline-flex; align-items: center; gap: var(--s-3);
+  }
+  .hero__logo-divider {
+    width: 1px; height: 18px; background: var(--c-slate-700);
+  }
+  .hero__logo-sub {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--c-slate-400);
+  }
+  .hero__title {
+    font-family: var(--font-display);
+    font-size: 60px; font-weight: 600; line-height: 1.0;
+    letter-spacing: -0.035em; margin-bottom: var(--s-4);
+  }
+  .hero__title em { font-style: normal; color: var(--c-teal-300); }
+  .hero__sub { font-size: 18px; color: var(--c-slate-300); max-width: 580px; line-height: 1.55; }
+  .hero__meta {
+    display: flex; gap: var(--s-8); margin-top: var(--s-12);
+    font-family: var(--font-mono); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--c-slate-400);
+  }
+  .hero__meta strong { color: var(--c-teal-300); font-weight: 500; }
+
+  /* ── Color swatches ───────────────────────── */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--s-3); }
+  .swatch {
+    background: var(--c-white);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    border: 1px solid var(--c-slate-100);
+  }
+  .swatch__chip { height: 80px; border-bottom: 1px solid rgba(0,0,0,0.04); }
+  .swatch__meta { padding: var(--s-3); }
+  .swatch__name { font-weight: 600; font-size: 13px; margin-bottom: 2px; }
+  .swatch__token { font-family: var(--font-mono); font-size: 10px; color: var(--c-slate-500); }
+  .swatch__hex { font-family: var(--font-mono); font-size: 11px; color: var(--c-slate-700); margin-top: 4px; }
+  .swatch--primary .swatch__name::after {
+    content: 'PRIMARY';
+    display: inline-block; margin-left: var(--s-2);
+    font-family: var(--font-mono); font-size: 9px; font-weight: 500;
+    background: var(--c-teal-500); color: var(--c-white);
+    padding: 2px 6px; border-radius: var(--r-xs); letter-spacing: 0.1em;
+  }
+
+  /* ── Type rows ────────────────────────────── */
+  .type-row {
+    display: flex; align-items: baseline; gap: var(--s-6);
+    padding: var(--s-4) 0;
+    border-bottom: 1px solid var(--c-slate-100);
+  }
+  .type-row:last-child { border-bottom: none; }
+  .type-row__label {
+    flex: 0 0 220px;
+    font-family: var(--font-mono); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--c-slate-500);
+  }
+  .type-row__label small { display: block; text-transform: none; letter-spacing: 0; margin-top: 2px; opacity: 0.7; }
+  .type-row__sample { flex: 1; color: var(--c-slate-900); }
+
+  .t-display-xl { font-family: var(--font-display); font-size: 60px; font-weight: 600; line-height: 1.0; letter-spacing: -0.035em; }
+  .t-display-lg { font-family: var(--font-display); font-size: 44px; font-weight: 600; line-height: 1.05; letter-spacing: -0.025em; }
+  .t-display-md { font-family: var(--font-display); font-size: 32px; font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; }
+  .t-heading-lg { font-family: var(--font-body); font-size: 22px; font-weight: 700; line-height: 1.25; letter-spacing: -0.015em; }
+  .t-heading-md { font-family: var(--font-body); font-size: 17px; font-weight: 600; line-height: 1.35; letter-spacing: -0.005em; }
+  .t-heading-sm { font-family: var(--font-body); font-size: 14px; font-weight: 600; line-height: 1.4; }
+  .t-body-lg { font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+  .t-body { font-family: var(--font-body); font-size: 14px; line-height: 1.6; }
+  .t-body-sm { font-family: var(--font-body); font-size: 13px; line-height: 1.5; color: var(--c-slate-500); }
+  .t-mono { font-family: var(--font-mono); font-size: 13px; }
+  .t-caption { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 500; }
+
+  /* ── Buttons ──────────────────────────────── */
+  .buttons { display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: center; }
+  .btn {
+    font-family: var(--font-body);
+    font-size: 13px; font-weight: 600;
+    padding: 9px 16px;
+    border-radius: var(--r-md);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background var(--t-base) var(--ease-out), color var(--t-base), border-color var(--t-base), box-shadow var(--t-base), transform var(--t-fast);
+    display: inline-flex; align-items: center; justify-content: center; gap: var(--s-2);
+    min-height: 36px; line-height: 1;
+    letter-spacing: -0.005em;
+  }
+  .btn--primary { background: var(--c-teal-500); color: var(--c-white); }
+  .btn--primary:hover { background: var(--c-teal-600); box-shadow: var(--shadow-sm); }
+  .btn--primary:active { background: var(--c-teal-700); transform: translateY(1px); }
+  .btn--primary:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+
+  .btn--secondary { background: var(--c-white); color: var(--c-slate-900); border-color: var(--c-slate-200); }
+  .btn--secondary:hover { background: var(--c-slate-50); border-color: var(--c-slate-300); }
+  .btn--secondary:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+
+  .btn--ghost { background: transparent; color: var(--c-teal-700); }
+  .btn--ghost:hover { background: var(--c-teal-50); }
+  .btn--ghost:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+
+  .btn--dark { background: var(--c-slate-900); color: var(--c-white); }
+  .btn--dark:hover { background: var(--c-slate-800); }
+
+  .btn--danger { background: var(--c-white); color: var(--c-danger); border-color: var(--c-slate-200); }
+  .btn--danger:hover { background: var(--c-danger); color: var(--c-white); border-color: var(--c-danger); }
+
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn--sm { font-size: 12px; padding: 6px 12px; min-height: 28px; }
+  .btn--lg { font-size: 14px; padding: 12px 20px; min-height: 44px; }
+
+  .kbd {
+    font-family: var(--font-mono); font-size: 11px;
+    background: var(--c-slate-100); color: var(--c-slate-600);
+    padding: 2px 6px; border-radius: var(--r-xs);
+    border: 1px solid var(--c-slate-200);
+    border-bottom-width: 2px;
+  }
+
+  /* ── Form controls ────────────────────────── */
+  .field { display: flex; flex-direction: column; gap: var(--s-2); margin-bottom: var(--s-4); max-width: 380px; }
+  .field__label { font-size: 13px; font-weight: 600; color: var(--c-slate-700); }
+  .field__input, .field__select {
+    font-family: var(--font-body); font-size: 14px;
+    padding: 9px 12px;
+    border-radius: var(--r-md);
+    background: var(--c-white);
+    border: 1px solid var(--c-slate-200);
+    color: var(--c-slate-900);
+    min-height: 36px;
+    transition: border var(--t-base), box-shadow var(--t-base);
+  }
+  .field__input:focus, .field__select:focus {
+    outline: none; border-color: var(--c-teal-500); box-shadow: var(--shadow-focus);
+  }
+  .field__hint { font-size: 12px; color: var(--c-slate-500); }
+
+  /* ── Badges & status ──────────────────────── */
+  .badges { display: flex; flex-wrap: wrap; gap: var(--s-2); align-items: center; }
+  .badge {
+    font-size: 11px; font-weight: 600;
+    padding: 3px 8px;
+    border-radius: var(--r-sm);
+    display: inline-flex; align-items: center; gap: 5px;
+    letter-spacing: 0.01em;
+    font-family: var(--font-body);
+  }
+  .badge__dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+  .badge--healthy { background: rgba(16, 185, 129, 0.12); color: #047857; }
+  .badge--degraded { background: rgba(245, 158, 11, 0.12); color: #B45309; }
+  .badge--down { background: rgba(239, 68, 68, 0.12); color: #B91C1C; }
+  .badge--draft { background: var(--c-slate-100); color: var(--c-slate-600); }
+  .badge--teal { background: var(--c-teal-100); color: var(--c-teal-800); }
+  .badge--dark { background: var(--c-slate-900); color: var(--c-white); }
+
+  /* Pulsing dot for "live" */
+  .badge--healthy .badge__dot {
+    background: var(--c-success);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+    70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+  }
+
+  /* ── Tech stack chips ─────────────────────── */
+  .stack { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+    padding: 3px 8px;
+    border-radius: var(--r-xs);
+    background: var(--c-slate-50);
+    color: var(--c-slate-700);
+    border: 1px solid var(--c-slate-100);
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .chip__dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ── Cards ────────────────────────────────── */
+  .card {
+    background: var(--c-white);
+    border: 1px solid var(--c-slate-100);
+    border-radius: var(--r-lg);
+    padding: var(--s-6);
+    box-shadow: var(--shadow-xs);
+    transition: box-shadow var(--t-base), transform var(--t-base), border-color var(--t-base);
+  }
+  .card--interactive { cursor: pointer; }
+  .card--interactive:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--c-slate-200);
+    transform: translateY(-1px);
+  }
+
+  /* ── Stat tile ────────────────────────────── */
+  .stat {
+    background: var(--c-white);
+    border: 1px solid var(--c-slate-100);
+    border-radius: var(--r-lg);
+    padding: var(--s-6);
+    position: relative;
+  }
+  .stat__label {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--c-slate-500); margin-bottom: var(--s-3);
+    display: flex; align-items: center; gap: var(--s-2);
+  }
+  .stat__label::before {
+    content: ''; width: 8px; height: 8px;
+    border-radius: 2px; background: var(--c-teal-500);
+  }
+  .stat__value {
+    font-family: var(--font-display); font-size: 36px; font-weight: 600;
+    line-height: 1.0; letter-spacing: -0.025em; color: var(--c-slate-900);
+    margin-bottom: var(--s-2);
+    font-feature-settings: 'tnum';
+  }
+  .stat__value-unit { font-size: 16px; color: var(--c-slate-500); font-weight: 500; margin-left: 2px; }
+  .stat__delta { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; font-family: var(--font-mono); }
+  .stat__delta--up { color: var(--c-success); }
+  .stat__delta--down { color: var(--c-danger); }
+  .stat__sub { font-size: 11px; color: var(--c-slate-500); margin-left: var(--s-2); font-family: var(--font-mono); }
+
+  /* ── Engagement card ──────────────────────── */
+  .engagement { display: flex; flex-direction: column; gap: var(--s-4); }
+  .engagement__head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s-3); }
+  .engagement__id {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+    color: var(--c-slate-400);
+    background: var(--c-slate-50);
+    padding: 2px 6px; border-radius: var(--r-xs);
+    border: 1px solid var(--c-slate-100);
+    display: inline-block;
+  }
+  .engagement__type {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em; color: var(--c-teal-700);
+    margin-bottom: var(--s-2); display: inline-flex; align-items: center; gap: var(--s-2);
+  }
+  .engagement__title {
+    font-family: var(--font-display); font-size: 20px; font-weight: 600;
+    line-height: 1.25; letter-spacing: -0.015em;
+    color: var(--c-slate-900);
+  }
+  .engagement__client {
+    font-size: 13px; color: var(--c-slate-500); margin-top: 2px;
+  }
+  .engagement__desc { font-size: 13px; color: var(--c-slate-600); line-height: 1.55; }
+  .engagement__meta {
+    display: flex; gap: var(--s-4); flex-wrap: wrap; align-items: center;
+    font-size: 12px; color: var(--c-slate-500);
+    padding-top: var(--s-4); border-top: 1px dashed var(--c-slate-100);
+  }
+  .engagement__meta strong { color: var(--c-slate-900); font-weight: 600; font-family: var(--font-mono); }
+  .engagement__team { display: flex; }
+  .avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    font-size: 10px; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 2px solid var(--c-white);
+    margin-left: -8px;
+    font-family: var(--font-mono);
+  }
+  .avatar:first-child { margin-left: 0; }
+  .avatar--a { background: #FED7AA; color: #7C2D12; }
+  .avatar--b { background: var(--c-teal-200); color: var(--c-teal-900); }
+  .avatar--c { background: #DDD6FE; color: #4C1D95; }
+  .avatar--d { background: #FECACA; color: #7F1D1D; }
+  .avatar--e { background: #BBF7D0; color: #14532D; }
+
+  /* ── Engineer card ────────────────────────── */
+  .engineer { display: flex; gap: var(--s-4); align-items: center; }
+  .engineer__avatar {
+    width: 44px; height: 44px; border-radius: var(--r-md);
+    background: linear-gradient(135deg, var(--c-teal-400), var(--c-teal-700));
+    color: var(--c-white);
+    font-family: var(--font-mono); font-weight: 700; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .engineer__name { font-size: 14px; font-weight: 600; color: var(--c-slate-900); }
+  .engineer__role { font-size: 12px; color: var(--c-slate-500); margin-top: 2px; }
+  .engineer__stack { display: flex; gap: 4px; margin-top: 6px; }
+  .engineer__seniority {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+    padding: 1px 6px; border-radius: var(--r-xs);
+    background: var(--c-teal-100); color: var(--c-teal-800);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-left: var(--s-2);
+  }
+
+  /* ── Services / environments table ────────── */
+  .tbl {
+    width: 100%; background: var(--c-white);
+    border: 1px solid var(--c-slate-100); border-radius: var(--r-lg);
+    overflow: hidden; border-collapse: collapse;
+  }
+  .tbl thead { background: var(--c-slate-50); }
+  .tbl th {
+    text-align: left; padding: var(--s-3) var(--s-4);
+    font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--c-slate-500); border-bottom: 1px solid var(--c-slate-100);
+  }
+  .tbl td {
+    padding: var(--s-3) var(--s-4); font-size: 13px;
+    border-bottom: 1px solid var(--c-slate-100); color: var(--c-slate-900);
+    vertical-align: middle;
+  }
+  .tbl tr:last-child td { border-bottom: none; }
+  .tbl tr:hover td { background: var(--c-slate-50); }
+  .tbl .mono { font-family: var(--font-mono); }
+  .tbl .num { font-family: var(--font-mono); font-weight: 500; font-feature-settings: 'tnum'; text-align: right; }
+  .env-tag {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+    padding: 2px 6px; border-radius: var(--r-xs);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .env-tag--prod { background: rgba(239, 68, 68, 0.1); color: #B91C1C; }
+  .env-tag--staging { background: rgba(245, 158, 11, 0.1); color: #B45309; }
+  .env-tag--dev { background: var(--c-teal-100); color: var(--c-teal-800); }
+
+  /* ── Nav ──────────────────────────────────── */
+  .topnav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: var(--s-3) var(--s-4);
+    background: var(--c-white);
+    border: 1px solid var(--c-slate-100);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-xs);
+  }
+  .topnav__left { display: flex; align-items: center; gap: var(--s-6); }
+  .topnav__logo {
+    display: flex; align-items: center; gap: var(--s-2);
+    font-family: var(--font-display); font-weight: 700; font-size: 15px;
+    letter-spacing: -0.01em;
+  }
+  .topnav__logo-mark {
+    width: 22px; height: 22px;
+    background: var(--c-teal-500); border-radius: var(--r-xs);
+    position: relative; flex-shrink: 0;
+  }
+  .topnav__logo-mark::after,
+  .topnav__logo-mark::before {
+    content: ''; position: absolute; background: var(--c-white);
+  }
+  .topnav__logo-mark::after { inset: 5px 5px auto auto; width: 10px; height: 1.5px; }
+  .topnav__logo-mark::before { inset: 5px auto auto 5px; width: 1.5px; height: 10px; }
+  .topnav__links { display: flex; gap: 2px; }
+  .topnav__link {
+    font-size: 13px; font-weight: 500;
+    color: var(--c-slate-600);
+    padding: 6px 10px; border-radius: var(--r-sm);
+    text-decoration: none;
+    transition: background var(--t-base), color var(--t-base);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .topnav__link:hover { background: var(--c-slate-50); color: var(--c-slate-900); }
+  .topnav__link--active { color: var(--c-teal-700); background: var(--c-teal-50); }
+  .topnav__right { display: flex; align-items: center; gap: var(--s-2); }
+  .topnav__search {
+    display: inline-flex; align-items: center; gap: var(--s-2);
+    background: var(--c-slate-50);
+    border: 1px solid var(--c-slate-100);
+    border-radius: var(--r-md);
+    padding: 6px 10px;
+    font-size: 12px; color: var(--c-slate-500);
+    font-family: var(--font-body);
+    cursor: pointer; transition: background var(--t-base);
+  }
+  .topnav__search:hover { background: var(--c-slate-100); }
+
+  /* ── Composed portal example ──────────────── */
+  .portal-demo {
+    background: var(--c-slate-50);
+    padding: var(--s-4);
+    border-radius: var(--r-xl);
+    border: 1px solid var(--c-slate-100);
+  }
+  .portal-grid {
+    display: grid; gap: var(--s-3);
+    grid-template-columns: repeat(4, 1fr);
+    margin-top: var(--s-3);
+  }
+  .portal-grid > .span-2 { grid-column: span 2; }
+  .portal-grid > .span-3 { grid-column: span 3; }
+  .portal-grid > .span-4 { grid-column: span 4; }
+
+  /* ── Spacing scale viz ────────────────────── */
+  .scale { display: flex; align-items: flex-end; gap: var(--s-4); flex-wrap: wrap; }
+  .scale__item { text-align: center; font-family: var(--font-mono); font-size: 11px; color: var(--c-slate-500); }
+  .scale__bar { background: var(--c-teal-500); border-radius: var(--r-xs); margin-bottom: var(--s-2); }
+
+  /* ── Examples grid ────────────────────────── */
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-4); }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--s-4); }
+
+  @media (max-width: 980px) {
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+    .portal-grid { grid-template-columns: 1fr 1fr; }
+    .portal-grid > .span-2, .portal-grid > .span-3, .portal-grid > .span-4 { grid-column: span 2; }
+  }
+  @media (max-width: 640px) {
+    .grid-3, .grid-2, .portal-grid { grid-template-columns: 1fr; }
+    .portal-grid > * { grid-column: span 1 !important; }
+    .section__title, .hero__title { font-size: 36px; }
+    .page { padding: var(--s-8) var(--s-4); }
+    .hero { padding: var(--s-8) var(--s-6); }
+    .topnav__links { display: none; }
+    .type-row { flex-direction: column; gap: var(--s-2); }
+    .type-row__label { flex: none; }
+  }
+
+  footer {
+    text-align: center; padding: var(--s-12) 0 var(--s-8);
+    color: var(--c-slate-400); font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <!-- ─────────────────────── HERO ─────────────────────── -->
+  <section class="hero">
+    <div class="hero__inner">
+      <div class="hero__logo">
+        <div class="hero__logo-mark"></div>
+        <div class="hero__logo-text">
+          Lattice
+          <span class="hero__logo-divider"></span>
+          <span class="hero__logo-sub">Engineering Consultancy</span>
+        </div>
+      </div>
+      <h1 class="hero__title">Ship the systems your <em>business</em> runs on.</h1>
+      <p class="hero__sub">A portal designed for engineering delivery — engagements, services, environments, and the people building them. Built for the work, not the slide deck.</p>
+      <div class="hero__meta">
+        <span>VERSION <strong>1.0.0</strong></span>
+        <span>UPDATED <strong>2026·05·26</strong></span>
+        <span>PRIMARY <strong>#0097A7</strong></span>
+        <span>STATUS <strong>● ONLINE</strong></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────── COLOR ─────────────────────── -->
+  <section class="section">
+    <div class="section__eyebrow">01 — Foundations</div>
+    <h2 class="section__title">A palette built for <em>signal</em>.</h2>
+    <p class="section__desc">Teal carries identity and intent. Slate handles every surface. Semantic colors are reserved for system health — never decoration.</p>
+
+    <h3 class="t-heading-md" style="margin-bottom: var(--s-3);">Teal — Brand</h3>
+    <div class="swatches" style="margin-bottom: var(--s-8);">
+      <div class="swatch"><div class="swatch__chip" style="background:#00272D"></div><div class="swatch__meta"><div class="swatch__name">Teal 950</div><div class="swatch__token">--c-teal-950</div><div class="swatch__hex">#00272D</div></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#003D44"></div><div class="swatch__meta"><div class="swatch__name">Teal 900</div><div class="swatch__token">--c-teal-900</div><div class="swatch__hex">#003D44</div></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#005662"></div><div class="swatch__meta"><div class="swatch__name">Teal 800</div><div class="swatch__token">--c-teal-800</div><div class="swatch__hex">#005662</div></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#006D7A"></div><div class="swatch__meta"><div class="swatch__name">Teal 700</div><div class="swatch__token">--c-teal-700</div><div class="swatch__hex">#006D7A</div></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#007E8C"></div><div class="swatch__meta"><div class="swatch__name">Teal 600</div><div class="swatch__token">--c-teal-600</div><div class="swatch__hex">#007E8C</div></div></div>
+      <div class="swatch swatch--primary"><div class="swatch__chip" style="background:#0097A7"></div><div class="swatch__meta"><div class="swatch__name">Teal 500</div><div class="swatch__token">--c-teal-500</div><div class="swatch__hex">#0097A7</div></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#2BAEBD"></div><div class="swatch__meta"><div class="swatch__name">Teal 400</div><div class="swatch__token">--c-teal-400</div><div class="swatch__hex">#2BAEBD</div></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#5BC4D1"></div><div class="swatch__meta"><div class="swatch__name">Teal 300</div><div class="swatch__token">--c-teal-300</div><div class="swatch__hex">#5BC4D1</div></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#9DDDE6"></div><div class="swatch__meta"><div class="swatch__name">Teal 200</div><div class="swatch__token">--c-teal-200</div><div class="swatch__hex">#9DDDE6</div></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#D4F0F4"></div><div class="swatch__meta"><div class="swatch__name">Teal 100</div><div class="swatch__token">--c-teal-100</div><div class="swatch__hex">#D4F0F4</div></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#EBF8FA"></div><div class="swatch__meta"><div class="swatch__name">Teal 50</div><div class="swatch__token">--c-teal-50</div><div class="swatch__hex">#EBF8FA</div></div></div>
+    </div>
+
+    <h3 class="t-heading-md" style="margin-bottom: var(--s-3);">Slate — Neutrals</h3>
+    <div class="swatches" style="margin-bottom: var(--s-8);">
+      <div class="swatch"><div class="swatch__chip" style="background:#0D1117"></div><div class="swatch__meta"><div class="swatch__name">Slate 900</div><div class="swatch__token">--c-slate-900</div><div class="swatch__hex">#0D1117</div></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#2A3441"></div><div class="swatch__meta"><div class="swatch__name">Slate 700</div><div class="swatch__token">--c-slate-700</div><div class="swatch__hex">#2A3441</div></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#5C6975"></div><div class="swatch__meta"><div class="swatch__name">Slate 500</div><div class="swatch__token">--c-slate-500</div><div class="swatch__hex">#5C6975</div></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#A3ADB7"></div><div class="swatch__meta"><div class="swatch__name">Slate 300</div><div class="swatch__token">--c-slate-300</div><div class="swatch__hex">#A3ADB7</div></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#E8ECF0"></div><div class="swatch__meta"><div class="swatch__name">Slate 100</div><div class="swatch__token">--c-slate-100</div><div class="swatch__hex">#E8ECF0</div></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#F5F7F9"></div><div class="swatch__meta"><div class="swatch__name">Slate 50</div><div class="swatch__token">--c-slate-50</div><div class="swatch__hex">#F5F7F9</div></div></div>
+    </div>
+
+    <h3 class="t-heading-md" style="margin-bottom: var(--s-3);">Semantic — Health signals only</h3>
+    <div class="swatches">
+      <div class="swatch"><div class="swatch__chip" style="background:#10B981"></div><div class="swatch__meta"><div class="swatch__name">Healthy</div><div class="swatch__token">--c-success</div><div class="swatch__hex">#10B981</div></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#F59E0B"></div><div class="swatch__meta"><div class="swatch__name">Degraded</div><div class="swatch__token">--c-warning</div><div class="swatch__hex">#F59E0B</div></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#EF4444"></div><div class="swatch__meta"><div class="swatch__name">Down · Critical</div><div class="swatch__token">--c-danger</div><div class="swatch__hex">#EF4444</div></div></div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────── TYPE ─────────────────────── -->
+  <section class="section">
+    <div class="section__eyebrow">02 — Typography</div>
+    <h2 class="section__title">Three families, <em>zero</em> ambiguity.</h2>
+    <p class="section__desc">Space Grotesk for display moments. Inter for UI. JetBrains Mono for identifiers, metrics, and anything that needs to look like code.</p>
+
+    <div>
+      <div class="type-row"><div class="type-row__label">Display XL<small>Space Grotesk 600 · 60/60</small></div><div class="type-row__sample t-display-xl">Built for builders.</div></div>
+      <div class="type-row"><div class="type-row__label">Display LG<small>Space Grotesk 600 · 44/46</small></div><div class="type-row__sample t-display-lg">Active engagements</div></div>
+      <div class="type-row"><div class="type-row__label">Display MD<small>Space Grotesk 600 · 32/37</small></div><div class="type-row__sample t-display-md">Platform modernization · Atlas</div></div>
+      <div class="type-row"><div class="type-row__label">Heading LG<small>Inter 700 · 22/28</small></div><div class="type-row__sample t-heading-lg">Service catalogue</div></div>
+      <div class="type-row"><div class="type-row__label">Heading MD<small>Inter 600 · 17/23</small></div><div class="type-row__sample t-heading-md">payments-orchestrator</div></div>
+      <div class="type-row"><div class="type-row__label">Heading SM<small>Inter 600 · 14/20</small></div><div class="type-row__sample t-heading-sm">Engineering lead · Staff engineer</div></div>
+      <div class="type-row"><div class="type-row__label">Body LG<small>Inter 400 · 17/27</small></div><div class="type-row__sample t-body-lg">Modernize the systems your business runs on — without a re-platform that takes two years and breaks half the integrations.</div></div>
+      <div class="type-row"><div class="type-row__label">Body<small>Inter 400 · 14/22</small></div><div class="type-row__sample t-body">Track engagements, service health, deploy frequency, and engineer utilization in one place.</div></div>
+      <div class="type-row"><div class="type-row__label">Body SM<small>Inter 400 · 13/20</small></div><div class="type-row__sample t-body-sm">Last deploy 4 hours ago · 12 engineers active · v2.14.3</div></div>
+      <div class="type-row"><div class="type-row__label">Mono<small>JetBrains 400 · 13/20</small></div><div class="type-row__sample t-mono">eng-2026-04-atlas-modernization</div></div>
+      <div class="type-row"><div class="type-row__label">Caption<small>JetBrains 500 · 11/16 · +12%</small></div><div class="type-row__sample t-caption">— P95 LATENCY · 142MS · UP 8% — </div></div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────── SPACING ─────────────────────── -->
+  <section class="section">
+    <div class="section__eyebrow">03 — Spacing</div>
+    <h2 class="section__title">An <em>8pt</em> grid, no exceptions.</h2>
+    <p class="section__desc">Every gap, padding, margin lands on the scale. Dense surfaces (tables, dashboards) compress to 4/8/12 — narrative pages breathe at 24/32/48.</p>
+    <div class="scale">
+      <div class="scale__item"><div class="scale__bar" style="width:36px;height:4px"></div>4 · --s-1</div>
+      <div class="scale__item"><div class="scale__bar" style="width:36px;height:8px"></div>8 · --s-2</div>
+      <div class="scale__item"><div class="scale__bar" style="width:36px;height:12px"></div>12 · --s-3</div>
+      <div class="scale__item"><div class="scale__bar" style="width:36px;height:16px"></div>16 · --s-4</div>
+      <div class="scale__item"><div class="scale__bar" style="width:36px;height:24px"></div>24 · --s-6</div>
+      <div class="scale__item"><div class="scale__bar" style="width:36px;height:32px"></div>32 · --s-8</div>
+      <div class="scale__item"><div class="scale__bar" style="width:36px;height:48px"></div>48 · --s-12</div>
+      <div class="scale__item"><div class="scale__bar" style="width:36px;height:64px"></div>64 · --s-16</div>
+      <div class="scale__item"><div class="scale__bar" style="width:36px;height:96px"></div>96 · --s-24</div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────── BUTTONS ─────────────────────── -->
+  <section class="section">
+    <div class="section__eyebrow">04 — Controls</div>
+    <h2 class="section__title">Buttons, badges, <em>chips</em>.</h2>
+    <p class="section__desc">Sharp 8px radii. Five button variants, three sizes. Health badges use word + dot — never color alone.</p>
+
+    <div class="buttons" style="margin-bottom: var(--s-6);">
+      <button class="btn btn--primary">+ New engagement</button>
+      <button class="btn btn--secondary">Cancel</button>
+      <button class="btn btn--ghost">Skip</button>
+      <button class="btn btn--dark">Deploy <span class="kbd">⌘ ⏎</span></button>
+      <button class="btn btn--danger">Archive</button>
+      <button class="btn btn--primary" disabled>Disabled</button>
+    </div>
+    <div class="buttons">
+      <button class="btn btn--primary btn--sm">Small</button>
+      <button class="btn btn--primary">Default</button>
+      <button class="btn btn--primary btn--lg">Large</button>
+    </div>
+
+    <h3 class="t-heading-md" style="margin: var(--s-8) 0 var(--s-3);">Service health badges</h3>
+    <div class="badges">
+      <span class="badge badge--healthy"><span class="badge__dot"></span>Healthy</span>
+      <span class="badge badge--degraded"><span class="badge__dot"></span>Degraded</span>
+      <span class="badge badge--down"><span class="badge__dot"></span>Down</span>
+      <span class="badge badge--draft">Draft</span>
+      <span class="badge badge--teal">Pinned</span>
+      <span class="badge badge--dark">v2.14.3</span>
+    </div>
+
+    <h3 class="t-heading-md" style="margin: var(--s-8) 0 var(--s-3);">Tech stack chips</h3>
+    <div class="stack">
+      <span class="chip"><span class="chip__dot" style="background:var(--c-go)"></span>Go 1.22</span>
+      <span class="chip"><span class="chip__dot" style="background:var(--c-ts)"></span>TypeScript</span>
+      <span class="chip"><span class="chip__dot" style="background:var(--c-py)"></span>Python 3.12</span>
+      <span class="chip"><span class="chip__dot" style="background:var(--c-rs)"></span>Rust</span>
+      <span class="chip"><span class="chip__dot" style="background:var(--c-k8s)"></span>Kubernetes</span>
+      <span class="chip"><span class="chip__dot" style="background:var(--c-aws)"></span>AWS</span>
+      <span class="chip"><span class="chip__dot" style="background:var(--c-pg)"></span>Postgres 16</span>
+      <span class="chip"><span class="chip__dot" style="background:var(--c-rd)"></span>Redis</span>
+    </div>
+
+    <h3 class="t-heading-md" style="margin: var(--s-8) 0 var(--s-3);">Form controls</h3>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--s-4); max-width: 800px;">
+      <div class="field">
+        <label class="field__label">Engagement codename</label>
+        <input class="field__input" value="atlas-modernization" />
+        <div class="field__hint">Used in every URL, slack channel, and deploy log.</div>
+      </div>
+      <div class="field">
+        <label class="field__label">Engagement type</label>
+        <select class="field__select">
+          <option>Build — Greenfield product</option>
+          <option>Modernize — Legacy migration</option>
+          <option>Audit — Architecture review</option>
+          <option>Embed — Staff augmentation</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────── PORTAL EXAMPLE ─────────────────────── -->
+  <section class="section">
+    <div class="section__eyebrow">05 — In context</div>
+    <h2 class="section__title">The portal, <em>composed</em>.</h2>
+    <p class="section__desc">Top nav, delivery KPIs, active engagement cards, engineer roster, and service health — the five surfaces a software consultancy actually lives on.</p>
+
+    <div class="portal-demo">
+      <!-- TOP NAV -->
+      <div class="topnav">
+        <div class="topnav__left">
+          <div class="topnav__logo">
+            <div class="topnav__logo-mark"></div>
+            <span>Lattice</span>
+          </div>
+          <nav class="topnav__links">
+            <a class="topnav__link topnav__link--active">Dashboard</a>
+            <a class="topnav__link">Engagements</a>
+            <a class="topnav__link">Services</a>
+            <a class="topnav__link">Engineers</a>
+            <a class="topnav__link">Playbooks</a>
+          </nav>
+        </div>
+        <div class="topnav__right">
+          <div class="topnav__search">Search engagements, services… <span class="kbd">⌘K</span></div>
+          <button class="btn btn--primary btn--sm">+ New</button>
+        </div>
+      </div>
+
+      <!-- KPI ROW: DORA-ish metrics -->
+      <div class="portal-grid">
+        <div class="stat">
+          <div class="stat__label">Deploy frequency</div>
+          <div class="stat__value">4.2<span class="stat__value-unit">/day</span></div>
+          <div><span class="stat__delta stat__delta--up">↑ 0.8</span><span class="stat__sub">vs 30d avg</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat__label">Lead time</div>
+          <div class="stat__value">2.1<span class="stat__value-unit">d</span></div>
+          <div><span class="stat__delta stat__delta--down">↓ 0.6d</span><span class="stat__sub">target &lt; 3d</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat__label">MTTR</div>
+          <div class="stat__value">38<span class="stat__value-unit">min</span></div>
+          <div><span class="stat__delta stat__delta--up">↓ 11m</span><span class="stat__sub">across 7 services</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat__label">Engineer utilization</div>
+          <div class="stat__value">82<span class="stat__value-unit">%</span></div>
+          <div><span class="stat__delta stat__delta--up">↑ 4pt</span><span class="stat__sub">target 80%</span></div>
+        </div>
+
+        <!-- ENGAGEMENT CARDS -->
+        <div class="card card--interactive span-2">
+          <div class="engagement">
+            <div class="engagement__head">
+              <div>
+                <div class="engagement__type">⚙ Modernize</div>
+                <div class="engagement__title">Payments core re-platform</div>
+                <div class="engagement__client">Atlas Financial · Banking</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+                <span class="badge badge--healthy"><span class="badge__dot"></span>On track</span>
+                <span class="engagement__id">eng-26q2-atlas</span>
+              </div>
+            </div>
+            <div class="engagement__desc">Strangler-fig migration from mainframe COBOL to event-driven Go services on Kubernetes. Sprint 8 of 16.</div>
+            <div class="stack">
+              <span class="chip"><span class="chip__dot" style="background:var(--c-go)"></span>Go 1.22</span>
+              <span class="chip"><span class="chip__dot" style="background:var(--c-k8s)"></span>Kubernetes</span>
+              <span class="chip"><span class="chip__dot" style="background:var(--c-pg)"></span>Postgres 16</span>
+              <span class="chip"><span class="chip__dot" style="background:var(--c-aws)"></span>AWS</span>
+            </div>
+            <div class="engagement__meta">
+              <span>Sprint <strong>8/16</strong></span>
+              <span>·</span>
+              <span>Closes <strong>Aug 14</strong></span>
+              <span>·</span>
+              <div class="engagement__team">
+                <span class="avatar avatar--a">MC</span>
+                <span class="avatar avatar--b">JR</span>
+                <span class="avatar avatar--c">SP</span>
+                <span class="avatar avatar--e">+4</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card--interactive span-2">
+          <div class="engagement">
+            <div class="engagement__head">
+              <div>
+                <div class="engagement__type">▲ Build</div>
+                <div class="engagement__title">Logistics planner — greenfield</div>
+                <div class="engagement__client">Helix Pharma · Operations</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+                <span class="badge badge--degraded"><span class="badge__dot"></span>At risk</span>
+                <span class="engagement__id">eng-26q2-helix</span>
+              </div>
+            </div>
+            <div class="engagement__desc">Optimization engine + ops dashboard. Vendor SDK gating sprint 3; mitigation in progress.</div>
+            <div class="stack">
+              <span class="chip"><span class="chip__dot" style="background:var(--c-rs)"></span>Rust</span>
+              <span class="chip"><span class="chip__dot" style="background:var(--c-ts)"></span>TypeScript</span>
+              <span class="chip"><span class="chip__dot" style="background:var(--c-py)"></span>Python</span>
+              <span class="chip"><span class="chip__dot" style="background:var(--c-rd)"></span>Redis</span>
+            </div>
+            <div class="engagement__meta">
+              <span>Sprint <strong>3/12</strong></span>
+              <span>·</span>
+              <span>Closes <strong>Oct 30</strong></span>
+              <span>·</span>
+              <div class="engagement__team">
+                <span class="avatar avatar--c">RT</span>
+                <span class="avatar avatar--a">LK</span>
+                <span class="avatar avatar--b">+2</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ENGINEERS -->
+        <div class="card span-2">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom: var(--s-4);">
+            <h3 class="t-heading-md">On the bench this sprint</h3>
+            <button class="btn btn--ghost btn--sm">View all →</button>
+          </div>
+          <div style="display: grid; gap: var(--s-4);">
+            <div class="engineer">
+              <div class="engineer__avatar">MC</div>
+              <div style="flex:1">
+                <div class="engineer__name">Mira Chen <span class="engineer__seniority">Staff</span></div>
+                <div class="engineer__role">Backend · Distributed systems · 11y</div>
+                <div class="engineer__stack">
+                  <span class="chip"><span class="chip__dot" style="background:var(--c-go)"></span>Go</span>
+                  <span class="chip"><span class="chip__dot" style="background:var(--c-k8s)"></span>K8s</span>
+                </div>
+              </div>
+            </div>
+            <div class="engineer">
+              <div class="engineer__avatar">JR</div>
+              <div style="flex:1">
+                <div class="engineer__name">Jonas Rivera <span class="engineer__seniority">Principal</span></div>
+                <div class="engineer__role">Platform · Infra · SRE</div>
+                <div class="engineer__stack">
+                  <span class="chip"><span class="chip__dot" style="background:var(--c-aws)"></span>AWS</span>
+                  <span class="chip"><span class="chip__dot" style="background:var(--c-k8s)"></span>K8s</span>
+                  <span class="chip">Terraform</span>
+                </div>
+              </div>
+            </div>
+            <div class="engineer">
+              <div class="engineer__avatar">SP</div>
+              <div style="flex:1">
+                <div class="engineer__name">Saanvi Patel <span class="engineer__seniority">Senior</span></div>
+                <div class="engineer__role">Full-stack · Product engineering</div>
+                <div class="engineer__stack">
+                  <span class="chip"><span class="chip__dot" style="background:var(--c-ts)"></span>TS</span>
+                  <span class="chip">React</span>
+                  <span class="chip"><span class="chip__dot" style="background:var(--c-py)"></span>Py</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SERVICE HEALTH TABLE -->
+        <div class="span-2">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Env</th>
+                <th>Version</th>
+                <th class="num">P95</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono">payments-orchestrator</td>
+                <td><span class="env-tag env-tag--prod">prod</span></td>
+                <td class="mono">v2.14.3</td>
+                <td class="num">142ms</td>
+                <td><span class="badge badge--healthy"><span class="badge__dot"></span>Healthy</span></td>
+              </tr>
+              <tr>
+                <td class="mono">ledger-api</td>
+                <td><span class="env-tag env-tag--prod">prod</span></td>
+                <td class="mono">v1.8.0</td>
+                <td class="num">218ms</td>
+                <td><span class="badge badge--degraded"><span class="badge__dot"></span>Degraded</span></td>
+              </tr>
+              <tr>
+                <td class="mono">notifications</td>
+                <td><span class="env-tag env-tag--staging">staging</span></td>
+                <td class="mono">v3.0.1-rc.2</td>
+                <td class="num">89ms</td>
+                <td><span class="badge badge--healthy"><span class="badge__dot"></span>Healthy</span></td>
+              </tr>
+              <tr>
+                <td class="mono">scheduler</td>
+                <td><span class="env-tag env-tag--prod">prod</span></td>
+                <td class="mono">v0.9.4</td>
+                <td class="num">—</td>
+                <td><span class="badge badge--down"><span class="badge__dot"></span>Down</span></td>
+              </tr>
+              <tr>
+                <td class="mono">reporting-worker</td>
+                <td><span class="env-tag env-tag--dev">dev</span></td>
+                <td class="mono">main</td>
+                <td class="num">312ms</td>
+                <td><span class="badge badge--draft">Building</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>Lattice Engineering · Design System · v1.0.0 · #0097A7</footer>
+</main>
+</body>
+</html>

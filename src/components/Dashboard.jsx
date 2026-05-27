@@ -1,5 +1,5 @@
 import { Flame, Activity, Footprints, TrendingDown } from 'lucide-react';
-import { STEP_CALORIES_MULTIPLIER } from '../data';
+import { STEP_CALORIES_MULTIPLIER } from '../lib/data';
 
 const Dashboard = ({ totals, steps, goals }) => {
   const calsLeft = goals.calories - totals.calIn;
@@ -16,17 +16,7 @@ const Dashboard = ({ totals, steps, goals }) => {
     <div className="animate-slide-up delay-2" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
       {/* Hero calorie balance */}
-      <div
-        style={{
-          background: 'var(--gradient-hero)',
-          borderRadius: 'var(--r-xl)',
-          padding: '24px 20px 20px',
-          boxShadow: 'var(--shadow-lift)',
-          border: '1px solid var(--ink-700)',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
+      <div className="dashboard-hero hero-card-animate">
         {/* Ghost number watermark */}
         <div
           aria-hidden="true"
@@ -61,16 +51,20 @@ const Dashboard = ({ totals, steps, goals }) => {
           </div>
 
           {/* Big number */}
-          <div style={{
-            fontFamily: 'var(--font-display)',
-            fontStyle: 'italic',
-            fontWeight: 900,
-            fontSize: 'clamp(3.2rem, 16vw, 5.5rem)',
-            lineHeight: 0.95,
-            color: isOver ? 'var(--danger)' : 'var(--yellow-500)',
-            marginBottom: '6px',
-            letterSpacing: '-0.01em',
-          }}>
+          <div
+            key={calsLeft}
+            className="value-bump"
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontStyle: 'italic',
+              fontWeight: 900,
+              fontSize: 'clamp(3.2rem, 16vw, 5.5rem)',
+              lineHeight: 0.95,
+              color: isOver ? 'var(--danger)' : 'var(--yellow-500)',
+              marginBottom: '6px',
+              letterSpacing: '-0.01em',
+            }}
+          >
             {isOver ? `+${Math.abs(calsLeft)}` : calsLeft}
           </div>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'rgba(255,255,255,0.4)', marginBottom: '16px' }}>
@@ -85,7 +79,7 @@ const Dashboard = ({ totals, steps, goals }) => {
                 width: `${Math.min(100, (totals.calIn / goals.calories) * 100)}%`,
                 background: isOver ? 'var(--danger)' : 'var(--gradient-cta)',
                 borderRadius: 'var(--r-pill)',
-                transition: 'width 0.6s ease',
+                transition: 'width 800ms var(--ease-out-expo)',
               }}
             />
           </div>
@@ -175,7 +169,7 @@ const Dashboard = ({ totals, steps, goals }) => {
                     {m.label}
                   </span>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
-                    <span style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 900, fontSize: '1.3rem', color: m.color, lineHeight: 1 }}>{m.value}</span>
+                    <span key={m.value} className="value-bump" style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 900, fontSize: '1.3rem', color: m.color, lineHeight: 1 }}>{m.value}</span>
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--gray-400)' }}>/ {m.goal}{m.unit}</span>
                   </div>
                 </div>
@@ -183,7 +177,7 @@ const Dashboard = ({ totals, steps, goals }) => {
                   <div style={{
                     height: '100%', width: `${pct}%`,
                     background: m.color, borderRadius: 'var(--r-pill)',
-                    transition: 'width 0.5s ease',
+                    transition: 'width 700ms var(--ease-out-expo)',
                     boxShadow: `0 0 8px ${m.color}66`,
                   }} />
                 </div>

@@ -3,18 +3,18 @@ pytest fixtures shared across all Selenium test files.
 
 Driver lifecycle  :  one Chrome instance per test (function scope) for clean state.
 Auth injection    :  navigate once → set localStorage token → reload.
-API mocking       :  selenium-wire request interceptor active before first page load.
+API mocking       :  Selenium 4 CDP Fetch interception (replaces seleniumwire).
 """
 import json
 import time
 import pytest
 
+from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
-from seleniumwire import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 
 from helpers.api_mocks import setup_api_mocks
@@ -46,26 +46,21 @@ MOCK_AUTH_PAYLOAD = {
 # ── Driver fixture ─────────────────────────────────────────────────────────────
 @pytest.fixture(scope="function")
 def driver():
-    """Bare Chrome driver with selenium-wire wired in (mobile-sized viewport)."""
+    """Chrome driver with CDP enabled for request interception (mobile-sized viewport)."""
     chrome_opts = Options()
     chrome_opts.add_argument("--headless=new")
     chrome_opts.add_argument("--no-sandbox")
     chrome_opts.add_argument("--disable-dev-shm-usage")
     chrome_opts.add_argument("--disable-gpu")
     chrome_opts.add_argument("--window-size=480,800")
-
-    sw_opts = {
-        "disable_encoding": True,
-        "verify_ssl": False,           # MITM proxy needs SSL passthrough
-        "suppress_connection_errors": True,
-    }
+    # Required for CDP Fetch domain to work in headless mode
+    chrome_opts.add_argument("--remote-debugging-port=0")
 
     drv = webdriver.Chrome(
         service=Service(ChromeDriverManager().install()),
         options=chrome_opts,
-        seleniumwire_options=sw_opts,
     )
-    drv.implicitly_wait(0)             # explicit waits only — never rely on implicit
+    drv.implicitly_wait(0)  # explicit waits only — never rely on implicit
     yield drv
     drv.quit()
 

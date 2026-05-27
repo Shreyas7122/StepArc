@@ -1,11 +1,11 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { foodDatabase, workoutDatabase } from './data';
+import { foodDatabase, workoutDatabase } from './lib/data';
 import './index.css';
 
-import { supabase } from './supabase';
-import { loadSettings, saveSettings, loadTodayLogs, saveTodayLogs, pruneOldLogs, clearLocalCache, DEFAULT_SETTINGS } from './db';
-import { computeTotals } from './utils';
-import { calcBMR, calcGoalCalories, calcMacros, calcAdjustedBurn } from './calc';
+import { supabase } from './services/supabase';
+import { loadSettings, saveSettings, loadTodayLogs, saveTodayLogs, pruneOldLogs, clearLocalCache, DEFAULT_SETTINGS } from './services/db';
+import { computeTotals } from './lib/utils';
+import { calcBMR, calcGoalCalories, calcMacros, calcAdjustedBurn } from './lib/calc';
 
 import AuthScreen from './components/AuthScreen';
 import Header from './components/Header';

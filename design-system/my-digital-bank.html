@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>my digital bank — Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* ── Brand colors ──────────────────────────────── */
+    --mdb-green-900: #1B4332;
+    --mdb-green-800: #2D5A47;
+    --mdb-green-700: #2D6A4F;   /* primary brand */
+    --mdb-green-600: #3E8567;
+    --mdb-green-500: #52B788;
+    --mdb-green-300: #95D5B2;
+    --mdb-green-100: #D8F3DC;
+
+    --mdb-cream-100: #FAF6EC;
+    --mdb-cream-200: #F2EBD8;   /* primary surface */
+    --mdb-cream-300: #E6DCC1;
+    --mdb-cream-400: #D4C7A6;
+
+    --mdb-ink-900: #1A1A1A;
+    --mdb-ink-700: #2D2D2D;
+    --mdb-ink-500: #6B6B6B;
+    --mdb-ink-300: #A8A8A8;
+
+    --mdb-white: #FFFFFF;
+    --mdb-overlay: rgba(45, 106, 79, 0.08);
+
+    /* ── Type ──────────────────────────────────────── */
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+    /* ── Spacing (8pt grid) ────────────────────────── */
+    --s-1: 4px;
+    --s-2: 8px;
+    --s-3: 12px;
+    --s-4: 16px;
+    --s-6: 24px;
+    --s-8: 32px;
+    --s-12: 48px;
+    --s-16: 64px;
+    --s-24: 96px;
+
+    /* ── Radii ─────────────────────────────────────── */
+    --r-sm: 8px;
+    --r-md: 16px;
+    --r-lg: 28px;
+    --r-xl: 40px;
+    --r-blob: 64px;
+    --r-pill: 999px;
+
+    /* ── Shadows ───────────────────────────────────── */
+    --shadow-card: 0 1px 2px rgba(27, 67, 50, 0.04), 0 8px 24px rgba(27, 67, 50, 0.06);
+    --shadow-lift: 0 4px 8px rgba(27, 67, 50, 0.06), 0 16px 40px rgba(27, 67, 50, 0.12);
+
+    /* ── Motion ────────────────────────────────────── */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --t-fast: 120ms;
+    --t-base: 200ms;
+    --t-slow: 320ms;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--mdb-ink-900);
+    background: var(--mdb-cream-200);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Layout ─────────────────────────────────────── */
+  .page { max-width: 1200px; margin: 0 auto; padding: var(--s-12) var(--s-6); }
+
+  .section {
+    margin-bottom: var(--s-24);
+    padding-top: var(--s-8);
+    border-top: 1px solid var(--mdb-cream-400);
+  }
+  .section:first-of-type { border-top: none; padding-top: 0; }
+
+  .section__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--mdb-green-700);
+    margin-bottom: var(--s-2);
+  }
+  .section__title {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--mdb-ink-900);
+    margin-bottom: var(--s-3);
+  }
+  .section__title em { color: var(--mdb-green-700); font-style: normal; }
+  .section__desc {
+    max-width: 620px;
+    font-size: 16px;
+    color: var(--mdb-ink-500);
+    margin-bottom: var(--s-8);
+  }
+
+  /* ── Hero ───────────────────────────────────────── */
+  .hero {
+    background: var(--mdb-green-700);
+    color: var(--mdb-cream-100);
+    padding: var(--s-16) var(--s-12);
+    border-radius: var(--r-xl);
+    margin-bottom: var(--s-16);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 320px; height: 320px;
+    background: var(--mdb-cream-200);
+    border-radius: var(--r-blob);
+    opacity: 0.95;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -120px; left: 40%;
+    width: 220px; height: 220px;
+    background: var(--mdb-green-600);
+    border-radius: var(--r-blob);
+    opacity: 0.5;
+  }
+  .hero__inner { position: relative; z-index: 2; max-width: 640px; }
+  .hero__logo {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 0.95;
+    margin-bottom: var(--s-8);
+    display: inline-flex;
+    flex-direction: column;
+  }
+  .hero__logo span:first-child { font-style: italic; opacity: 0.85; font-weight: 500; }
+  .hero__logo span:last-child { letter-spacing: -0.02em; }
+  .hero__title {
+    font-family: var(--font-display);
+    font-size: 72px;
+    font-weight: 600;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    margin-bottom: var(--s-4);
+  }
+  .hero__title em { font-style: italic; font-weight: 500; }
+  .hero__sub { font-size: 18px; opacity: 0.85; max-width: 480px; }
+  .hero__meta {
+    margin-top: var(--s-8);
+    display: flex; gap: var(--s-6);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+  }
+
+  /* ── Color swatches ─────────────────────────────── */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: var(--s-4); }
+  .swatch {
+    background: var(--mdb-white);
+    border-radius: var(--r-md);
+    padding: var(--s-4);
+    border: 1px solid var(--mdb-cream-300);
+  }
+  .swatch__chip {
+    width: 100%; height: 96px;
+    border-radius: var(--r-sm);
+    margin-bottom: var(--s-3);
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  .swatch__name { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+  .swatch__token { font-family: var(--font-mono); font-size: 11px; color: var(--mdb-ink-500); }
+  .swatch__hex { font-family: var(--font-mono); font-size: 11px; color: var(--mdb-ink-700); margin-top: var(--s-1); }
+
+  /* ── Type scale ─────────────────────────────────── */
+  .type-row {
+    display: flex; align-items: baseline; gap: var(--s-6);
+    padding: var(--s-4) 0;
+    border-bottom: 1px solid var(--mdb-cream-300);
+  }
+  .type-row:last-child { border-bottom: none; }
+  .type-row__label {
+    flex: 0 0 200px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--mdb-ink-500);
+  }
+  .type-row__label small { display: block; text-transform: none; letter-spacing: 0; margin-top: 2px; opacity: 0.7; }
+  .type-row__sample { flex: 1; color: var(--mdb-ink-900); }
+
+  .t-display-xl { font-family: var(--font-display); font-size: 72px; font-weight: 600; line-height: 1.0; letter-spacing: -0.03em; }
+  .t-display-lg { font-family: var(--font-display); font-size: 56px; font-weight: 600; line-height: 1.05; letter-spacing: -0.02em; }
+  .t-display-md { font-family: var(--font-display); font-size: 40px; font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; }
+  .t-heading-lg { font-family: var(--font-body); font-size: 28px; font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; }
+  .t-heading-md { font-family: var(--font-body); font-size: 20px; font-weight: 600; line-height: 1.3; }
+  .t-body-lg { font-family: var(--font-body); font-size: 18px; line-height: 1.55; }
+  .t-body { font-family: var(--font-body); font-size: 15px; line-height: 1.6; }
+  .t-caption { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; }
+
+  /* ── Signature shape: cutout card ───────────────── */
+  /* The mark of the brand — a rounded square with one inverted/concave corner. */
+  .blob-card {
+    position: relative;
+    background: var(--mdb-cream-200);
+    border-radius: var(--r-blob);
+    padding: var(--s-8);
+    overflow: hidden;
+    min-height: 280px;
+  }
+  .blob-card--green {
+    background: var(--mdb-green-700);
+    color: var(--mdb-cream-100);
+  }
+  .blob-card--cream { background: var(--mdb-cream-200); color: var(--mdb-ink-900); }
+
+  /* Concave corner via radial gradient cutout */
+  .blob-card--cutout-tr::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle at top right, transparent 0 64px, var(--mdb-cream-200) 64px);
+  }
+  .blob-card--green.blob-card--cutout-tr::before { background: radial-gradient(circle at top right, transparent 0 64px, var(--mdb-green-700) 64px); }
+  /* When card sits on cream page, cutout shows page through */
+  .on-cream .blob-card--green.blob-card--cutout-tr::before {
+    background: radial-gradient(circle at top right, var(--mdb-cream-200) 0 64px, var(--mdb-green-700) 64px);
+  }
+  .on-cream .blob-card--cream.blob-card--cutout-tr::before {
+    background: radial-gradient(circle at top right, var(--mdb-green-700) 0 64px, var(--mdb-cream-200) 64px);
+  }
+
+  /* ── Shape gallery ──────────────────────────────── */
+  .shape-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-4); }
+
+  .demo-card {
+    aspect-ratio: 1 / 1;
+    border-radius: var(--r-blob);
+    padding: var(--s-6);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+  .demo-card--green { background: var(--mdb-green-700); color: var(--mdb-cream-100); }
+  .demo-card--cream { background: var(--mdb-cream-100); color: var(--mdb-green-900); border: 1px solid var(--mdb-cream-300); }
+
+  .demo-card__cutout-tr {
+    position: absolute; top: 0; right: 0;
+    width: 50%; height: 50%;
+    background: var(--mdb-cream-200);
+    border-bottom-left-radius: 100%;
+  }
+  .demo-card--cream .demo-card__cutout-tr { background: var(--mdb-green-700); }
+
+  .demo-card__kicker {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    opacity: 0.7;
+  }
+  .demo-card__headline {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    max-width: 70%;
+  }
+  .demo-card__headline em { font-style: italic; }
+  .demo-card__foot {
+    display: flex; align-items: center; gap: var(--s-2);
+    font-size: 12px;
+    opacity: 0.85;
+  }
+  .demo-card__dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  /* ── Buttons ────────────────────────────────────── */
+  .buttons { display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: center; }
+  .btn {
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 600;
+    padding: 14px 28px;
+    border-radius: var(--r-pill);
+    border: none;
+    cursor: pointer;
+    transition: background var(--t-base) var(--ease-out), transform var(--t-fast) var(--ease-out), box-shadow var(--t-base);
+    display: inline-flex; align-items: center; gap: var(--s-2);
+    min-height: 44px;
+  }
+  .btn--primary { background: var(--mdb-green-700); color: var(--mdb-cream-100); }
+  .btn--primary:hover { background: var(--mdb-green-800); transform: translateY(-1px); box-shadow: var(--shadow-lift); }
+  .btn--primary:active { transform: translateY(0); }
+  .btn--primary:focus-visible { outline: 3px solid var(--mdb-green-300); outline-offset: 2px; }
+
+  .btn--secondary { background: var(--mdb-cream-100); color: var(--mdb-green-900); border: 1.5px solid var(--mdb-green-900); }
+  .btn--secondary:hover { background: var(--mdb-green-900); color: var(--mdb-cream-100); }
+  .btn--secondary:focus-visible { outline: 3px solid var(--mdb-green-300); outline-offset: 2px; }
+
+  .btn--ghost { background: transparent; color: var(--mdb-green-700); }
+  .btn--ghost:hover { background: var(--mdb-overlay); }
+  .btn--ghost:focus-visible { outline: 3px solid var(--mdb-green-300); outline-offset: 2px; }
+
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .btn--icon { padding: 12px; border-radius: 50%; min-width: 44px; }
+
+  /* ── Form ───────────────────────────────────────── */
+  .field { display: flex; flex-direction: column; gap: var(--s-2); max-width: 360px; margin-bottom: var(--s-4); }
+  .field__label { font-size: 13px; font-weight: 600; color: var(--mdb-ink-700); }
+  .field__input {
+    font-family: var(--font-body);
+    font-size: 15px;
+    padding: 14px 18px;
+    border-radius: var(--r-md);
+    background: var(--mdb-white);
+    border: 1.5px solid var(--mdb-cream-400);
+    color: var(--mdb-ink-900);
+    transition: border var(--t-base);
+    min-height: 44px;
+  }
+  .field__input:focus { outline: none; border-color: var(--mdb-green-700); box-shadow: 0 0 0 4px var(--mdb-overlay); }
+  .field__hint { font-size: 12px; color: var(--mdb-ink-500); }
+
+  /* ── Badges ─────────────────────────────────────── */
+  .badges { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+  .badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 6px 12px;
+    border-radius: var(--r-pill);
+  }
+  .badge--green { background: var(--mdb-green-100); color: var(--mdb-green-900); }
+  .badge--solid { background: var(--mdb-green-700); color: var(--mdb-cream-100); }
+  .badge--outline { background: transparent; color: var(--mdb-green-700); border: 1px solid var(--mdb-green-700); }
+
+  /* ── Spacing scale viz ──────────────────────────── */
+  .scale { display: flex; align-items: flex-end; gap: var(--s-4); flex-wrap: wrap; }
+  .scale__item { text-align: center; font-family: var(--font-mono); font-size: 11px; color: var(--mdb-ink-500); }
+  .scale__bar { background: var(--mdb-green-700); border-radius: var(--r-sm); margin-bottom: var(--s-2); }
+
+  /* ── Component examples grid ────────────────────── */
+  .examples { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-4); }
+  @media (max-width: 900px) { .examples, .shape-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) {
+    .examples, .shape-grid { grid-template-columns: 1fr; }
+    .section__title, .hero__title { font-size: 40px; }
+    .page { padding: var(--s-8) var(--s-4); }
+    .hero { padding: var(--s-8) var(--s-6); }
+  }
+
+  /* ── Footer ─────────────────────────────────────── */
+  footer {
+    text-align: center;
+    padding: var(--s-12) 0 var(--s-8);
+    color: var(--mdb-ink-500);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <!-- ─────────────────────── HERO ─────────────────────── -->
+  <section class="hero">
+    <div class="hero__inner">
+      <div class="hero__logo">
+        <span>my</span>
+        <span>digital bånk</span>
+      </div>
+      <h1 class="hero__title">A bank that <em>feels</em><br/>like fresh air.</h1>
+      <p class="hero__sub">Design system v1.0 — calm green, warm cream, and a signature concave-cut card that quietly carries the brand.</p>
+      <div class="hero__meta">
+        <span>v1.0.0</span>
+        <span>2026·05·26</span>
+        <span>Designed for trust</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────── COLOR ─────────────────────── -->
+  <section class="section">
+    <div class="section__eyebrow">01 — Foundations</div>
+    <h2 class="section__title">A palette that <em>breathes</em>.</h2>
+    <p class="section__desc">One deep, confident green carries the brand. Warm cream replaces sterile white. Everything else is restraint.</p>
+
+    <div class="swatches">
+      <div class="swatch"><div class="swatch__chip" style="background:#1B4332"></div><div class="swatch__name">Forest 900</div><div class="swatch__token">--mdb-green-900</div><div class="swatch__hex">#1B4332</div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#2D6A4F"></div><div class="swatch__name">Forest 700 — Primary</div><div class="swatch__token">--mdb-green-700</div><div class="swatch__hex">#2D6A4F</div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#3E8567"></div><div class="swatch__name">Forest 600</div><div class="swatch__token">--mdb-green-600</div><div class="swatch__hex">#3E8567</div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#52B788"></div><div class="swatch__name">Forest 500</div><div class="swatch__token">--mdb-green-500</div><div class="swatch__hex">#52B788</div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#95D5B2"></div><div class="swatch__name">Forest 300</div><div class="swatch__token">--mdb-green-300</div><div class="swatch__hex">#95D5B2</div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#D8F3DC"></div><div class="swatch__name">Forest 100</div><div class="swatch__token">--mdb-green-100</div><div class="swatch__hex">#D8F3DC</div></div>
+
+      <div class="swatch"><div class="swatch__chip" style="background:#FAF6EC"></div><div class="swatch__name">Cream 100</div><div class="swatch__token">--mdb-cream-100</div><div class="swatch__hex">#FAF6EC</div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#F2EBD8"></div><div class="swatch__name">Cream 200 — Surface</div><div class="swatch__token">--mdb-cream-200</div><div class="swatch__hex">#F2EBD8</div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#E6DCC1"></div><div class="swatch__name">Cream 300</div><div class="swatch__token">--mdb-cream-300</div><div class="swatch__hex">#E6DCC1</div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#D4C7A6"></div><div class="swatch__name">Cream 400</div><div class="swatch__token">--mdb-cream-400</div><div class="swatch__hex">#D4C7A6</div></div>
+
+      <div class="swatch"><div class="swatch__chip" style="background:#1A1A1A"></div><div class="swatch__name">Ink 900</div><div class="swatch__token">--mdb-ink-900</div><div class="swatch__hex">#1A1A1A</div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:#6B6B6B"></div><div class="swatch__name">Ink 500</div><div class="swatch__token">--mdb-ink-500</div><div class="swatch__hex">#6B6B6B</div></div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────── TYPE ─────────────────────── -->
+  <section class="section">
+    <div class="section__eyebrow">02 — Typography</div>
+    <h2 class="section__title">Editorial warmth, <em>operational</em> clarity.</h2>
+    <p class="section__desc">Fraunces (serif) carries emotional headlines. Inter handles every interface job. JetBrains Mono labels data.</p>
+
+    <div>
+      <div class="type-row">
+        <div class="type-row__label">Display XL<small>Fraunces 600 · 72/72 · -3%</small></div>
+        <div class="type-row__sample t-display-xl">Money, made human.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row__label">Display LG<small>Fraunces 600 · 56/58</small></div>
+        <div class="type-row__sample t-display-lg">Credit for everyone.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row__label">Display MD<small>Fraunces 600 · 40/44</small></div>
+        <div class="type-row__sample t-display-md">Open your account in minutes.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row__label">Heading LG<small>Inter 700 · 28/34</small></div>
+        <div class="type-row__sample t-heading-lg">Total control of your money.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row__label">Heading MD<small>Inter 600 · 20/26</small></div>
+        <div class="type-row__sample t-heading-md">24h support, zero fees, just freedom.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row__label">Body LG<small>Inter 400 · 18/28</small></div>
+        <div class="type-row__sample t-body-lg">Be it for your profile or for your future — we have the right credit for you.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row__label">Body<small>Inter 400 · 15/24</small></div>
+        <div class="type-row__sample t-body">All in app. Zero complications. Cashback on purchases. Your bank fits in your pocket.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row__label">Caption<small>JetBrains 500 · 11/16 · +12%</small></div>
+        <div class="type-row__sample t-caption">— Rates from 1.5% / month</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────── SHAPE ─────────────────────── -->
+  <section class="section">
+    <div class="section__eyebrow">03 — Shape language</div>
+    <h2 class="section__title">The <em>concave</em> cut.</h2>
+    <p class="section__desc">Every brand card is a rounded square with one corner curved inward — like a tile pulled from a larger pattern. It's the brand's signature, used consistently on social, marketing, and in-app.</p>
+
+    <div class="shape-grid on-cream">
+      <div class="demo-card demo-card--green">
+        <div class="demo-card__cutout-tr"></div>
+        <div class="demo-card__kicker">Personal loan</div>
+        <div class="demo-card__headline">Rates from <em>1.5%</em> a month</div>
+        <div class="demo-card__foot"><span class="demo-card__dot"></span> mydigitalbank.com</div>
+      </div>
+      <div class="demo-card demo-card--cream">
+        <div class="demo-card__cutout-tr"></div>
+        <div class="demo-card__kicker">Real estate</div>
+        <div class="demo-card__headline">Best market <em>rates</em>, tailored.</div>
+        <div class="demo-card__foot"><span class="demo-card__dot"></span> Up to 5.95% p.a.</div>
+      </div>
+      <div class="demo-card demo-card--green">
+        <div class="demo-card__cutout-tr"></div>
+        <div class="demo-card__kicker">Account PJ+</div>
+        <div class="demo-card__headline">Open your <em>business</em> account now.</div>
+        <div class="demo-card__foot"><span class="demo-card__dot"></span> Zero fees forever</div>
+      </div>
+    </div>
+
+    <div style="margin-top: var(--s-8); padding: var(--s-6); background: var(--mdb-cream-100); border-radius: var(--r-md); border: 1px solid var(--mdb-cream-300);">
+      <div class="t-caption" style="color: var(--mdb-green-700); margin-bottom: var(--s-2);">Rules</div>
+      <ul style="padding-left: var(--s-4); color: var(--mdb-ink-700); font-size: 14px; line-height: 1.7;">
+        <li>One concave cut per card. Never two, never on opposite corners.</li>
+        <li>Cut radius = 25–50% of the card's shortest side.</li>
+        <li>The cut reveals the surface behind the card — never a third color.</li>
+        <li>Use the cut to frame imagery, a stat chip, or a "what's behind".</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ─────────────────────── BUTTONS ─────────────────────── -->
+  <section class="section">
+    <div class="section__eyebrow">04 — Components</div>
+    <h2 class="section__title">Buttons &amp; <em>actions</em>.</h2>
+    <p class="section__desc">Pills only. The primary is always green-on-cream. Secondary is outlined. Ghost is for tertiary actions inside dense surfaces.</p>
+
+    <div class="buttons">
+      <button class="btn btn--primary">Open my account</button>
+      <button class="btn btn--secondary">Learn more</button>
+      <button class="btn btn--ghost">Skip for now</button>
+      <button class="btn btn--primary" disabled>Disabled</button>
+    </div>
+
+    <h3 class="t-heading-md" style="margin: var(--s-8) 0 var(--s-4);">Badges</h3>
+    <div class="badges">
+      <span class="badge badge--solid">New</span>
+      <span class="badge badge--green">Approved</span>
+      <span class="badge badge--outline">Up to 5.95%</span>
+    </div>
+
+    <h3 class="t-heading-md" style="margin: var(--s-8) 0 var(--s-4);">Form input</h3>
+    <div class="field">
+      <label class="field__label">Monthly income</label>
+      <input class="field__input" placeholder="$ 0,00" />
+      <div class="field__hint">We use this only to calculate your limit. Never shared.</div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────── SPACING ─────────────────────── -->
+  <section class="section">
+    <div class="section__eyebrow">05 — Spacing</div>
+    <h2 class="section__title">A strict <em>8pt</em> rhythm.</h2>
+    <p class="section__desc">Every gap, padding, and margin maps to this scale. No arbitrary numbers, no half-pixels.</p>
+
+    <div class="scale">
+      <div class="scale__item"><div class="scale__bar" style="width:32px;height:4px"></div>4 · --s-1</div>
+      <div class="scale__item"><div class="scale__bar" style="width:32px;height:8px"></div>8 · --s-2</div>
+      <div class="scale__item"><div class="scale__bar" style="width:32px;height:12px"></div>12 · --s-3</div>
+      <div class="scale__item"><div class="scale__bar" style="width:32px;height:16px"></div>16 · --s-4</div>
+      <div class="scale__item"><div class="scale__bar" style="width:32px;height:24px"></div>24 · --s-6</div>
+      <div class="scale__item"><div class="scale__bar" style="width:32px;height:32px"></div>32 · --s-8</div>
+      <div class="scale__item"><div class="scale__bar" style="width:32px;height:48px"></div>48 · --s-12</div>
+      <div class="scale__item"><div class="scale__bar" style="width:32px;height:64px"></div>64 · --s-16</div>
+      <div class="scale__item"><div class="scale__bar" style="width:32px;height:96px"></div>96 · --s-24</div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────── EXAMPLES ─────────────────────── -->
+  <section class="section">
+    <div class="section__eyebrow">06 — In context</div>
+    <h2 class="section__title">The system, <em>composed</em>.</h2>
+    <p class="section__desc">A small grid of brand surfaces using only the tokens above — no one-off styles.</p>
+
+    <div class="examples">
+      <div class="demo-card demo-card--green" style="aspect-ratio: 1/1.1;">
+        <div class="demo-card__cutout-tr"></div>
+        <div>
+          <div class="demo-card__kicker">24h support</div>
+          <div class="demo-card__headline" style="margin-top: var(--s-4); font-size: 28px;">Your access, <em>safe</em> and protected.</div>
+        </div>
+        <div class="demo-card__foot"><span class="demo-card__dot"></span> /mdbsocial</div>
+      </div>
+
+      <div class="demo-card demo-card--cream" style="aspect-ratio: 1/1.1;">
+        <div class="demo-card__cutout-tr"></div>
+        <div>
+          <div class="demo-card__kicker">Credit for all</div>
+          <div class="demo-card__headline" style="margin-top: var(--s-4); font-size: 28px;">Whoever your <em>profile</em> is, we have the right credit.</div>
+        </div>
+        <div class="buttons">
+          <button class="btn btn--secondary" style="font-size:13px;padding:10px 18px;">More in caption ↓</button>
+        </div>
+      </div>
+
+      <div class="demo-card demo-card--green" style="aspect-ratio: 1/1.1;">
+        <div class="demo-card__cutout-tr"></div>
+        <div>
+          <div class="demo-card__kicker">No fees · No paperwork</div>
+          <div class="demo-card__headline" style="margin-top: var(--s-4); font-size: 28px;">Just <em>freedom</em>.</div>
+        </div>
+        <div class="demo-card__foot"><span class="demo-card__dot"></span> Open in minutes</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>my digital bank · design system · v1.0.0</footer>
+</main>
+</body>
+</html>

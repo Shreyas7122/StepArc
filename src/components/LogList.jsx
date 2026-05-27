@@ -1,6 +1,6 @@
 import { X, Edit2, Check, Timer, Utensils, Dumbbell } from 'lucide-react';
 import { useState } from 'react';
-import { foodDatabase, workoutDatabase, cardioDatabase } from '../data';
+import { foodDatabase, workoutDatabase, cardioDatabase } from '../lib/data';
 
 const SectionLabel = ({ color, icon, text }) => (
   <div
@@ -62,9 +62,10 @@ const MonoBadge = ({ color, children }) => (
   </span>
 );
 
-const GhostIconBtn = ({ onClick, children, danger }) => (
+const GhostIconBtn = ({ onClick, children, danger, ariaLabel }) => (
   <button
     onClick={onClick}
+    aria-label={ariaLabel}
     style={{
       padding: '5px',
       width: 'auto',
@@ -75,8 +76,13 @@ const GhostIconBtn = ({ onClick, children, danger }) => (
       cursor: 'pointer',
       display: 'flex',
       alignItems: 'center',
-      transition: 'background 0.15s, color 0.15s',
+      transition: 'background 150ms var(--ease-out-expo), color 150ms var(--ease-out-expo), transform 100ms var(--ease-out-expo)',
+      transform: 'scale(1)',
     }}
+    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
+    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+    onMouseDown={e => e.currentTarget.style.transform = 'scale(0.9)'}
+    onMouseUp={e => e.currentTarget.style.transform = 'scale(1.1)'}
   >
     {children}
   </button>
@@ -92,6 +98,15 @@ const LogList = ({
   const [editFoodAmount, setEditFoodAmount] = useState('');
   const [editingWorkoutId, setEditingWorkoutId] = useState(null);
   const [editWorkoutSets, setEditWorkoutSets] = useState('');
+  const [removingIds, setRemovingIds] = useState(new Set());
+
+  const handleRemove = (id, deleteFn) => {
+    setRemovingIds(prev => new Set([...prev, id]));
+    setTimeout(() => {
+      deleteFn(id);
+      setRemovingIds(prev => { const n = new Set(prev); n.delete(id); return n; });
+    }, 230);
+  };
 
   const saveEditFood = (logId) => {
     onUpdateFoodLog(logId, Number(editFoodAmount));
@@ -114,7 +129,7 @@ const LogList = ({
           <div style={emptyStyle}>No food logged yet.</div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {foodLogs.map(log => {
+            {foodLogs.map((log, i) => {
               const isAI = !!log.aiMacros;
               const isEditing = !isAI && editingFoodId === log.id;
               const foodItem = isAI ? null : foodDatabase.find(f => f.id === log.foodId);
@@ -125,6 +140,7 @@ const LogList = ({
               return (
                 <div
                   key={log.id}
+                  className={`animate-slide-up${removingIds.has(log.id) ? ' log-item-removing' : ''}`}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -132,11 +148,14 @@ const LogList = ({
                     background: 'var(--ink-800)',
                     padding: '10px 12px 10px 14px',
                     borderRadius: 'var(--r-md)',
-                    borderLeft: '3px solid var(--yellow-500)',
                     border: '1px solid var(--ink-700)',
                     borderLeftWidth: 3,
                     borderLeftColor: 'var(--yellow-500)',
                     borderLeftStyle: 'solid',
+                    animationDelay: removingIds.has(log.id) ? '0ms' : `${i * 50}ms`,
+                    animationFillMode: 'forwards',
+                    opacity: 0,
+                    transition: 'background 200ms var(--ease-out-expo)',
                   }}
                 >
                   <div style={{ flex: 1 }}>
@@ -179,21 +198,21 @@ const LogList = ({
                         style={{ width: 70, padding: '6px', margin: 0, fontSize: '0.9rem' }}
                         autoFocus
                       />
-                      <GhostIconBtn onClick={() => saveEditFood(log.id)}>
+                      <GhostIconBtn onClick={() => saveEditFood(log.id)} ariaLabel="Save food edit">
                         <Check size={13} color="var(--gold-500)" />
                       </GhostIconBtn>
-                      <GhostIconBtn onClick={() => setEditingFoodId(null)}>
+                      <GhostIconBtn onClick={() => setEditingFoodId(null)} ariaLabel="Cancel food edit">
                         <X size={13} />
                       </GhostIconBtn>
                     </div>
                   ) : (
                     <div style={{ display: 'flex', gap: '4px' }}>
                       {!isAI && (
-                        <GhostIconBtn onClick={() => { setEditingFoodId(log.id); setEditFoodAmount(log.amount); }}>
+                        <GhostIconBtn onClick={() => { setEditingFoodId(log.id); setEditFoodAmount(log.amount); }} ariaLabel="Edit food log">
                           <Edit2 size={14} />
                         </GhostIconBtn>
                       )}
-                      <GhostIconBtn onClick={() => onDeleteFoodLog(log.id)} danger>
+                      <GhostIconBtn onClick={() => handleRemove(log.id, onDeleteFoodLog)} danger ariaLabel="Delete food log">
                         <X size={14} />
                       </GhostIconBtn>
                     </div>
@@ -213,7 +232,7 @@ const LogList = ({
           <div style={emptyStyle}>No cardio logged yet.</div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {cardioLogs.map(log => {
+            {cardioLogs.map((log, i) => {
               const cal = log.aiCalories
                 ? Math.round(log.aiCalories)
                 : (() => {
@@ -223,6 +242,7 @@ const LogList = ({
               return (
                 <div
                   key={log.id}
+                  className={`animate-slide-up${removingIds.has(log.id) ? ' log-item-removing' : ''}`}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -230,11 +250,14 @@ const LogList = ({
                     background: 'var(--ink-800)',
                     padding: '10px 12px',
                     borderRadius: 'var(--r-md)',
-                    borderLeft: '3px solid var(--yellow-500)',
                     border: '1px solid var(--ink-700)',
                     borderLeftWidth: 3,
                     borderLeftColor: 'var(--yellow-500)',
                     borderLeftStyle: 'solid',
+                    animationDelay: removingIds.has(log.id) ? '0ms' : `${i * 50}ms`,
+                    animationFillMode: 'forwards',
+                    opacity: 0,
+                    transition: 'background 200ms var(--ease-out-expo)',
                   }}
                 >
                   <div>
@@ -246,7 +269,7 @@ const LogList = ({
                       <MonoBadge color="var(--yellow-500)">{cal} kcal burned</MonoBadge>
                     </div>
                   </div>
-                  <GhostIconBtn onClick={() => onDeleteCardioLog(log.id)} danger>
+                  <GhostIconBtn onClick={() => handleRemove(log.id, onDeleteCardioLog)} danger ariaLabel="Delete cardio log">
                     <X size={14} />
                   </GhostIconBtn>
                 </div>
@@ -264,13 +287,14 @@ const LogList = ({
           <div style={emptyStyle}>No workout logged yet.</div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {workoutLogs.map(log => {
+            {workoutLogs.map((log, i) => {
               const isEditing = editingWorkoutId === log.id;
               const workoutItem = workoutDatabase.find(w => w.id === log.workoutId);
               const cal = workoutItem ? Math.round(workoutItem.calPerSet * log.sets) : 0;
               return (
                 <div
                   key={log.id}
+                  className={`animate-slide-up${removingIds.has(log.id) ? ' log-item-removing' : ''}`}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -278,11 +302,14 @@ const LogList = ({
                     background: 'var(--ink-800)',
                     padding: '10px 12px',
                     borderRadius: 'var(--r-md)',
-                    borderLeft: '3px solid var(--gray-200)',
                     border: '1px solid var(--ink-700)',
                     borderLeftWidth: 3,
                     borderLeftColor: 'var(--gray-200)',
                     borderLeftStyle: 'solid',
+                    animationDelay: removingIds.has(log.id) ? '0ms' : `${i * 50}ms`,
+                    animationFillMode: 'forwards',
+                    opacity: 0,
+                    transition: 'background 200ms var(--ease-out-expo)',
                   }}
                 >
                   <div style={{ flex: 1 }}>
@@ -306,19 +333,19 @@ const LogList = ({
                         style={{ width: 60, padding: '6px', margin: 0, fontSize: '0.9rem' }}
                         autoFocus
                       />
-                      <GhostIconBtn onClick={() => saveEditWorkout(log.id)}>
+                      <GhostIconBtn onClick={() => saveEditWorkout(log.id)} ariaLabel="Save workout edit">
                         <Check size={13} color="var(--gold-500)" />
                       </GhostIconBtn>
-                      <GhostIconBtn onClick={() => setEditingWorkoutId(null)}>
+                      <GhostIconBtn onClick={() => setEditingWorkoutId(null)} ariaLabel="Cancel workout edit">
                         <X size={13} />
                       </GhostIconBtn>
                     </div>
                   ) : (
                     <div style={{ display: 'flex', gap: '4px' }}>
-                      <GhostIconBtn onClick={() => { setEditingWorkoutId(log.id); setEditWorkoutSets(log.sets); }}>
+                      <GhostIconBtn onClick={() => { setEditingWorkoutId(log.id); setEditWorkoutSets(log.sets); }} ariaLabel="Edit workout log">
                         <Edit2 size={14} />
                       </GhostIconBtn>
-                      <GhostIconBtn onClick={() => onDeleteWorkoutLog(log.id)} danger>
+                      <GhostIconBtn onClick={() => handleRemove(log.id, onDeleteWorkoutLog)} danger ariaLabel="Delete workout log">
                         <X size={14} />
                       </GhostIconBtn>
                     </div>

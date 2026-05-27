@@ -1,6 +1,6 @@
 import { Timer, Send, X, ChevronDown, ChevronUp, Flame } from 'lucide-react';
 import { useState } from 'react';
-import { getApiBase } from '../utils';
+import { getApiBase } from '../lib/utils';
 
 const CardioAIInput = ({ onLogCardio }) => {
   const [prompt, setPrompt]             = useState('');

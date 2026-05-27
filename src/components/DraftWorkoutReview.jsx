@@ -1,5 +1,5 @@
 import { X, Plus, Check } from 'lucide-react';
-import { workoutDatabase } from '../data';
+import { workoutDatabase } from '../lib/data';
 import SearchSelect from './SearchSelect';
 
 const exerciseItems = workoutDatabase.map(w => ({

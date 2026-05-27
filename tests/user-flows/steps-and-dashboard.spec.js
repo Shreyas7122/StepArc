@@ -74,6 +74,9 @@ test.describe('Dashboard Calorie Math', () => {
     await page.getByPlaceholder('e.g. 180').fill('400');
     await page.getByRole('button', { name: /log custom food/i }).click();
 
+    // Manually navigate to the Today/Dashboard tab after logging
+    await page.getByRole('tab', { name: 'Today tab' }).click();
+
     await page.waitForSelector('text=kcal eaten', { timeout: 3000 });
     const consumedSection = page.locator('text=kcal eaten').locator('..');
     await expect(consumedSection.getByText('400')).toBeVisible();
@@ -95,6 +98,9 @@ test.describe('Dashboard Calorie Math', () => {
     await page.getByPlaceholder('e.g. Low Fat Paneer, Chicken Subji…').fill('Enormous Meal');
     await page.getByPlaceholder('e.g. 180').fill('9999');
     await page.getByRole('button', { name: /log custom food/i }).click();
+
+    // Manually navigate to the Today/Dashboard tab after logging
+    await page.getByRole('tab', { name: 'Today tab' }).click();
 
     await expect(page.getByText('OVER GOAL')).toBeVisible({ timeout: 3000 });
   });

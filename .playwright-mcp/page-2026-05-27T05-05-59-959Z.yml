@@ -1,0 +1,155 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "UNITY home" [ref=e5] [cursor=pointer]:
+        - /url: "#"
+        - generic [ref=e7]: UNITY
+      - navigation "Primary" [ref=e8]:
+        - link "My Profile" [ref=e9] [cursor=pointer]:
+          - /url: "#"
+        - link "Accion University" [ref=e10] [cursor=pointer]:
+          - /url: "#"
+      - generic [ref=e11]:
+        - generic [ref=e12]: Saanvi
+        - generic [ref=e13]: LAT-2026-0142
+  - navigation "Sections" [ref=e14]:
+    - generic [ref=e15]:
+      - tablist [ref=e16]:
+        - tab "Overview" [ref=e17] [cursor=pointer]:
+          - img [ref=e19]
+          - generic [ref=e22]: Overview
+        - tab "Timesheet" [ref=e23] [cursor=pointer]:
+          - img [ref=e25]
+          - generic [ref=e28]: Timesheet
+        - tab "Leave" [active] [selected] [ref=e29] [cursor=pointer]:
+          - img [ref=e31]
+          - generic [ref=e34]: Leave
+        - tab "Admin soon" [disabled] [ref=e35]:
+          - img [ref=e37]
+          - generic [ref=e39]: Admin
+          - generic [ref=e40]: soon
+      - search [ref=e41]:
+        - img [ref=e42]
+        - searchbox "Search" [ref=e45]
+        - generic [ref=e46]: ⌘K
+  - main [ref=e47]:
+    - complementary [ref=e48]:
+      - article "Saanvi Patel" [ref=e49]:
+        - generic [ref=e50]:
+          - generic [ref=e51]: Engineering Roster
+          - heading "Saanvi Patel" [level=1] [ref=e53]
+          - paragraph [ref=e54]: Senior Software Engineer
+          - generic [ref=e55]:
+            - generic "Work ID" [ref=e56]: LAT-2026-0142
+            - generic [ref=e57]: Platform Engineering
+        - generic [ref=e58]:
+          - generic [ref=e59]:
+            - term [ref=e60]: Base location
+            - definition [ref=e61]: Bengaluru, IN
+          - generic [ref=e62]:
+            - term [ref=e63]: Work location
+            - definition [ref=e64]: Atlas Financial · Mumbai
+        - figure "Photograph of Saanvi Patel" [ref=e65]:
+          - generic [ref=e66]: SP
+          - generic "Online" [ref=e67]: Active · this week
+        - generic [ref=e69]:
+          - button "Fill timesheet" [ref=e70] [cursor=pointer]:
+            - img [ref=e71]
+            - text: Fill timesheet
+          - button "Apply for leave" [ref=e74] [cursor=pointer]:
+            - img [ref=e75]
+            - text: Apply leave
+    - region "Apply for leave" [ref=e78]:
+      - generic [ref=e79]: Leave
+      - heading "Apply for leave" [level=2] [ref=e80]
+      - paragraph [ref=e81]: Requests route to your reporting manager. Balance updates on approval — not on submission.
+      - generic [ref=e82]:
+        - generic [ref=e83]:
+          - group "Leave type" [ref=e84]:
+            - generic [ref=e85]: Leave type
+            - generic [ref=e86]:
+              - button "Annual Earned PTO 12d left" [pressed] [ref=e87] [cursor=pointer]:
+                - generic [ref=e88]: Annual
+                - generic [ref=e89]: Earned PTO
+                - generic [ref=e90]: 12d left
+              - button "Sick Doctor-certified 8d left" [ref=e91] [cursor=pointer]:
+                - generic [ref=e92]: Sick
+                - generic [ref=e93]: Doctor-certified
+                - generic [ref=e94]: 8d left
+              - button "Casual Personal half/full 4d left" [ref=e95] [cursor=pointer]:
+                - generic [ref=e96]: Casual
+                - generic [ref=e97]: Personal half/full
+                - generic [ref=e98]: 4d left
+              - button "Comp-off Weekend/holiday work 2d left" [ref=e99] [cursor=pointer]:
+                - generic [ref=e100]: Comp-off
+                - generic [ref=e101]: Weekend/holiday work
+                - generic [ref=e102]: 2d left
+              - button "Unpaid No balance impact" [ref=e103] [cursor=pointer]:
+                - generic [ref=e104]: Unpaid
+                - generic [ref=e105]: No balance impact
+          - generic [ref=e106]:
+            - generic [ref=e107]:
+              - generic [ref=e108]: From
+              - textbox "From" [ref=e109]: 2026-05-27
+            - generic [ref=e110]:
+              - generic [ref=e111]: To
+              - textbox "To" [ref=e112]: 2026-05-27
+            - generic [ref=e113]:
+              - generic [ref=e114]: "1"
+              - generic [ref=e115]: day
+          - generic [ref=e116]:
+            - generic [ref=e117]: Reason
+            - textbox "Reason" [ref=e118]:
+              - /placeholder: Short context for your approver.
+            - generic [ref=e119]: 0 / 400 — visible to your approver only.
+          - status [ref=e120]: Add a brief reason for your approver.
+          - generic [ref=e121]:
+            - button "Submit request" [disabled] [ref=e122]
+            - button "Reset" [ref=e123] [cursor=pointer]
+        - complementary "Leave balance and history" [ref=e124]:
+          - generic [ref=e125]:
+            - heading "Balance · 2026" [level=3] [ref=e126]
+            - list [ref=e127]:
+              - listitem [ref=e128]:
+                - generic [ref=e129]:
+                  - generic [ref=e130]: Annual
+                  - generic [ref=e131]:
+                    - strong [ref=e132]: "12"
+                    - generic [ref=e133]: / 20
+              - listitem [ref=e135]:
+                - generic [ref=e136]:
+                  - generic [ref=e137]: Sick
+                  - generic [ref=e138]:
+                    - strong [ref=e139]: "8"
+                    - generic [ref=e140]: / 10
+              - listitem [ref=e142]:
+                - generic [ref=e143]:
+                  - generic [ref=e144]: Casual
+                  - generic [ref=e145]:
+                    - strong [ref=e146]: "4"
+                    - generic [ref=e147]: / 6
+              - listitem [ref=e149]:
+                - generic [ref=e150]:
+                  - generic [ref=e151]: Comp-off
+                  - strong [ref=e153]: "2"
+          - generic [ref=e155]:
+            - heading "Recent requests" [level=3] [ref=e156]
+            - list [ref=e157]:
+              - listitem [ref=e158]:
+                - generic [ref=e159]:
+                  - generic [ref=e160]: approved
+                  - generic [ref=e161]: 1d · sick
+                - generic [ref=e162]: 2026-04-09 → 2026-04-09
+                - generic [ref=e163]: Fever — doctor advised rest.
+              - listitem [ref=e164]:
+                - generic [ref=e165]:
+                  - generic [ref=e166]: approved
+                  - generic [ref=e167]: 5d · annual
+                - generic [ref=e168]: 2026-03-21 → 2026-03-25
+                - generic [ref=e169]: Family holiday — Goa.
+  - contentinfo [ref=e170]:
+    - generic [ref=e171]:
+      - generic [ref=e172]:
+        - text: Copyright © 2026 · Powered by
+        - strong [ref=e173]: UNITY
+      - generic [ref=e174]: v0.2.0 · build development

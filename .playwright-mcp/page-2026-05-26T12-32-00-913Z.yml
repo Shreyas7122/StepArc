@@ -1,0 +1,34 @@
+- main [ref=e3]:
+  - generic [ref=e4]:
+    - article "Saanvi Patel" [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]: Engineering Roster
+        - heading "Saanvi Patel" [level=1] [ref=e9]
+        - paragraph [ref=e10]: Senior Software Engineer
+        - generic [ref=e11]:
+          - generic "Work ID" [ref=e12]: LAT-2026-0142
+          - generic [ref=e13]: Platform Engineering
+      - generic [ref=e14]:
+        - generic [ref=e15]:
+          - term [ref=e16]: Base location
+          - definition [ref=e17]: Bengaluru, IN
+        - generic [ref=e18]:
+          - term [ref=e19]: Work location
+          - definition [ref=e20]: Atlas Financial · Mumbai
+      - figure "Photograph of Saanvi Patel" [ref=e21]:
+        - generic [ref=e22]: SP
+        - generic "Online" [ref=e23]: Active · this week
+      - generic [ref=e25]:
+        - button "Fill timesheet" [active] [ref=e26] [cursor=pointer]:
+          - img [ref=e27]
+          - text: Fill timesheet
+        - button "Apply for leave" [ref=e30] [cursor=pointer]:
+          - img [ref=e31]
+          - text: Apply leave
+    - region "Workspace" [ref=e34]:
+      - generic [ref=e35]: Workspace
+      - heading "Welcome back, Saanvi." [level=2] [ref=e36]
+      - paragraph [ref=e37]: This is your day-one surface. Your timesheet, leave balance, and current engagement live one click away on the card to the left. Admin views, service health, and engineer roster come online in the next pass.
+      - generic [ref=e38]:
+        - strong [ref=e39]: Last action ›
+        - text: Timesheet opened for Saanvi Patel (LAT-2026-0142).

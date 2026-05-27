@@ -1,6 +1,6 @@
 import { Sparkles, Send, X, ChevronDown, ChevronUp, Zap, Camera, Image } from 'lucide-react';
 import { useRef, useState } from 'react';
-import { getApiBase } from '../utils';
+import { getApiBase } from '../lib/utils';
 
 const MacroChip = ({ label, value, unit, color }) => (
   <div
@@ -131,6 +131,8 @@ const AIInput = ({ caloriesLoggedToday, calorieGoal, onLogMeal }) => {
     alignItems: 'center',
     gap: '4px',
     boxShadow: 'none',
+    transform: 'none',
+    transition: 'background-color 150ms var(--ease-out-expo), color 150ms var(--ease-out-expo)',
   });
 
   return (
@@ -337,7 +339,7 @@ const AIInput = ({ caloriesLoggedToday, calorieGoal, onLogMeal }) => {
 
       {/* Result card */}
       {result && (
-        <div className="glass-card ai-result-card">
+        <div className="glass-card ai-result-card animate-slide-up">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
             <div>
               <div

@@ -1,10 +1,13 @@
 import { test, expect } from '@playwright/test';
 import { setupApiMocks } from '../mocks/api-mocks.js';
+import { setupAuthenticated } from '../helpers/setup-authenticated.js';
 
 test.describe('Dashboard & Core Navigation Flow', () => {
   test.beforeEach(async ({ page }) => {
+    await setupAuthenticated(page);
     await setupApiMocks(page);
     await page.goto('/');
+    await page.waitForSelector('header h1', { timeout: 8000 });
   });
 
   test('should render header with correct title', async ({ page }) => {
@@ -13,36 +16,39 @@ test.describe('Dashboard & Core Navigation Flow', () => {
   });
 
   test('should navigate between tabs correctly', async ({ page }) => {
-    // Default tab is Dashboard
+    // Default tab is Dashboard/Today
     await expect(page.getByText('MACROS TODAY')).toBeVisible();
 
-    // Click Food Tab
-    await page.getByRole('tab', { name: 'Food' }).click();
-    await expect(page.getByPlaceholder('What did you eat?')).toBeVisible();
+    // Click Nutrition Tab
+    await page.getByRole('tab', { name: 'Nutrition tab' }).click();
+    await expect(page.getByPlaceholder('Search food… e.g. oats')).toBeVisible();
 
-    // Click Workout Tab
-    await page.getByRole('tab', { name: 'Workout' }).click();
-    await expect(page.getByPlaceholder('What did you do?')).toBeVisible();
+    // Click Training Tab
+    await page.getByRole('tab', { name: 'Training tab' }).click();
+    await expect(page.getByText('Gym Routine')).toBeVisible();
 
-    // Go back to Dashboard
-    await page.getByRole('tab', { name: 'Dashboard' }).click();
+    // Go back to Today/Dashboard
+    await page.getByRole('tab', { name: 'Today tab' }).click();
     await expect(page.getByText('MACROS TODAY')).toBeVisible();
   });
 
   test('should open and close the User Profile Modal from the header', async ({ page }) => {
-    // Click the profile area in the header (which is a button)
-    await page.locator('header button').first().click();
-    
+    // Click the profile button in the header
+    await page.click('button[aria-label="Toggle user profile and settings menu"]');
+
+    // Click Edit Profile in the dropdown
+    await page.click('text=Edit Profile');
+
     // Modal should appear
-    await expect(page.getByRole('heading', { name: 'User Profile' })).toBeVisible();
-    
+    await expect(page.getByText('MY PROFILE')).toBeVisible({ timeout: 3000 });
+
     // Check if the mock data is populated
     await expect(page.getByDisplayValue('23')).toBeVisible(); // Age
     await expect(page.getByDisplayValue('175')).toBeVisible(); // Height
 
-    // Close the modal
-    await page.getByRole('button', { name: 'Close profile' }).click();
-    await expect(page.getByRole('heading', { name: 'User Profile' })).toBeHidden();
+    // Close the modal using the close button (aria-label="Close profile settings")
+    await page.click('button[aria-label="Close profile settings"]');
+    await expect(page.getByText('MY PROFILE')).toBeHidden({ timeout: 3000 });
   });
 
   test('should render horizontal progress bars', async ({ page }) => {

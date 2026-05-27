@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { supabase } from '../supabase';
+import { supabase } from '../services/supabase';
 import { Activity, Mail, Lock, Eye, EyeOff, UserPlus, LogIn } from 'lucide-react';
 
 const AuthScreen = ({ onAuth }) => {
@@ -131,7 +131,7 @@ const AuthScreen = ({ onAuth }) => {
                 fontFamily: 'var(--font-heading)', fontWeight: 700,
                 fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.08em',
                 boxShadow: mode === m ? 'var(--glow-gold)' : 'none',
-                transition: 'all 0.2s',
+                transition: 'background-color 200ms var(--ease-out-expo), color 200ms var(--ease-out-expo), box-shadow 200ms var(--ease-out-expo)',
               }}
             >
               {m === 'login' ? 'Log In' : 'Sign Up'}
@@ -153,7 +153,11 @@ const AuthScreen = ({ onAuth }) => {
             </div>
             <input
               type="email"
+              name="email"
               placeholder="Email address"
+              aria-label="Email address"
+              autoComplete="email"
+              spellCheck={false}
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
@@ -174,7 +178,10 @@ const AuthScreen = ({ onAuth }) => {
             </div>
             <input
               type={showPw ? 'text' : 'password'}
+              name="password"
               placeholder="Password (min 6 chars)"
+              aria-label="Password"
+              autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
               value={password}
               onChange={e => setPassword(e.target.value)}
               required

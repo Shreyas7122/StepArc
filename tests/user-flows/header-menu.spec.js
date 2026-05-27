@@ -1,10 +1,13 @@
 import { test, expect } from '@playwright/test';
 import { setupApiMocks } from '../mocks/api-mocks.js';
+import { setupAuthenticated } from '../helpers/setup-authenticated.js';
 
 test.describe('Header User Menu', () => {
   test.beforeEach(async ({ page }) => {
+    await setupAuthenticated(page);
     await setupApiMocks(page);
     await page.goto('/');
+    await page.waitForSelector('header h1', { timeout: 8000 });
   });
 
   test('user menu button is visible in header', async ({ page }) => {

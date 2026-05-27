@@ -76,6 +76,11 @@
   --fats-color:    #eab308;
   --fibre-color:   #22c55e;
   --calories-color:#F4C20D;
+
+  /* Motion Tokens */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 /* ============================================================
@@ -126,11 +131,17 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--r-lg);
   padding: 20px;
   box-shadow: var(--shadow-card);
-  transition: box-shadow 0.2s ease;
+  transition: transform 300ms var(--ease-out-expo), box-shadow 300ms var(--ease-out-expo), border-color 300ms var(--ease-out-expo);
 }
 
 .glass-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(244, 194, 13, 0.25);
   box-shadow: var(--shadow-lift);
+}
+
+.glass-card:active {
+  transform: translateY(-1px) scale(0.99);
 }
 
 /* ============================================================
@@ -208,7 +219,8 @@ select,
 input[type="text"],
 input[type="number"],
 input[type="email"],
-input[type="password"] {
+input[type="password"],
+textarea {
   width: 100%;
   padding: 11px 14px;
   background: var(--ink-800);
@@ -218,16 +230,18 @@ input[type="password"] {
   font-family: var(--font-body);
   font-size: 0.95rem;
   outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition: border-color 200ms var(--ease-out-expo), box-shadow 200ms var(--ease-out-expo), background-color 200ms var(--ease-out-expo);
 }
 
 select:focus,
 input[type="text"]:focus,
 input[type="number"]:focus,
 input[type="email"]:focus,
-input[type="password"]:focus {
+input[type="password"]:focus,
+textarea:focus {
   border-color: var(--yellow-500);
-  box-shadow: 0 0 0 3px rgba(244,194,13,0.18);
+  box-shadow: 0 0 0 3px rgba(244, 194, 13, 0.25);
+  background-color: var(--ink-900);
 }
 
 select::placeholder,
@@ -251,21 +265,30 @@ button {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  transition: transform 150ms var(--ease-out-expo), box-shadow 150ms var(--ease-out-expo), background-color 150ms var(--ease-out-expo), filter 150ms var(--ease-out-expo);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
 }
 
-button:hover  { transform: translateY(-1px); box-shadow: var(--glow-yellow); }
-button:active { transform: scale(0.98); opacity: 0.88; }
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glow-yellow);
+  filter: brightness(1.08);
+}
+
+button:active {
+  transform: translateY(-0.5px) scale(0.97);
+  filter: brightness(0.95);
+}
 
 button:disabled {
   opacity: 0.35;
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
+  filter: none;
 }
 
 button.secondary {
@@ -277,9 +300,14 @@ button.secondary {
 }
 
 button.secondary:hover {
-  border-color: var(--gray-400);
+  border-color: var(--white);
+  background: rgba(255, 255, 255, 0.04);
   box-shadow: none;
-  transform: none;
+  transform: translateY(-2px);
+}
+
+button.secondary:active {
+  transform: translateY(-0.5px) scale(0.97);
 }
 
 /* ============================================================
@@ -296,11 +324,12 @@ button.secondary:hover {
 
 .tab {
   flex: 1;
-  padding: 8px 4px;
+  padding: 9px 4px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  justify-content: center;
+  gap: 4px;
   border-radius: var(--r-md);
   font-size: 0.58rem;
   font-family: var(--font-heading);
@@ -308,12 +337,41 @@ button.secondary:hover {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
   color: var(--gray-400);
   background: transparent;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  transform: none;
+  transition: background-color 200ms var(--ease-out-expo), color 200ms var(--ease-out-expo), box-shadow 200ms var(--ease-out-expo), transform 150ms var(--ease-out-expo);
+}
+
+.tab:focus-visible {
+  outline: none;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 2px var(--yellow-500);
+}
+
+.tab:hover {
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.04);
+  transform: translateY(-1px);
+}
+
+.tab:active {
+  transform: scale(0.96) translateY(0);
 }
 
 .tab.active {
+  background: var(--gradient-cta);
+  color: var(--black);
+  box-shadow: var(--glow-yellow);
+}
+
+.tab.active:hover {
+  transform: none;
   background: var(--gradient-cta);
   color: var(--black);
   box-shadow: var(--glow-yellow);
@@ -331,6 +389,7 @@ button.secondary:hover {
   max-height: 200px;
   overflow-y: auto;
   box-shadow: var(--shadow-lift);
+  animation: dropdownEnter 180ms var(--ease-out-expo) forwards;
 }
 
 .search-option {
@@ -393,14 +452,110 @@ button.secondary:hover {
    ANIMATIONS
    ============================================================ */
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(12px); filter: blur(2px); }
+  to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+@keyframes dropdownEnter {
+  from { opacity: 0; transform: translateY(-5px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.animate-slide-up          { animation: slideUp 0.32s cubic-bezier(0.4,0,0.2,1) forwards; }
+@keyframes logItemExit {
+  from { opacity: 1; transform: none; filter: none; }
+  to   { opacity: 0; transform: translateX(16px); }
+}
+
+@keyframes valueBump {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.07); }
+  100% { transform: scale(1); }
+}
+
+@keyframes heroGlowPulse {
+  0% { box-shadow: var(--shadow-lift); }
+  50% { box-shadow: 0 22px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(244, 194, 13, 0.16); }
+  100% { box-shadow: var(--shadow-lift); }
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; backdrop-filter: blur(0px); }
+  to   { opacity: 1; backdrop-filter: blur(8px); }
+}
+
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translateY(30px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.animate-slide-up {
+  animation: slideUp 350ms var(--ease-out-expo) forwards;
+}
 .delay-1 { animation-delay: 0.08s; opacity: 0; }
 .delay-2 { animation-delay: 0.16s; opacity: 0; }
 .delay-3 { animation-delay: 0.24s; opacity: 0; }
+
+.log-item-removing {
+  animation: logItemExit 220ms var(--ease-out-expo) forwards !important;
+  pointer-events: none;
+}
+
+.value-bump {
+  animation: valueBump 280ms var(--ease-out-expo);
+  transform-origin: left center;
+}
+
+/* Dashboard Hero Card Style & Animation */
+.dashboard-hero {
+  background: var(--gradient-hero);
+  border-radius: var(--r-xl);
+  padding: 24px 20px 20px;
+  box-shadow: var(--shadow-lift);
+  border: 1px solid var(--ink-700);
+  position: relative;
+  overflow: hidden;
+  transition: transform 400ms var(--ease-out-expo), box-shadow 400ms var(--ease-out-expo), border-color 400ms var(--ease-out-expo);
+}
+
+.dashboard-hero:hover {
+  transform: translateY(-2px);
+  border-color: rgba(244, 194, 13, 0.35);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.8), 0 0 25px rgba(244, 194, 13, 0.12);
+}
+
+.hero-card-animate {
+  animation: heroGlowPulse 4s var(--ease-in-out) infinite;
+}
+
+/* Toggle Styles */
+.toggle {
+  width: 44px;
+  height: 24px;
+  background: var(--ink-700);
+  border-radius: 999px;
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+  transition: background-color 250ms var(--ease-out-expo);
+}
+.toggle::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 18px;
+  height: 18px;
+  background: var(--white);
+  border-radius: 50%;
+  transition: left 250ms var(--ease-out-expo), background-color 250ms var(--ease-out-expo);
+}
+.toggle.on {
+  background: var(--yellow-500);
+}
+.toggle.on::after {
+  left: 23px;
+  background: var(--black);
+}
 
 /* ============================================================
    MODAL
@@ -411,8 +566,17 @@ button.secondary:hover {
   z-index: 999;
   background: rgba(0,0,0,0.85);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
+  padding: 20px;
+}
+
+.modal-backdrop-animate {
+  animation: modalFadeIn 250ms var(--ease-out-expo) forwards;
+}
+
+.modal-content-animate {
+  animation: modalSlideUp 350ms var(--ease-out-expo) forwards;
 }
 
 /* ============================================================
@@ -466,4 +630,41 @@ button.secondary:hover {
   color: var(--black);
   padding: 0 6px;
   border-radius: var(--r-sm);
+}
+
+/* ============================================================
+   ACCESSIBILITY — Reduced Motion
+   Honour the user's OS-level "reduce motion" preference.
+   Strips all animations and transitions down to instant.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0.01ms !important;
+  }
+
+  .animate-slide-up,
+  .hero-card-animate,
+  .modal-backdrop-animate,
+  .modal-content-animate {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .log-item-removing {
+    animation: none !important;
+    opacity: 0 !important;
+    transform: none !important;
+  }
+
+  .value-bump {
+    animation: none !important;
+  }
 }

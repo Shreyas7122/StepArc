@@ -1,0 +1,85 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "UNITY home" [ref=e5] [cursor=pointer]:
+        - /url: "#"
+        - generic [ref=e7]: UNITY
+      - navigation "Primary" [ref=e8]:
+        - link "My Profile" [ref=e9] [cursor=pointer]:
+          - /url: "#"
+        - link "Accion University" [ref=e10] [cursor=pointer]:
+          - /url: "#"
+      - generic [ref=e11]:
+        - generic [ref=e12]: Saanvi
+        - generic [ref=e13]: LAT-2026-0142
+  - navigation "Sections" [ref=e14]:
+    - generic [ref=e15]:
+      - tablist [ref=e16]:
+        - tab "Overview" [selected] [ref=e17] [cursor=pointer]:
+          - img [ref=e19]
+          - generic [ref=e22]: Overview
+        - tab "Timesheet" [ref=e23] [cursor=pointer]:
+          - img [ref=e25]
+          - generic [ref=e28]: Timesheet
+        - tab "Leave" [ref=e29] [cursor=pointer]:
+          - img [ref=e31]
+          - generic [ref=e34]: Leave
+        - tab "Admin soon" [disabled] [ref=e35]:
+          - img [ref=e37]
+          - generic [ref=e39]: Admin
+          - generic [ref=e40]: soon
+      - search [ref=e41]:
+        - img [ref=e42]
+        - searchbox "Search" [ref=e45]
+        - generic [ref=e46]: ⌘K
+  - main [ref=e47]:
+    - complementary [ref=e48]:
+      - article "Saanvi Patel" [ref=e49]:
+        - generic [ref=e50]:
+          - generic [ref=e51]: Engineering Roster
+          - heading "Saanvi Patel" [level=1] [ref=e53]
+          - paragraph [ref=e54]: Senior Software Engineer
+          - generic [ref=e55]:
+            - generic "Work ID" [ref=e56]: LAT-2026-0142
+            - generic [ref=e57]: Platform Engineering
+        - generic [ref=e58]:
+          - generic [ref=e59]:
+            - term [ref=e60]: Base location
+            - definition [ref=e61]: Bengaluru, IN
+          - generic [ref=e62]:
+            - term [ref=e63]: Work location
+            - definition [ref=e64]: Atlas Financial · Mumbai
+        - figure "Photograph of Saanvi Patel" [ref=e65]:
+          - generic [ref=e66]: SP
+          - generic "Online" [ref=e67]: Active · this week
+        - generic [ref=e69]:
+          - button "Fill timesheet" [ref=e70] [cursor=pointer]:
+            - img [ref=e71]
+            - text: Fill timesheet
+          - button "Apply for leave" [ref=e74] [cursor=pointer]:
+            - img [ref=e75]
+            - text: Apply leave
+    - region "Welcome back, Saanvi." [ref=e78]:
+      - generic [ref=e79]: Overview
+      - heading "Welcome back, Saanvi." [level=2] [ref=e80]
+      - paragraph [ref=e81]:
+        - text: This is your day-one surface. Use the
+        - strong [ref=e82]: Fill timesheet
+        - text: button on the card to your left to log this week's hours, or
+        - strong [ref=e83]: Apply leave
+        - text: to file a request. Admin views come online next.
+      - generic [ref=e84]:
+        - strong [ref=e85]: You're on ›
+        - text: Engagement
+        - emphasis [ref=e86]: Atlas Financial · Mumbai
+        - text: · practice
+        - emphasis [ref=e87]: Platform Engineering
+        - text: · base
+        - emphasis [ref=e88]: Bengaluru, IN
+        - text: .
+  - contentinfo [ref=e89]:
+    - generic [ref=e90]:
+      - generic [ref=e91]:
+        - text: Copyright © 2026 · Powered by
+        - strong [ref=e92]: UNITY
+      - generic [ref=e93]: v0.2.0 · build development

@@ -1,12 +1,116 @@
 import { Brain, AlertTriangle, CheckCircle, X } from 'lucide-react';
-import { useState } from 'react';
-import { foodDatabase, workoutDatabase, STEP_CALORIES_MULTIPLIER } from '../data';
-import { getApiBase } from '../utils';
+import { useState, useEffect } from 'react';
+import { foodDatabase, workoutDatabase, STEP_CALORIES_MULTIPLIER, saveCustomFood } from '../lib/data';
+import { getApiBase } from '../lib/utils';
 
 const statusMeta = {
   on_track: { color: 'var(--gold-500)', bg: 'rgba(255,184,0,0.12)', border: 'rgba(255,184,0,0.25)', label: 'On Track' },
   over:     { color: '#ef4444',          bg: 'rgba(239,68,68,0.12)',  border: 'rgba(239,68,68,0.25)',  label: 'Over Goal' },
   under:    { color: '#f59e0b',          bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.25)', label: 'Under Goal' },
+};
+
+const MissingIngredientForm = ({ name }) => {
+  const [newMacros, setNewMacros] = useState({
+    calories: '',
+    protein: '',
+    carbs: '',
+    fats: '',
+    fibre: ''
+  });
+
+  const handleAddNew = () => {
+    const newFood = {
+      id: Date.now() + Math.random(),
+      name: name,
+      calories: Number(newMacros.calories) || 0,
+      protein: Number(newMacros.protein) || 0,
+      carbs: Number(newMacros.carbs) || 0,
+      fats: Number(newMacros.fats) || 0,
+      fibre: Number(newMacros.fibre) || 0,
+    };
+    saveCustomFood(newFood);
+  };
+
+  return (
+    <div
+      className="glass-card animate-slide-up"
+      style={{
+        padding: '12px',
+        border: '1px solid rgba(244,194,13,0.3)',
+        background: 'rgba(255,255,255,0.02)',
+        marginTop: '8px',
+      }}
+    >
+      <div
+        style={{
+          fontFamily: 'var(--font-heading)',
+          fontSize: '0.65rem',
+          color: 'var(--gold-500)',
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+          marginBottom: '8px',
+        }}
+      >
+        Add "{name}" to Database?
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', marginBottom: '6px' }}>
+        <input
+          type="number"
+          placeholder="kcal/100g"
+          value={newMacros.calories}
+          onChange={e => setNewMacros({...newMacros, calories: e.target.value})}
+          style={{ margin: 0, padding: '6px 8px', fontSize: '0.75rem' }}
+        />
+        <input
+          type="number"
+          placeholder="Protein (g)"
+          value={newMacros.protein}
+          onChange={e => setNewMacros({...newMacros, protein: e.target.value})}
+          style={{ margin: 0, padding: '6px 8px', fontSize: '0.75rem' }}
+        />
+        <input
+          type="number"
+          placeholder="Carbs (g)"
+          value={newMacros.carbs}
+          onChange={e => setNewMacros({...newMacros, carbs: e.target.value})}
+          style={{ margin: 0, padding: '6px 8px', fontSize: '0.75rem' }}
+        />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '6px', marginBottom: '8px' }}>
+        <input
+          type="number"
+          placeholder="Fats (g)"
+          value={newMacros.fats}
+          onChange={e => setNewMacros({...newMacros, fats: e.target.value})}
+          style={{ margin: 0, padding: '6px 8px', fontSize: '0.75rem' }}
+        />
+        <input
+          type="number"
+          placeholder="Fibre (g)"
+          value={newMacros.fibre}
+          onChange={e => setNewMacros({...newMacros, fibre: e.target.value})}
+          style={{ margin: 0, padding: '6px 8px', fontSize: '0.75rem' }}
+        />
+      </div>
+      <button
+        type="button"
+        onClick={handleAddNew}
+        style={{
+          width: '100%',
+          padding: '7px',
+          background: 'var(--gradient-cta)',
+          color: 'var(--black)',
+          fontWeight: 700,
+          fontSize: '0.7rem',
+          textTransform: 'uppercase',
+          borderRadius: 'var(--r-sm)',
+        }}
+      >
+        Add Ingredient
+      </button>
+    </div>
+  );
 };
 
 const AIAdvisor = ({ foodLogs, workoutLogs, cardioLogs, steps, totals, userProfile, goals }) => {
@@ -15,6 +119,31 @@ const AIAdvisor = ({ foodLogs, workoutLogs, cardioLogs, steps, totals, userProfi
   const [error, setError]     = useState(null);
   const [open, setOpen]       = useState(false);
   const [fridgeItems, setFridgeItems] = useState('');
+  const [dbVersion, setDbVersion] = useState(0);
+
+  useEffect(() => {
+    const handleUpdate = () => setDbVersion(v => v + 1);
+    window.addEventListener('food-database-updated', handleUpdate);
+    return () => window.removeEventListener('food-database-updated', handleUpdate);
+  }, []);
+
+  const matchesIngredient = (enteredName) => {
+    const cleanEntered = enteredName.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+    if (!cleanEntered) return true; // empty
+
+    return foodDatabase.some(f => {
+      const cleanDb = f.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+      // exact match or one contains the other
+      return cleanDb.includes(cleanEntered) || cleanEntered.includes(cleanDb);
+    });
+  };
+
+  const enteredIngredients = fridgeItems
+    .split(',')
+    .map(item => item.trim())
+    .filter(item => item.length > 0);
+
+  const missingIngredients = enteredIngredients.filter(item => !matchesIngredient(item));
 
   const buildFoodText = () => {
     if (!foodLogs.length) return 'None';
@@ -119,26 +248,27 @@ const AIAdvisor = ({ foodLogs, workoutLogs, cardioLogs, steps, totals, userProfi
           </span>
         </div>
         <textarea
-          placeholder="e.g. chicken, rice, broccoli, eggs..."
+          placeholder="e.g. chicken, rice, broccoli, eggs…"
           value={fridgeItems}
           onChange={e => setFridgeItems(e.target.value)}
           style={{
             width: '100%',
             padding: '10px 12px',
-            background: 'var(--ink-900)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            borderRadius: 'var(--r-md)',
             fontFamily: 'var(--font-body)',
             fontSize: '0.85rem',
-            color: 'var(--white)',
-            outline: 'none',
             minHeight: '60px',
             resize: 'vertical',
-            transition: 'border-color 0.2s',
           }}
-          onFocus={e => (e.target.style.borderColor = 'rgba(255,184,0,0.4)')}
-          onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
         />
+
+        {/* Display macro options for missing fridge items */}
+        {missingIngredients.length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {missingIngredients.map(ing => (
+              <MissingIngredientForm key={ing} name={ing} />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Trigger card */}
@@ -206,7 +336,7 @@ const AIAdvisor = ({ foodLogs, workoutLogs, cardioLogs, steps, totals, userProfi
       {/* Result panel */}
       {open && (result || error || loading) && (
         <div
-          className="glass-card"
+          className="glass-card animate-slide-up"
           style={{ border: '1px solid rgba(244,194,13,0.12)', marginTop: '10px' }}
         >
           {/* Header */}
@@ -341,6 +471,7 @@ const AIAdvisor = ({ foodLogs, workoutLogs, cardioLogs, steps, totals, userProfi
                     {result.recommendations.map((rec, i) => (
                       <div
                         key={i}
+                        className="animate-slide-up"
                         style={{
                           padding: '8px 12px',
                           background: 'rgba(34,197,94,0.06)',
@@ -350,6 +481,9 @@ const AIAdvisor = ({ foodLogs, workoutLogs, cardioLogs, steps, totals, userProfi
                           fontSize: '0.82rem',
                           lineHeight: 1.55,
                           color: 'var(--gray-300)',
+                          animationDelay: `${(i + 1) * 60}ms`,
+                          animationFillMode: 'forwards',
+                          opacity: 0,
                         }}
                       >
                         {rec}
@@ -382,6 +516,7 @@ const AIAdvisor = ({ foodLogs, workoutLogs, cardioLogs, steps, totals, userProfi
                     {result.warnings.map((w, i) => (
                       <div
                         key={i}
+                        className="animate-slide-up"
                         style={{
                           padding: '8px 12px',
                           background: 'rgba(245,158,11,0.06)',
@@ -391,6 +526,9 @@ const AIAdvisor = ({ foodLogs, workoutLogs, cardioLogs, steps, totals, userProfi
                           fontSize: '0.82rem',
                           lineHeight: 1.55,
                           color: 'var(--gray-300)',
+                          animationDelay: `${(i + 1) * 60}ms`,
+                          animationFillMode: 'forwards',
+                          opacity: 0,
                         }}
                       >
                         {w}

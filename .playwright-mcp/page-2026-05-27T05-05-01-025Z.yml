@@ -1,0 +1,186 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "UNITY home" [ref=e5] [cursor=pointer]:
+        - /url: "#"
+        - generic [ref=e7]: UNITY
+      - navigation "Primary" [ref=e8]:
+        - link "My Profile" [ref=e9] [cursor=pointer]:
+          - /url: "#"
+        - link "Accion University" [ref=e10] [cursor=pointer]:
+          - /url: "#"
+      - generic [ref=e11]:
+        - generic [ref=e12]: Saanvi
+        - generic [ref=e13]: LAT-2026-0142
+  - navigation "Sections" [ref=e14]:
+    - generic [ref=e15]:
+      - tablist [ref=e16]:
+        - tab "Overview" [ref=e17] [cursor=pointer]:
+          - img [ref=e19]
+          - generic [ref=e22]: Overview
+        - tab "Timesheet" [active] [selected] [ref=e23] [cursor=pointer]:
+          - img [ref=e25]
+          - generic [ref=e28]: Timesheet
+        - tab "Leave" [ref=e29] [cursor=pointer]:
+          - img [ref=e31]
+          - generic [ref=e34]: Leave
+        - tab "Admin soon" [disabled] [ref=e35]:
+          - img [ref=e37]
+          - generic [ref=e39]: Admin
+          - generic [ref=e40]: soon
+      - search [ref=e41]:
+        - img [ref=e42]
+        - searchbox "Search" [ref=e45]
+        - generic [ref=e46]: ⌘K
+  - main [ref=e47]:
+    - complementary [ref=e48]:
+      - article "Saanvi Patel" [ref=e49]:
+        - generic [ref=e50]:
+          - generic [ref=e51]: Engineering Roster
+          - heading "Saanvi Patel" [level=1] [ref=e53]
+          - paragraph [ref=e54]: Senior Software Engineer
+          - generic [ref=e55]:
+            - generic "Work ID" [ref=e56]: LAT-2026-0142
+            - generic [ref=e57]: Platform Engineering
+        - generic [ref=e58]:
+          - generic [ref=e59]:
+            - term [ref=e60]: Base location
+            - definition [ref=e61]: Bengaluru, IN
+          - generic [ref=e62]:
+            - term [ref=e63]: Work location
+            - definition [ref=e64]: Atlas Financial · Mumbai
+        - figure "Photograph of Saanvi Patel" [ref=e65]:
+          - generic [ref=e66]: SP
+          - generic "Online" [ref=e67]: Active · this week
+        - generic [ref=e69]:
+          - button "Fill timesheet" [ref=e70] [cursor=pointer]:
+            - img [ref=e71]
+            - text: Fill timesheet
+          - button "Apply for leave" [ref=e74] [cursor=pointer]:
+            - img [ref=e75]
+            - text: Apply leave
+    - region "Log this week's hours" [ref=e94]:
+      - generic [ref=e95]: Timesheet
+      - heading "Log this week's hours" [level=2] [ref=e96]
+      - paragraph [ref=e97]: Enter hours per project per day. Submissions lock after Sunday 23:59 IST — amendments need approver review.
+      - group "Week selector" [ref=e98]:
+        - button "Previous week" [ref=e99] [cursor=pointer]: ‹
+        - generic [ref=e100]:
+          - generic [ref=e101]: Week of
+          - generic [ref=e102]: 25 May – 31 May 2026
+        - button "Next week" [ref=e103] [cursor=pointer]: ›
+        - button "This week" [ref=e104] [cursor=pointer]
+      - region "Hours grid" [ref=e105]:
+        - table [ref=e106]:
+          - rowgroup [ref=e107]:
+            - row "Project Mon 25 Tue 26 Wed 27 Thu 28 Fri 29 Sat 30 Sun 31 Total" [ref=e108]:
+              - columnheader "Project" [ref=e109]
+              - columnheader "Mon 25" [ref=e110]:
+                - generic [ref=e111]: Mon
+                - generic [ref=e112]: "25"
+              - columnheader "Tue 26" [ref=e113]:
+                - generic [ref=e114]: Tue
+                - generic [ref=e115]: "26"
+              - columnheader "Wed 27" [ref=e116]:
+                - generic [ref=e117]: Wed
+                - generic [ref=e118]: "27"
+              - columnheader "Thu 28" [ref=e119]:
+                - generic [ref=e120]: Thu
+                - generic [ref=e121]: "28"
+              - columnheader "Fri 29" [ref=e122]:
+                - generic [ref=e123]: Fri
+                - generic [ref=e124]: "29"
+              - columnheader "Sat 30" [ref=e125]:
+                - generic [ref=e126]: Sat
+                - generic [ref=e127]: "30"
+              - columnheader "Sun 31" [ref=e128]:
+                - generic [ref=e129]: Sun
+                - generic [ref=e130]: "31"
+              - columnheader "Total" [ref=e131]
+          - rowgroup [ref=e132]:
+            - row "Payments core re-platform eng-26q2-atlas · Atlas Financial 0.0" [ref=e133]:
+              - rowheader "Payments core re-platform eng-26q2-atlas · Atlas Financial" [ref=e134]:
+                - generic [ref=e136]:
+                  - generic [ref=e137]: Payments core re-platform
+                  - generic [ref=e138]: eng-26q2-atlas · Atlas Financial
+              - cell [ref=e139]:
+                - spinbutton "Payments core re-platform, Mon" [ref=e140]
+              - cell [ref=e141]:
+                - spinbutton "Payments core re-platform, Tue" [ref=e142]
+              - cell [ref=e143]:
+                - spinbutton "Payments core re-platform, Wed" [ref=e144]
+              - cell [ref=e145]:
+                - spinbutton "Payments core re-platform, Thu" [ref=e146]
+              - cell [ref=e147]:
+                - spinbutton "Payments core re-platform, Fri" [ref=e148]
+              - cell [ref=e149]:
+                - spinbutton "Payments core re-platform, Sat" [ref=e150]
+              - cell [ref=e151]:
+                - spinbutton "Payments core re-platform, Sun" [ref=e152]
+              - cell "0.0" [ref=e153]
+            - row "Logistics planner — greenfield eng-26q2-helix · Helix Pharma 0.0" [ref=e154]:
+              - rowheader "Logistics planner — greenfield eng-26q2-helix · Helix Pharma" [ref=e155]:
+                - generic [ref=e157]:
+                  - generic [ref=e158]: Logistics planner — greenfield
+                  - generic [ref=e159]: eng-26q2-helix · Helix Pharma
+              - cell [ref=e160]:
+                - spinbutton "Logistics planner — greenfield, Mon" [ref=e161]
+              - cell [ref=e162]:
+                - spinbutton "Logistics planner — greenfield, Tue" [ref=e163]
+              - cell [ref=e164]:
+                - spinbutton "Logistics planner — greenfield, Wed" [ref=e165]
+              - cell [ref=e166]:
+                - spinbutton "Logistics planner — greenfield, Thu" [ref=e167]
+              - cell [ref=e168]:
+                - spinbutton "Logistics planner — greenfield, Fri" [ref=e169]
+              - cell [ref=e170]:
+                - spinbutton "Logistics planner — greenfield, Sat" [ref=e171]
+              - cell [ref=e172]:
+                - spinbutton "Logistics planner — greenfield, Sun" [ref=e173]
+              - cell "0.0" [ref=e174]
+            - row "Internal · Tech enablement internal-bench · UNITY 0.0" [ref=e175]:
+              - rowheader "Internal · Tech enablement internal-bench · UNITY" [ref=e176]:
+                - generic [ref=e178]:
+                  - generic [ref=e179]: Internal · Tech enablement
+                  - generic [ref=e180]: internal-bench · UNITY
+              - cell [ref=e181]:
+                - spinbutton "Internal · Tech enablement, Mon" [ref=e182]
+              - cell [ref=e183]:
+                - spinbutton "Internal · Tech enablement, Tue" [ref=e184]
+              - cell [ref=e185]:
+                - spinbutton "Internal · Tech enablement, Wed" [ref=e186]
+              - cell [ref=e187]:
+                - spinbutton "Internal · Tech enablement, Thu" [ref=e188]
+              - cell [ref=e189]:
+                - spinbutton "Internal · Tech enablement, Fri" [ref=e190]
+              - cell [ref=e191]:
+                - spinbutton "Internal · Tech enablement, Sat" [ref=e192]
+              - cell [ref=e193]:
+                - spinbutton "Internal · Tech enablement, Sun" [ref=e194]
+              - cell "0.0" [ref=e195]
+          - rowgroup [ref=e196]:
+            - row "Daily total 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 h" [ref=e197]:
+              - rowheader "Daily total" [ref=e198]
+              - cell "0.0" [ref=e199]
+              - cell "0.0" [ref=e200]
+              - cell "0.0" [ref=e201]
+              - cell "0.0" [ref=e202]
+              - cell "0.0" [ref=e203]
+              - cell "0.0" [ref=e204]
+              - cell "0.0" [ref=e205]
+              - cell "0.0 h" [ref=e206]
+      - generic [ref=e207]:
+        - generic [ref=e208]: Notes for approver (optional)
+        - textbox "Notes for approver (optional)" [ref=e209]:
+          - /placeholder: Context — leaves taken, client meetings, blockers…
+        - generic [ref=e210]: 0 / 500
+      - generic [ref=e211]:
+        - button "Submit for approval" [ref=e212] [cursor=pointer]
+        - button "Clear week" [ref=e213] [cursor=pointer]
+        - generic [ref=e214]: 0.0 h logged across 0 projects
+  - contentinfo [ref=e89]:
+    - generic [ref=e90]:
+      - generic [ref=e91]:
+        - text: Copyright © 2026 · Powered by
+        - strong [ref=e92]: UNITY
+      - generic [ref=e93]: v0.2.0 · build development

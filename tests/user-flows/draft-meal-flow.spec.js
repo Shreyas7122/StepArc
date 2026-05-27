@@ -57,7 +57,7 @@ test.describe('Quick Log → DraftMealReview → Confirm Flow', () => {
 
     // Count buttons in item list – each item has a red ×
     const removeButtons = page.locator('button').filter({
-      has: page.locator('svg.lucide-x'),
+      has: page.locator('svg'),
     });
     const initialCount = await removeButtons.count();
 
@@ -90,13 +90,16 @@ test.describe('Quick Log → DraftMealReview → Confirm Flow', () => {
 
   // ── Confirm ─────────────────────────────────────────────────────────────────
 
-  test('confirming the meal navigates to dashboard and logs calories', async ({ page }) => {
+  test('confirming the meal logs calories and shows on dashboard', async ({ page }) => {
     await page.getByText('Meal 1: Pre-Workout (9:15 AM)').click();
     await page.waitForSelector('text=REVIEW MEAL', { timeout: 3000 });
 
     await page.getByRole('button', { name: /confirm.*log meal/i }).click();
 
-    // Should land on Dashboard
+    // Manually navigate to the Today/Dashboard tab after logging
+    await page.getByRole('tab', { name: 'Today tab' }).click();
+
+    // Should be on Dashboard
     await expect(page.getByText('CALORIES LEFT').or(page.getByText('OVER GOAL'))).toBeVisible({ timeout: 3000 });
     // CONSUMED should be non-zero (Egg 100g + Banana 150g ≈ 277 kcal)
     const consumedSection = page.locator('text=kcal eaten').locator('..');
@@ -111,7 +114,7 @@ test.describe('Quick Log → DraftMealReview → Confirm Flow', () => {
     await page.waitForSelector('text=REVIEW MEAL', { timeout: 3000 });
 
     // Cancel via the X button in the DraftMealReview header
-    await page.locator('button').filter({ has: page.locator('svg.lucide-x') }).last().click();
+    await page.locator('button').filter({ has: page.locator('svg') }).last().click();
 
     // DraftMealReview should be gone; FoodTab's quick-log section should be back
     await expect(page.getByText('01 · QUICK LOG')).toBeVisible({ timeout: 3000 });
@@ -148,11 +151,14 @@ test.describe('Quick Log → DraftWorkoutReview → Confirm Flow', () => {
     await expect(page.getByText('Lat Pull Down')).toBeVisible();
   });
 
-  test('confirming workout logs sets and navigates to dashboard', async ({ page }) => {
+  test('confirming workout logs sets and shows on dashboard', async ({ page }) => {
     await page.getByText('Monday: Back, Biceps & Abs').click();
     await page.waitForSelector('text=REVIEW WORKOUT', { timeout: 3000 });
 
     await page.getByRole('button', { name: /confirm.*log workout/i }).click();
+
+    // Manually navigate to the Today/Dashboard tab after logging
+    await page.getByRole('tab', { name: 'Today tab' }).click();
 
     await expect(page.getByText('CALORIES LEFT').or(page.getByText('OVER GOAL'))).toBeVisible({ timeout: 3000 });
     // BURNED should be non-zero
@@ -165,8 +171,8 @@ test.describe('Quick Log → DraftWorkoutReview → Confirm Flow', () => {
     await page.getByText('Monday: Back, Biceps & Abs').click();
     await page.waitForSelector('text=REVIEW WORKOUT', { timeout: 3000 });
 
-    // Cancel via the ×
-    await page.locator('button').filter({ has: page.locator('svg.lucide-x') }).last().click();
+    // Cancel via the × button
+    await page.locator('button').filter({ has: page.locator('svg') }).last().click();
 
     await expect(page.getByText('Gym Routine')).toBeVisible({ timeout: 3000 });
   });

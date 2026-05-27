@@ -16,17 +16,9 @@ const TabBar = ({ activeTab, setActiveTab, onResetDrafts }) => {
 
   return (
     <nav
-      className="animate-slide-up delay-1"
+      className="tabs animate-slide-up delay-1"
       role="tablist"
       aria-label="Main Navigation"
-      style={{
-        display: 'flex',
-        gap: '3px',
-        background: 'var(--ink-900)',
-        border: '1px solid var(--ink-700)',
-        borderRadius: 'var(--r-lg)',
-        padding: '5px',
-      }}
     >
       {TABS.map(({ id, label, Icon }) => {
         const isActive = activeTab === id;
@@ -38,25 +30,7 @@ const TabBar = ({ activeTab, setActiveTab, onResetDrafts }) => {
             aria-selected={isActive}
             aria-label={`${label} tab`}
             onClick={() => handleTabClick(id)}
-            style={{
-              flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '4px',
-              padding: '9px 4px',
-              cursor: 'pointer',
-              background: isActive ? 'var(--gradient-cta)' : 'transparent',
-              color: isActive ? 'var(--black)' : 'var(--gray-400)',
-              borderRadius: 'var(--r-md)',
-              boxShadow: isActive ? 'var(--glow-yellow)' : 'none',
-              transition: 'background 0.15s, color 0.15s, box-shadow 0.15s',
-              userSelect: 'none',
-              WebkitTapHighlightColor: 'transparent',
-              border: 'none',
-              outline: 'none',
-            }}
+            className={isActive ? 'tab active' : 'tab'}
           >
             <Icon size={14} strokeWidth={isActive ? 2.5 : 2} />
             <span

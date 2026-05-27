@@ -49,8 +49,8 @@ test.describe('Profile — BMR-Driven Goal Engine', () => {
     await boot(page);
     await openProfile(page);
 
-    // Select the fat_loss goal type
-    await page.getByLabel(/goal type/i).selectOption('fat_loss');
+    // Select the fat_loss goal type by clicking the "Standard Cut" button
+    await page.getByRole('button', { name: /Standard Cut/i }).click();
     await page.getByRole('button', { name: /save/i }).click();
     await page.waitForSelector('text=MY PROFILE', { state: 'detached', timeout: 4000 });
 
@@ -62,7 +62,8 @@ test.describe('Profile — BMR-Driven Goal Engine', () => {
     await boot(page);
     await openProfile(page);
 
-    await page.getByLabel(/goal type/i).selectOption('bulk');
+    // Select the bulk goal type by clicking the "Standard Bulk" button
+    await page.getByRole('button', { name: /Standard Bulk/i }).click();
     await page.getByRole('button', { name: /save/i }).click();
     await page.waitForSelector('text=MY PROFILE', { state: 'detached', timeout: 4000 });
 
@@ -79,8 +80,8 @@ test.describe('Profile — BMR-Driven Goal Engine', () => {
     await page.getByRole('button', { name: /save/i }).click();
     await page.waitForSelector('text=MY PROFILE', { state: 'detached', timeout: 4000 });
 
-    // New protein goal = 2 * 90 = 180g; displayed on Dashboard macro bar
-    await expect(page.getByText('/ 180g')).toBeVisible({ timeout: 3000 });
+    // New protein goal = 2.2 * 90 = 198g; displayed on Dashboard macro bar
+    await expect(page.getByText('/ 198g')).toBeVisible({ timeout: 3000 });
   });
 });
 

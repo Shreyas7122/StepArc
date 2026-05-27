@@ -1,0 +1,117 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: user-flows/header-menu.spec.js >> Header User Menu >> dropdown closes when clicking the backdrop
+- Location: tests/user-flows/header-menu.spec.js:61:3
+
+# Error details
+
+```
+Error: expect(locator).toBeHidden() failed
+
+Locator:  getByRole('button', { name: /Sign Out/i })
+Expected: hidden
+Received: visible
+Timeout:  5000ms
+
+Call log:
+  - Expect "toBeHidden" with timeout 5000ms
+  - waiting for getByRole('button', { name: /Sign Out/i })
+    14 × locator resolved to <button type="button">…</button>
+       - unexpected value "visible"
+
+```
+
+```yaml
+- button "Sign Out"
+```
+
+# Test source
+
+```ts
+  1  | import { test, expect } from '@playwright/test';
+  2  | import { setupApiMocks } from '../mocks/api-mocks.js';
+  3  | import { setupAuthenticated } from '../helpers/setup-authenticated.js';
+  4  | 
+  5  | test.describe('Header User Menu', () => {
+  6  |   test.beforeEach(async ({ page }) => {
+  7  |     await setupAuthenticated(page);
+  8  |     await setupApiMocks(page);
+  9  |     await page.goto('/');
+  10 |     await page.waitForSelector('header h1', { timeout: 8000 });
+  11 |   });
+  12 | 
+  13 |   test('user menu button is visible in header', async ({ page }) => {
+  14 |     await expect(page.getByRole('button', { name: 'Toggle user profile and settings menu' })).toBeVisible();
+  15 |   });
+  16 | 
+  17 |   test('opens dropdown with Edit Profile and Sign Out on click', async ({ page }) => {
+  18 |     await page.getByRole('button', { name: 'Toggle user profile and settings menu' }).click();
+  19 | 
+  20 |     await expect(page.getByRole('button', { name: /Edit Profile/i })).toBeVisible();
+  21 |     await expect(page.getByRole('button', { name: /Sign Out/i })).toBeVisible();
+  22 |   });
+  23 | 
+  24 |   test('Sign Out button is not clipped — it is fully visible and interactive', async ({ page }) => {
+  25 |     await page.getByRole('button', { name: 'Toggle user profile and settings menu' }).click();
+  26 | 
+  27 |     const signOutBtn = page.getByRole('button', { name: /Sign Out/i });
+  28 |     await expect(signOutBtn).toBeVisible();
+  29 | 
+  30 |     // Verify the button is within the viewport (not clipped off-screen)
+  31 |     const box = await signOutBtn.boundingBox();
+  32 |     expect(box).not.toBeNull();
+  33 |     expect(box.y + box.height).toBeLessThan(await page.evaluate(() => window.innerHeight));
+  34 |     expect(box.width).toBeGreaterThan(0);
+  35 |     expect(box.height).toBeGreaterThan(0);
+  36 |   });
+  37 | 
+  38 |   test('Sign Out button has sufficient touch target size (min 44px height)', async ({ page }) => {
+  39 |     await page.getByRole('button', { name: 'Toggle user profile and settings menu' }).click();
+  40 | 
+  41 |     const signOutBtn = page.getByRole('button', { name: /Sign Out/i });
+  42 |     const box = await signOutBtn.boundingBox();
+  43 |     expect(box.height).toBeGreaterThanOrEqual(44);
+  44 |   });
+  45 | 
+  46 |   test('email is shown in the dropdown when signed in', async ({ page }) => {
+  47 |     await page.getByRole('button', { name: 'Toggle user profile and settings menu' }).click();
+  48 | 
+  49 |     // The mock sets email to 'testathlete@steparc.com'
+  50 |     await expect(page.getByText('testathlete@steparc.com')).toBeVisible();
+  51 |   });
+  52 | 
+  53 |   test('clicking Edit Profile opens profile modal', async ({ page }) => {
+  54 |     await page.getByRole('button', { name: 'Toggle user profile and settings menu' }).click();
+  55 |     await page.getByRole('button', { name: /Edit Profile/i }).click();
+  56 | 
+  57 |     // Profile modal should appear
+  58 |     await expect(page.getByText(/MY PROFILE/i)).toBeVisible();
+  59 |   });
+  60 | 
+  61 |   test('dropdown closes when clicking the backdrop', async ({ page }) => {
+  62 |     await page.getByRole('button', { name: 'Toggle user profile and settings menu' }).click();
+  63 |     await expect(page.getByRole('button', { name: /Sign Out/i })).toBeVisible();
+  64 | 
+  65 |     // Click outside the dropdown (top-left corner away from the menu)
+  66 |     await page.mouse.click(10, 300);
+> 67 |     await expect(page.getByRole('button', { name: /Sign Out/i })).toBeHidden();
+     |                                                                   ^ Error: expect(locator).toBeHidden() failed
+  68 |   });
+  69 | 
+  70 |   test('dropdown closes when toggled again', async ({ page }) => {
+  71 |     const menuBtn = page.getByRole('button', { name: 'Toggle user profile and settings menu' });
+  72 |     await menuBtn.click();
+  73 |     await expect(page.getByRole('button', { name: /Sign Out/i })).toBeVisible();
+  74 | 
+  75 |     await menuBtn.click();
+  76 |     await expect(page.getByRole('button', { name: /Sign Out/i })).toBeHidden();
+  77 |   });
+  78 | });
+  79 | 
+```

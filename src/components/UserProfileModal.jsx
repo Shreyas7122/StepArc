@@ -1,9 +1,9 @@
 import { User, X, Save, Brain, Plus, Trash2, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import SearchSelect from './SearchSelect';
-import { foodDatabase, workoutDatabase, fixedWorkouts } from '../data';
-import { getApiBase } from '../utils';
-import { calcBMR, calcGoalCalories, calcMacros, GOAL_META, ACTIVITY_LEVELS } from '../calc';
+import { foodDatabase, workoutDatabase, fixedWorkouts } from '../lib/data';
+import { getApiBase } from '../lib/utils';
+import { calcBMR, calcGoalCalories, calcMacros, GOAL_META, ACTIVITY_LEVELS } from '../lib/calc';
 
 // Fixed 5 meal categories — order and names are canonical
 const FIXED_CATEGORIES = [
@@ -121,8 +121,6 @@ const Field = ({ label, value, onChange, min, max, step, unit }) => (
       onChange={e => onChange(e.target.value)}
       aria-label={label}
       style={inputStyle}
-      onFocus={e => (e.target.style.borderColor = 'var(--gold-500)')}
-      onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
     />
   </div>
 );
@@ -293,7 +291,7 @@ const DietPlanTab = ({ meals, setMeals, formState }) => {
               background: on ? 'rgba(244,194,13,0.05)' : 'var(--ink-800)',
               border: on ? '1px solid rgba(255,184,0,0.35)' : '1px solid rgba(255,255,255,0.06)',
               borderRadius: 'var(--r-md)', padding: 12, marginBottom: 8,
-              cursor: 'pointer', transition: 'all 0.15s', userSelect: 'none', opacity: on ? 1 : 0.5,
+              cursor: 'pointer', transition: 'background-color 150ms var(--ease-out-expo), border-color 150ms var(--ease-out-expo), opacity 150ms var(--ease-out-expo)', userSelect: 'none', opacity: on ? 1 : 0.5,
             }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                 <div style={{
@@ -634,7 +632,7 @@ const TrainingTab = ({ days, setDays, formState }) => {
               background: on ? 'rgba(244,194,13,0.05)' : 'var(--ink-800)',
               border: on ? '1px solid rgba(255,184,0,0.35)' : '1px solid rgba(255,255,255,0.06)',
               borderRadius: 'var(--r-md)', padding: 12, marginBottom: 8,
-              cursor: 'pointer', transition: 'all 0.15s', userSelect: 'none', opacity: on ? 1 : 0.5,
+              cursor: 'pointer', transition: 'background-color 150ms var(--ease-out-expo), border-color 150ms var(--ease-out-expo), opacity 150ms var(--ease-out-expo)', userSelect: 'none', opacity: on ? 1 : 0.5,
             }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                 <div style={{
@@ -955,15 +953,11 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
   return (
     <div
       onClick={onClose}
-      style={{
-        position: 'fixed', inset: 0, zIndex: 999,
-        background: 'rgba(0,0,0,0.85)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: '20px',
-      }}
+      className="modal-overlay modal-backdrop-animate"
     >
       <div
         onClick={e => e.stopPropagation()}
+        className="modal-content-animate"
         style={{
           width: '100%', maxWidth: '460px',
           background: 'var(--ink-900)',
@@ -1030,7 +1024,7 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
                 textTransform: 'uppercase',
                 letterSpacing: '0.1em',
                 cursor: 'pointer',
-                transition: 'all 0.15s',
+                transition: 'background-color 150ms var(--ease-out-expo), color 150ms var(--ease-out-expo), box-shadow 150ms var(--ease-out-expo)',
                 ...(activeTab === t.id ? tabActive : tabInactive),
               }}
             >
@@ -1067,7 +1061,7 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
                         background: gender === g ? 'var(--gradient-cta)' : 'rgba(255,255,255,0.04)',
                         color: gender === g ? 'var(--purple-900)' : 'var(--gray-400)',
                         boxShadow: gender === g ? 'var(--glow-gold)' : 'none',
-                        transition: 'all 0.15s',
+                        transition: 'background-color 150ms var(--ease-out-expo), border-color 150ms var(--ease-out-expo), box-shadow 150ms var(--ease-out-expo)',
                       }}
                     >
                       {g === 'male' ? '♂ Male' : '♀ Female'}
@@ -1095,7 +1089,7 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
                         padding: '10px 14px', borderRadius: 'var(--r-md)', cursor: 'pointer',
                         border: active ? '1px solid var(--yellow-500)' : '1px solid rgba(255,255,255,0.07)',
                         background: active ? 'rgba(244,194,13,0.1)' : 'rgba(255,255,255,0.03)',
-                        transition: 'all 0.15s',
+                        transition: 'background-color 150ms var(--ease-out-expo), border-color 150ms var(--ease-out-expo)',
                       }}
                     >
                       <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: active ? 'var(--yellow-500)' : 'var(--gray-400)' }}>
@@ -1124,7 +1118,7 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
                         padding: '10px 14px', borderRadius: 'var(--r-md)', cursor: 'pointer',
                         border: active ? `1px solid ${meta.color}` : '1px solid rgba(255,255,255,0.07)',
                         background: active ? `${meta.color}18` : 'rgba(255,255,255,0.03)',
-                        transition: 'all 0.15s',
+                        transition: 'background-color 150ms var(--ease-out-expo), border-color 150ms var(--ease-out-expo)',
                       }}
                     >
                       <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: active ? meta.color : 'var(--gray-400)' }}>

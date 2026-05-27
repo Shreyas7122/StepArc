@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Search } from 'lucide-react';
 
-const SearchSelect = ({ items, selectedId, onSelect, placeholder }) => {
+const SearchSelect = ({ items, selectedId, onSelect, placeholder, onQueryChange }) => {
   const [query, setQuery] = useState(
     () => items.find(i => i.id === selectedId)?.label || ''
   );
@@ -23,7 +23,12 @@ const SearchSelect = ({ items, selectedId, onSelect, placeholder }) => {
   };
 
   const handleOpen   = () => { updatePos(); setOpen(true); };
-  const handleSelect = (item) => { setQuery(item.label); onSelect(item.id); setOpen(false); };
+  const handleSelect = (item) => {
+    setQuery(item.label);
+    onSelect(item.id);
+    setOpen(false);
+    if (onQueryChange) onQueryChange(item.label);
+  };
 
   useEffect(() => {
     const close = (e) => {
@@ -63,7 +68,12 @@ const SearchSelect = ({ items, selectedId, onSelect, placeholder }) => {
           type="text"
           placeholder={placeholder || 'Search…'}
           value={query}
-          onChange={(e) => { setQuery(e.target.value); handleOpen(); }}
+          onChange={(e) => {
+            const val = e.target.value;
+            setQuery(val);
+            handleOpen();
+            if (onQueryChange) onQueryChange(val);
+          }}
           onFocus={handleOpen}
           onKeyDown={(e) => e.key === 'Escape' && setOpen(false)}
           style={{ paddingLeft: 38 }}

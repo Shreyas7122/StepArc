@@ -1,10 +1,12 @@
 """
-Request interceptors for selenium-wire — mirrors tests/mocks/api-mocks.js.
-All Supabase auth/REST calls and FastAPI AI endpoints are virtualised so
-tests never hit real network services.
+Request interception via JS fetch mocking injected on new document.
+Mirrors tests/mocks/api-mocks.js — all Supabase and AI backend calls are virtualised.
+
+Uses CDP Page.addScriptToEvaluateOnNewDocument to inject a window.fetch override
+before any app code runs. Compatible with selenium==4.18.1 (no add_cdp_listener needed).
 """
 import json
-import time
+from typing import Optional
 
 BASE_URL = "http://localhost:5173"
 
@@ -33,6 +35,7 @@ MOCK_SETTINGS = {
     "user_id": "mocked-user-id-12345",
     "gender": "male",
     "goal_type": "maintenance",
+    "activity_level": "moderate",
     "calorie_goal": 2870,
     "protein_goal": 160,
     "carbs_goal": 400,
@@ -43,34 +46,23 @@ MOCK_SETTINGS = {
     "step_goal": 10000,
     "diet_plan": {"meals": []},
     "workout_plan": {"days": []},
-    "updated_at": "2026-05-21T00:00:00.000Z",
+    "updated_at": "2026-05-22T00:00:00.000Z",
 }
 
 MOCK_DAILY_LOGS = [{
     "user_id": "mocked-user-id-12345",
-    "log_date": "2026-05-21",
+    "log_date": "2026-05-22",
     "food_logs": [],
     "workout_logs": [],
     "cardio_logs": [],
     "steps": 0,
-    "updated_at": "2026-05-21T00:00:00.000Z",
+    "updated_at": "2026-05-22T00:00:00.000Z",
 }]
 
 MOCK_AI_ADVICE = {
-    "summary": (
-        "You are tracking beautifully today! You have met 60% of your "
-        "protein goal and are well within your calorie targets."
-    ),
-    "remaining_macros": {
-        "calories": 1220,
-        "protein_g": 65,
-        "carbs_g": 150,
-        "fat_g": 22,
-    },
-    "recommendations": [
-        "Suggest Meal 5: 150g Low Fat Paneer + 100g white rice.",
-        "Add 35g Whey Isolate to close protein gaps post-workout.",
-    ],
+    "summary": "You are tracking beautifully today!",
+    "remaining_macros": {"calories": 1220, "protein_g": 65, "carbs_g": 150, "fat_g": 22},
+    "recommendations": ["Suggest Meal 5: 150g Low Fat Paneer + 100g white rice."],
     "warnings": [],
     "status": "on_track",
 }
@@ -81,10 +73,6 @@ MOCK_ANALYZE_MEAL = {
     "ingredients": [
         {"name": "Grilled Chicken", "amount": 150, "unit": "g",
          "calories": 250, "protein_g": 35, "carbs_g": 0, "fat_g": 5},
-        {"name": "Steamed Rice", "amount": 100, "unit": "g",
-         "calories": 130, "protein_g": 2.7, "carbs_g": 28, "fat_g": 0.3},
-        {"name": "Broccoli", "amount": 80, "unit": "g",
-         "calories": 70, "protein_g": 2.3, "carbs_g": 2, "fat_g": 4.7},
     ],
     "daily_summary": {
         "bulk_target_kcal": 2870,
@@ -108,89 +96,112 @@ MOCK_ANALYZE_CARDIO = {
 }
 
 
-def _json_resp(body, status=200):
-    return dict(
-        status_code=status,
-        headers={"Content-Type": "application/json"},
-        body=json.dumps(body).encode(),
+def _build_fetch_mock_script(mocks: dict, error_urls: Optional[dict] = None) -> str:
+    """
+    Build a JS script that overrides window.fetch before any app code runs.
+
+    mocks       — {url_substring: (status_code, body_dict)}
+    error_urls  — {url_substring: status_code}  — these return the given HTTP status
+    """
+    if error_urls is None:
+        error_urls = {}
+
+    mocks_json       = json.dumps({k: {"status": v[0], "body": v[1]} for k, v in mocks.items()})
+    error_urls_json  = json.dumps(error_urls)
+
+    return f"""
+(function() {{
+  const MOCKS       = {mocks_json};
+  const ERROR_URLS  = {error_urls_json};
+  const _realFetch  = window.fetch.bind(window);
+
+  window.fetch = function(input, init) {{
+    const url = (typeof input === 'string') ? input : (input && input.url) || '';
+    const method = (init && init.method || 'GET').toUpperCase();
+
+    // Error overrides (e.g. 500 for error-state tests)
+    for (const [pat, status] of Object.entries(ERROR_URLS)) {{
+      if (url.includes(pat)) {{
+        return Promise.resolve(new Response(JSON.stringify({{detail: 'mocked error'}}), {{
+          status: status,
+          headers: {{'Content-Type': 'application/json'}},
+        }}));
+      }}
+    }}
+
+    // Normal mocks
+    for (const [pat, cfg] of Object.entries(MOCKS)) {{
+      if (url.includes(pat)) {{
+        // For mutating calls return success body; for GET return full mock
+        const body = (method === 'GET' || method === 'OPTIONS')
+          ? cfg.body
+          : (cfg.body_write !== undefined ? cfg.body_write : {{'success': true}});
+        return Promise.resolve(new Response(JSON.stringify(body), {{
+          status: cfg.status,
+          headers: {{'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}},
+        }}));
+      }}
+    }}
+
+    // Pass-through for local dev server assets
+    return _realFetch(input, init);
+  }};
+}})();
+"""
+
+
+# Default mock table used by setup_api_mocks
+_DEFAULT_MOCKS = {
+    "/auth/v1/session":     (200, MOCK_SESSION),
+    "/auth/v1/token":       (200, MOCK_SESSION),
+    "/auth/v1/user":        (200, MOCK_USER),
+    "/auth/v1/logout":      (200, {}),
+    "/rest/v1/user_settings": (200, MOCK_SETTINGS),
+    "/rest/v1/daily_logs":  (200, MOCK_DAILY_LOGS),
+    "/ai-advice":           (200, MOCK_AI_ADVICE),
+    "/analyze-meal":        (200, MOCK_ANALYZE_MEAL),
+    "/analyze-cardio":      (200, MOCK_ANALYZE_CARDIO),
+    "/recommend-diet":      (200, {"recommendation": {"meals": []}}),
+}
+
+
+def setup_api_mocks(driver, extra_mocks: Optional[dict] = None, error_urls: Optional[dict] = None):
+    """
+    Inject a window.fetch mock that returns virtualised payloads for all
+    Supabase and AI backend requests.  Must be called BEFORE driver.get().
+
+    extra_mocks — additional {url_substring: (status, body)} overrides
+    error_urls  — {url_substring: http_status} — force HTTP error responses
+    """
+    mocks = dict(_DEFAULT_MOCKS)
+    if extra_mocks:
+        mocks.update(extra_mocks)
+
+    script = _build_fetch_mock_script(mocks, error_urls)
+    driver.execute_cdp_cmd(
+        "Page.addScriptToEvaluateOnNewDocument",
+        {"source": script},
     )
 
 
-def setup_api_mocks(driver):
-    """
-    Attach a selenium-wire request interceptor that fulfils every
-    Supabase auth/REST call and AI backend endpoint with mock data.
-    Must be called before driver.get() so interception is active from
-    the first request.
-    """
-    def interceptor(request):
-        url = request.url
-        method = request.method.upper()
-
-        # ── Supabase Auth ──────────────────────────────────────────────────────
-        if "/auth/v1/session" in url:
-            request.create_response(**_json_resp(MOCK_SESSION))
-
-        elif "/auth/v1/user" in url:
-            request.create_response(**_json_resp(MOCK_USER))
-
-        elif "/auth/v1/token" in url:
-            # Refresh-token grant
-            request.create_response(**_json_resp(MOCK_SESSION))
-
-        elif "/auth/v1/logout" in url:
-            request.create_response(**_json_resp({}))
-
-        # ── Supabase REST — user_settings ──────────────────────────────────────
-        elif "/rest/v1/user_settings" in url:
-            if method == "GET":
-                request.create_response(**_json_resp(MOCK_SETTINGS))
-            else:
-                request.create_response(**_json_resp({"success": True}))
-
-        # ── Supabase REST — daily_logs ─────────────────────────────────────────
-        elif "/rest/v1/daily_logs" in url:
-            if method == "GET":
-                request.create_response(**_json_resp(MOCK_DAILY_LOGS))
-            else:
-                request.create_response(**_json_resp({"success": True}))
-
-        # ── AI backend endpoints ───────────────────────────────────────────────
-        elif "/ai-advice" in url:
-            request.create_response(**_json_resp(MOCK_AI_ADVICE))
-
-        elif "/analyze-meal" in url:
-            request.create_response(**_json_resp(MOCK_ANALYZE_MEAL))
-
-        elif "/analyze-cardio" in url:
-            request.create_response(**_json_resp(MOCK_ANALYZE_CARDIO))
-
-        elif "/recommend-diet" in url:
-            request.create_response(**_json_resp({
-                "recommendation": {
-                    "meals": [
-                        {"name": "AI Breakfast", "items": []},
-                        {"name": "AI Lunch", "items": []},
-                    ]
-                }
-            }))
-
-    driver.request_interceptor = interceptor
-
-
 def override_ai_advice_error(driver, detail="Internal server error"):
-    """Swap the ai-advice mock to return a 500 for error-state tests."""
-    def interceptor(request):
-        url = request.url
-        if "/ai-advice" in url:
-            request.create_response(**_json_resp({"detail": detail}, status=500))
-        # Fall through for all other requests — handled by the base mock
-    driver.request_interceptor = interceptor
+    """Replace the ai-advice mock with a 500 for error-state tests."""
+    mocks = dict(_DEFAULT_MOCKS)
+    # Remove the normal ai-advice mock and add an error override
+    del mocks["/ai-advice"]
+    script = _build_fetch_mock_script(mocks, error_urls={"/ai-advice": 500})
+    driver.execute_cdp_cmd(
+        "Page.addScriptToEvaluateOnNewDocument",
+        {"source": script},
+    )
 
 
 def override_ai_advice_abort(driver):
-    """Abort the ai-advice request to simulate a network failure."""
-    def interceptor(request):
-        if "/ai-advice" in request.url:
-            request.abort()
-    driver.request_interceptor = interceptor
+    """Simulate a network failure on ai-advice by returning a 503."""
+    mocks = dict(_DEFAULT_MOCKS)
+    del mocks["/ai-advice"]
+    script = _build_fetch_mock_script(mocks, error_urls={"/ai-advice": 503})
+    driver.execute_cdp_cmd(
+        "Page.addScriptToEvaluateOnNewDocument",
+        {"source": script},
+    )

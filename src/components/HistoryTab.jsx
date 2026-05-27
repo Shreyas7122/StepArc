@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Flame, Footprints } from 'lucide-react';
-import { load7DayHistory } from '../db';
-import { computeTotals } from '../utils';
+import { load7DayHistory } from '../services/db';
+import { computeTotals } from '../lib/utils';
 
 const HistoryTab = ({ userId, goals }) => {
   const [history, setHistory] = useState([]);
@@ -37,12 +37,12 @@ const HistoryTab = ({ userId, goals }) => {
     if (dateStr === todayStr) return 'Today';
     const yest = new Date(); yest.setDate(yest.getDate() - 1);
     if (dateStr === yest.toISOString().slice(0, 10)) return 'Yesterday';
-    return d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+    return d.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
   };
 
   const dayAbbr = (dateStr, i) => {
     if (i === 0) return 'TDY';
-    return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short' }).slice(0, 2).toUpperCase();
+    return new Date(dateStr + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'short' }).slice(0, 2).toUpperCase();
   };
 
   const statChips = [

@@ -1,5 +1,5 @@
 import { Dumbbell, ChevronRight, Footprints, Plus } from 'lucide-react';
-import { fixedWorkouts, workoutDatabase, STEP_CALORIES_MULTIPLIER } from '../data';
+import { fixedWorkouts, workoutDatabase, STEP_CALORIES_MULTIPLIER } from '../lib/data';
 import SearchSelect from './SearchSelect';
 import CardioAIInput from './CardioAIInput';
 

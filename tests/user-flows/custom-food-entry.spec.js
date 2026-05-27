@@ -49,7 +49,7 @@ test.describe('03 · Custom Food Entry — Manual Macro Form', () => {
 
   // ── Happy path ───────────────────────────────────────────────────────────────
 
-  test('submitting navigates to dashboard and shows consumed calories', async ({ page }) => {
+  test('submitting logs food and shows consumed calories on dashboard', async ({ page }) => {
     await page.getByPlaceholder('e.g. Low Fat Paneer, Chicken Subji…').fill('Low Fat Paneer');
     await page.getByPlaceholder('e.g. 180').fill('180');
     await page.getByPlaceholder('e.g. 20').fill('20');
@@ -58,7 +58,9 @@ test.describe('03 · Custom Food Entry — Manual Macro Form', () => {
     await page.getByPlaceholder('e.g. 0').fill('0');
     await page.getByRole('button', { name: /log custom food/i }).click();
 
-    // App auto-navigates to dashboard after logging
+    // Manually navigate to the Today/Dashboard tab after logging
+    await page.getByRole('tab', { name: 'Today tab' }).click();
+
     await expect(page.getByText('CALORIES LEFT').or(page.getByText('OVER GOAL'))).toBeVisible({ timeout: 3000 });
     // CONSUMED card should show 180
     await expect(page.getByText('kcal eaten')).toBeVisible();
