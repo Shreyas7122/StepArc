@@ -74,7 +74,7 @@ const SearchSelect = ({ items, selectedId, onSelect, placeholder, onQueryChange 
             handleOpen();
             if (onQueryChange) onQueryChange(val);
           }}
-          onFocus={handleOpen}
+          onFocus={(e) => { e.target.select(); handleOpen(); }}
           onKeyDown={(e) => e.key === 'Escape' && setOpen(false)}
           style={{ paddingLeft: 38 }}
         />
@@ -83,12 +83,16 @@ const SearchSelect = ({ items, selectedId, onSelect, placeholder, onQueryChange 
       {open && filtered.length > 0 && createPortal(
         <div
           ref={dropdownRef}
+          role="listbox"
+          aria-label="Search suggestions"
           className="search-dropdown"
           style={{ position: 'fixed', top: pos.top, left: pos.left, width: pos.width }}
         >
           {filtered.map(item => (
             <div
               key={item.id}
+              role="option"
+              aria-selected={item.id === selectedId}
               className="search-option"
               onClick={() => handleSelect(item)}
             >

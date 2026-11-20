@@ -1,5 +1,5 @@
 import { User, X, Save, Brain, Plus, Trash2, ChevronDown } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SearchSelect from './SearchSelect';
 import { foodDatabase, workoutDatabase, fixedWorkouts } from '../lib/data';
 import { getApiBase } from '../lib/utils';
@@ -488,7 +488,7 @@ const DietPlanTab = ({ meals, setMeals, formState }) => {
                       <SearchSelect items={foodItems} selectedId={af.foodId} onSelect={val => setAFField(meal.id, 'foodId', val)} placeholder="Search food…" />
                       <div style={{ display: 'flex', gap: 6 }}>
                         <input
-                          type="number" placeholder="grams" min="1" value={af.amount}
+                          type="number" placeholder="grams" aria-label="Amount in grams" min="1" value={af.amount}
                           onChange={e => setAFField(meal.id, 'amount', e.target.value)}
                           style={{ flex: 1, minWidth: 0, width: 0, padding: '9px 12px', background: 'var(--ink-800)', border: '1px solid var(--ink-700)', borderRadius: 'var(--r-md)', color: 'var(--white)', fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box' }}
                           onFocus={e => (e.target.style.borderColor = 'var(--gold-500)')}
@@ -836,7 +836,7 @@ const TrainingTab = ({ days, setDays, formState }) => {
                       <SearchSelect items={workoutItems} selectedId={ae.exerciseId} onSelect={val => setAEField(day.id, 'exerciseId', val)} placeholder="Search exercise…" />
                       <div style={{ display: 'flex', gap: 6 }}>
                         <input
-                          type="number" placeholder="sets" min="1" max="10" value={ae.sets}
+                          type="number" placeholder="sets" aria-label="Number of sets" min="1" max="10" value={ae.sets}
                           onChange={e => setAEField(day.id, 'sets', e.target.value)}
                           style={{ flex: 1, minWidth: 0, width: 0, padding: '9px 12px', background: 'var(--ink-800)', border: '1px solid var(--ink-700)', borderRadius: 'var(--r-md)', color: 'var(--white)', fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box' }}
                           onFocus={e => (e.target.style.borderColor = 'var(--gold-500)')}
@@ -868,6 +868,12 @@ const TrainingTab = ({ days, setDays, formState }) => {
 // ── Main modal ────────────────────────────────────────────────────────────────
 const UserProfileModal = ({ settings, onSave, onClose }) => {
   const [activeTab, setActiveTab] = useState('goals');
+
+  useEffect(() => {
+    const handleKey = (e) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [onClose]);
 
   // Goals tab state
   const [gender,        setGender]        = useState(settings.gender          ?? 'male');
@@ -956,6 +962,9 @@ const UserProfileModal = ({ settings, onSave, onClose }) => {
       className="modal-overlay modal-backdrop-animate"
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Goals & Plans"
         onClick={e => e.stopPropagation()}
         className="modal-content-animate"
         style={{

@@ -55,14 +55,8 @@ test.describe('Quick Log → DraftMealReview → Confirm Flow', () => {
     await page.getByText('Meal 1: Pre-Workout (9:15 AM)').click();
     await page.waitForSelector('text=REVIEW MEAL', { timeout: 3000 });
 
-    // Count buttons in item list – each item has a red ×
-    const removeButtons = page.locator('button').filter({
-      has: page.locator('svg'),
-    });
-    const initialCount = await removeButtons.count();
-
-    // Click the remove button on the first item row (skip any Cancel/header buttons)
-    await removeButtons.first().click();
+    // Each item row has an aria-label="Remove item" button
+    await page.getByRole('button', { name: 'Remove item' }).first().click();
 
     // One fewer row
     await expect(page.getByText('Whole Egg (Raw)')).not.toBeVisible({ timeout: 2000 });
@@ -75,9 +69,10 @@ test.describe('Quick Log → DraftMealReview → Confirm Flow', () => {
     await page.waitForSelector('text=Add Extra Item', { timeout: 3000 });
 
     // Type in the extra-item search box and pick the first match
+    // Open extra-item search and pick first food from initial dropdown
     await page.getByPlaceholder('Search food… e.g. paneer').click();
-    await page.getByPlaceholder('Search food… e.g. paneer').fill('Oats');
-    await page.locator('[role="listbox"]').locator('div').first().click();
+    await page.waitForSelector('.search-option', { timeout: 4000 });
+    await page.locator('.search-option').first().click({ force: true });
 
     // Fill amount
     await page.getByPlaceholder('grams').fill('60');
@@ -94,7 +89,7 @@ test.describe('Quick Log → DraftMealReview → Confirm Flow', () => {
     await page.getByText('Meal 1: Pre-Workout (9:15 AM)').click();
     await page.waitForSelector('text=REVIEW MEAL', { timeout: 3000 });
 
-    await page.getByRole('button', { name: /confirm.*log meal/i }).click();
+    await page.getByRole('button', { name: 'Confirm and log meal' }).click();
 
     // Manually navigate to the Today/Dashboard tab after logging
     await page.getByRole('tab', { name: 'Today tab' }).click();
@@ -102,8 +97,9 @@ test.describe('Quick Log → DraftMealReview → Confirm Flow', () => {
     // Should be on Dashboard
     await expect(page.getByText('CALORIES LEFT').or(page.getByText('OVER GOAL'))).toBeVisible({ timeout: 3000 });
     // CONSUMED should be non-zero (Egg 100g + Banana 150g ≈ 277 kcal)
+    // The calorie number is the second div child of the consumed glass-card (first is the header row)
     const consumedSection = page.locator('text=kcal eaten').locator('..');
-    const calText = await consumedSection.locator('div').first().textContent();
+    const calText = await consumedSection.locator('div').nth(1).textContent();
     expect(parseInt(calText ?? '0')).toBeGreaterThan(0);
   });
 
@@ -113,8 +109,8 @@ test.describe('Quick Log → DraftMealReview → Confirm Flow', () => {
     await page.getByText('Meal 1: Pre-Workout (9:15 AM)').click();
     await page.waitForSelector('text=REVIEW MEAL', { timeout: 3000 });
 
-    // Cancel via the X button in the DraftMealReview header
-    await page.locator('button').filter({ has: page.locator('svg') }).last().click();
+    // Cancel via the aria-labelled cancel button in the DraftMealReview header
+    await page.getByRole('button', { name: 'Cancel draft' }).click();
 
     // DraftMealReview should be gone; FoodTab's quick-log section should be back
     await expect(page.getByText('01 · QUICK LOG')).toBeVisible({ timeout: 3000 });
@@ -155,15 +151,16 @@ test.describe('Quick Log → DraftWorkoutReview → Confirm Flow', () => {
     await page.getByText('Monday: Back, Biceps & Abs').click();
     await page.waitForSelector('text=REVIEW WORKOUT', { timeout: 3000 });
 
-    await page.getByRole('button', { name: /confirm.*log workout/i }).click();
+    await page.getByRole('button', { name: 'Confirm and log workout' }).click();
 
     // Manually navigate to the Today/Dashboard tab after logging
     await page.getByRole('tab', { name: 'Today tab' }).click();
 
     await expect(page.getByText('CALORIES LEFT').or(page.getByText('OVER GOAL'))).toBeVisible({ timeout: 3000 });
     // BURNED should be non-zero
+    // The calorie number is the second div child of the burned glass-card
     const burnedSection = page.locator('text=kcal active').locator('..');
-    const burnText = await burnedSection.locator('div').first().textContent();
+    const burnText = await burnedSection.locator('div').nth(1).textContent();
     expect(parseInt(burnText ?? '0')).toBeGreaterThan(0);
   });
 
@@ -171,8 +168,8 @@ test.describe('Quick Log → DraftWorkoutReview → Confirm Flow', () => {
     await page.getByText('Monday: Back, Biceps & Abs').click();
     await page.waitForSelector('text=REVIEW WORKOUT', { timeout: 3000 });
 
-    // Cancel via the × button
-    await page.locator('button').filter({ has: page.locator('svg') }).last().click();
+    // Cancel via the aria-labelled cancel button
+    await page.getByRole('button', { name: 'Cancel draft' }).click();
 
     await expect(page.getByText('Gym Routine')).toBeVisible({ timeout: 3000 });
   });

@@ -119,6 +119,7 @@ const AIInput = ({ caloriesLoggedToday, calorieGoal, onLogMeal }) => {
   const modeBtnStyle = (active) => ({
     width: 'auto',
     padding: '5px 10px',
+    minHeight: 44,
     fontSize: '0.7rem',
     fontFamily: 'var(--font-heading)',
     fontWeight: 600,
@@ -220,6 +221,7 @@ const AIInput = ({ caloriesLoggedToday, calorieGoal, onLogMeal }) => {
                 style={{
                   width: 'auto',
                   padding: '10px 16px',
+                  minHeight: 44, minWidth: 44,
                   flexShrink: 0,
                   background: loading ? 'rgba(255,255,255,0.08)' : 'var(--gradient-cta)',
                   color: 'var(--black)',

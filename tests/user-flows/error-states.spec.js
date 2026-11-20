@@ -74,8 +74,8 @@ test.describe('Error States — AI Advisor', () => {
     await page.getByRole('button', { name: /ask gemini/i }).click();
     await expect(page.getByText(/cannot reach/i)).toBeVisible({ timeout: 5000 });
 
-    // Close the result panel
-    await page.locator('div').filter({ hasText: "Gemini's Advice" }).locator('button').last().click();
+    // Close button is a sibling of the "Gemini's Advice" label — go up two levels then find button
+    await page.getByRole('button', { name: 'Close AI advice' }).click();
     await expect(page.getByText(/cannot reach/i)).not.toBeVisible({ timeout: 2000 });
   });
 });
@@ -96,10 +96,10 @@ test.describe('Error States — AI Meal Analysis (AIInput)', () => {
     await page.goto('/');
     await page.waitForSelector('header h1', { timeout: 8000 });
 
-    // The AIInput component is on the Dashboard tab
-    const aiInput = page.getByPlaceholder(/what did you eat/i);
+    // AIInput is on the Dashboard tab — placeholder and button reflect current component
+    const aiInput = page.getByPlaceholder("e.g. '2 slices pizza, a cola, garlic bread'");
     await aiInput.fill('3 boiled eggs and a banana');
-    await page.getByRole('button', { name: /analyze meal/i }).click();
+    await page.getByRole('button', { name: /submit text for ai analysis/i }).click();
 
     await expect(page.getByText(/ai model unavailable|error|failed/i)).toBeVisible({ timeout: 5000 });
   });
@@ -123,9 +123,9 @@ test.describe('Error States — AI Cardio Analysis', () => {
     await page.getByRole('tab', { name: 'Training tab' }).click();
     await page.waitForSelector('text=Gym Routine', { timeout: 4000 });
 
-    const cardioInput = page.getByPlaceholder(/what did you do|walked|ran/i).first();
+    const cardioInput = page.getByPlaceholder("e.g. '12 mins incline 10° 4.2 speed, 9 mins flat 4.0'");
     await cardioInput.fill('ran 5km in 25 mins');
-    await page.getByRole('button', { name: /analyze cardio/i }).click();
+    await page.getByRole('button', { name: /submit cardio text for ai analysis/i }).click();
 
     await expect(page.getByText(/cardio model error|error|failed/i)).toBeVisible({ timeout: 5000 });
   });

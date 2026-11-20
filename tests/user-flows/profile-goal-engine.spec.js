@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { setupApiMocks } from '../mocks/api-mocks.js';
 import { setupAuthenticated } from '../helpers/setup-authenticated.js';
-import { calcBMR, calcGoalCalories } from '../../src/calc.js';
+import { calcBMR, calcGoalCalories } from '../../src/lib/calc.js';
 
 // The api-mock returns: age 23, height_cm 175, weight_kg 75.5, (gender defaults to 'male',
 // goal_type defaults to 'maintenance').
@@ -27,8 +27,8 @@ async function openProfile(page) {
 test.describe('Profile — BMR-Driven Goal Engine', () => {
   test('dashboard shows the correct computed baseGoal calories (no activity)', async ({ page }) => {
     await boot(page);
-    // With no workouts/cardio/steps, adjustedGoal = baseGoal = MAINTENANCE_CAL
-    await expect(page.getByText(String(MAINTENANCE_CAL))).toBeVisible({ timeout: 3000 });
+    // value-bump is the live calorie number (excludes aria-hidden ghost watermark)
+    await expect(page.locator('.dashboard-hero .value-bump')).toHaveText(String(MAINTENANCE_CAL), { timeout: 3000 });
   });
 
   test('BMR breakdown chips are visible on the dashboard hero card', async ({ page }) => {
@@ -54,8 +54,7 @@ test.describe('Profile — BMR-Driven Goal Engine', () => {
     await page.getByRole('button', { name: /save/i }).click();
     await page.waitForSelector('text=MY PROFILE', { state: 'detached', timeout: 4000 });
 
-    // Dashboard should now display a lower calorie target
-    await expect(page.getByText(String(FAT_LOSS_CAL))).toBeVisible({ timeout: 3000 });
+    await expect(page.locator('.value-bump')).toHaveText(String(FAT_LOSS_CAL), { timeout: 3000 });
   });
 
   test('changing goal_type to bulk in profile raises the calorie goal', async ({ page }) => {
@@ -67,7 +66,7 @@ test.describe('Profile — BMR-Driven Goal Engine', () => {
     await page.getByRole('button', { name: /save/i }).click();
     await page.waitForSelector('text=MY PROFILE', { state: 'detached', timeout: 4000 });
 
-    await expect(page.getByText(String(BULK_CAL))).toBeVisible({ timeout: 3000 });
+    await expect(page.locator('.value-bump')).toHaveText(String(BULK_CAL), { timeout: 3000 });
   });
 
   test('updating weight in profile recalculates protein and fat macro goals', async ({ page }) => {
@@ -97,9 +96,9 @@ test.describe('Profile Modal — Structural Checks', () => {
 
   test('profile modal pre-fills age, height and weight from settings', async ({ page }) => {
     await openProfile(page);
-    await expect(page.getByDisplayValue('23')).toBeVisible();   // age
-    await expect(page.getByDisplayValue('175')).toBeVisible();  // height_cm
-    await expect(page.getByDisplayValue('75.5')).toBeVisible(); // weight_kg
+    await expect(page.locator('input[aria-label="Age"]')).toHaveValue('23');
+    await expect(page.locator('input[aria-label="Height"]')).toHaveValue('175');
+    await expect(page.locator('input[aria-label="Weight"]')).toHaveValue('75.5');
   });
 
   test('closing the modal with Cancel does not navigate away from dashboard', async ({ page }) => {
@@ -119,8 +118,9 @@ test.describe('Profile Modal — Structural Checks', () => {
 
   test('Training Plan tab is accessible from within the profile modal', async ({ page }) => {
     await openProfile(page);
-    await page.getByRole('button', { name: /training plan/i }).click();
-    await expect(page.getByRole('button', { name: /generate ai plan/i }).or(
+    // Tab button label is "Training" not "Training Plan"
+    await page.getByRole('button', { name: /^training$/i }).click();
+    await expect(page.getByText(/ai generate plan/i).or(
       page.getByText(/monday/i).or(page.getByText(/gym/i))
     )).toBeVisible({ timeout: 3000 });
   });

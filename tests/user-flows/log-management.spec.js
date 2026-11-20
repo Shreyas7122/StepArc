@@ -20,9 +20,10 @@ async function logCustomFood(page, name, calories, protein = '0', fibre = '0') {
 async function logWorkout(page, sets = '3') {
   await page.getByRole('tab', { name: 'Training tab' }).click();
   await page.waitForSelector('text=02 · SINGLE EXERCISE', { timeout: 4000 });
+  // First item in exercise database is Deadlift — click to open, pick first
   await page.getByPlaceholder('Search exercise… e.g. incline').click();
-  await page.getByPlaceholder('Search exercise… e.g. incline').fill('Deadlift');
-  await page.locator('[role="listbox"]').locator('div').first().click();
+  await page.waitForSelector('.search-option', { timeout: 4000 });
+  await page.locator('.search-option').first().click({ force: true });
   await page.getByPlaceholder('e.g. 4').fill(sets);
   await page.getByRole('button', { name: /log exercise/i }).click();
   await page.getByRole('tab', { name: 'Logs tab' }).click();
@@ -52,17 +53,15 @@ test.describe('Log Management — Food Logs', () => {
     await logCustomFood(page, 'Delete Me Food', 100);
     await expect(page.getByText('Delete Me Food')).toBeVisible();
 
-    // AI logs don't have an edit button — only a delete (red ×) button
-    const logRow = page.locator('div').filter({ hasText: 'Delete Me Food' }).last();
-    await logRow.getByRole('button').last().click();
+    // AI food logs only have a delete button (aria-label "Delete food log")
+    await page.getByRole('button', { name: 'Delete food log' }).first().click();
 
     await expect(page.getByText('Delete Me Food')).not.toBeVisible({ timeout: 2000 });
   });
 
   test('deleting the only food log shows the empty state message', async ({ page }) => {
     await logCustomFood(page, 'Solo Food', 200);
-    const logRow = page.locator('div').filter({ hasText: 'Solo Food' }).last();
-    await logRow.getByRole('button').last().click();
+    await page.getByRole('button', { name: 'Delete food log' }).first().click();
 
     await expect(page.getByText('No food logged yet.')).toBeVisible({ timeout: 3000 });
   });
@@ -106,16 +105,13 @@ test.describe('Log Management — Workout Logs', () => {
     await logWorkout(page, '3');
     await expect(page.getByText('3 sets')).toBeVisible();
 
-    // Click the edit (pencil) button
-    const workoutRow = page.locator('div').filter({ hasText: 'Deadlift' }).last();
-    const editBtn = workoutRow.locator('button').nth(0); // first button = edit (pencil)
-    await editBtn.click();
+    // Click the edit (pencil) button using aria-label
+    await page.getByRole('button', { name: 'Edit workout log' }).first().click();
 
     // Inline number input appears — change from 3 to 5
-    const setsInput = workoutRow.locator('input[type="number"]');
-    await setsInput.fill('5');
-    // Confirm (check icon)
-    await workoutRow.locator('button').filter({ has: page.locator('svg.lucide-check') }).click();
+    await page.locator('input[type="number"]').last().fill('5');
+    // Confirm (check icon) using aria-label
+    await page.getByRole('button', { name: 'Save workout edit' }).click();
 
     await expect(page.getByText('5 sets')).toBeVisible({ timeout: 2000 });
     await expect(page.getByText('3 sets')).not.toBeVisible({ timeout: 2000 });
@@ -125,9 +121,7 @@ test.describe('Log Management — Workout Logs', () => {
     await logWorkout(page, '3');
     await expect(page.getByText('Deadlift')).toBeVisible();
 
-    const workoutRow = page.locator('div').filter({ hasText: 'Deadlift' }).last();
-    // Last button in row = red delete ×
-    await workoutRow.getByRole('button').last().click();
+    await page.getByRole('button', { name: 'Delete workout log' }).first().click();
 
     await expect(page.getByText('Deadlift')).not.toBeVisible({ timeout: 2000 });
     await expect(page.getByText('No workout logged yet.')).toBeVisible({ timeout: 2000 });
@@ -153,12 +147,12 @@ test.describe('Log Management — Cardio Logs', () => {
     await page.getByRole('tab', { name: 'Training tab' }).click();
     await page.waitForSelector('text=Gym Routine', { timeout: 4000 });
 
-    const cardioInput = page.getByPlaceholder(/what did you do|walked|ran/i).first();
+    const cardioInput = page.getByPlaceholder("e.g. '12 mins incline 10° 4.2 speed, 9 mins flat 4.0'");
     await cardioInput.fill('walked on treadmill 30 mins');
-    await page.getByRole('button', { name: /analyze cardio/i }).click();
+    await page.getByRole('button', { name: /submit cardio text for ai analysis/i }).click();
     // Mock returns "Mocked AI Treadmill Cardio" — confirm it
     await expect(page.getByText('Mocked AI Treadmill Cardio')).toBeVisible({ timeout: 4000 });
-    await page.getByRole('button', { name: /log cardio/i }).click();
+    await page.getByRole('button', { name: /log session/i }).click();
 
     await page.getByRole('tab', { name: 'Logs tab' }).click();
     await page.waitForSelector('text=Cardio Log', { timeout: 4000 });
@@ -170,18 +164,17 @@ test.describe('Log Management — Cardio Logs', () => {
     // Log cardio first
     await page.getByRole('tab', { name: 'Training tab' }).click();
     await page.waitForSelector('text=Gym Routine', { timeout: 4000 });
-    const cardioInput = page.getByPlaceholder(/what did you do|walked|ran/i).first();
+    const cardioInput = page.getByPlaceholder("e.g. '12 mins incline 10° 4.2 speed, 9 mins flat 4.0'");
     await cardioInput.fill('run 5km');
-    await page.getByRole('button', { name: /analyze cardio/i }).click();
+    await page.getByRole('button', { name: /submit cardio text for ai analysis/i }).click();
     await expect(page.getByText('Mocked AI Treadmill Cardio')).toBeVisible({ timeout: 4000 });
-    await page.getByRole('button', { name: /log cardio/i }).click();
+    await page.getByRole('button', { name: /log session/i }).click();
 
     await page.getByRole('tab', { name: 'Logs tab' }).click();
     await page.waitForSelector('text=Cardio Log', { timeout: 4000 });
     await expect(page.getByText('Mocked AI Treadmill Cardio')).toBeVisible();
 
-    const cardioRow = page.locator('div').filter({ hasText: 'Mocked AI Treadmill Cardio' }).last();
-    await cardioRow.getByRole('button').last().click();
+    await page.getByRole('button', { name: 'Delete cardio log' }).first().click();
 
     await expect(page.getByText('Mocked AI Treadmill Cardio')).not.toBeVisible({ timeout: 2000 });
     await expect(page.getByText('No cardio logged yet.')).toBeVisible({ timeout: 2000 });

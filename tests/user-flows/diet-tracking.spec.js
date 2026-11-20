@@ -1,76 +1,77 @@
 import { test, expect } from '@playwright/test';
 import { setupApiMocks } from '../mocks/api-mocks.js';
+import { setupAuthenticated } from '../helpers/setup-authenticated.js';
+
+// AI meal analysis (AIInput) lives on the Dashboard tab, not the Nutrition tab.
+// Submit button is a Send icon with aria-label "Submit text for AI analysis".
+// After mock resolves, "LOG THIS MEAL" logs the meal.
 
 test.describe('Diet & Nutrition Flow', () => {
   test.beforeEach(async ({ page }) => {
+    await setupAuthenticated(page);
     await setupApiMocks(page);
     await page.goto('/');
-    // Navigate to the Food tab
-    await page.getByRole('tab', { name: 'Food' }).click();
+    await page.waitForSelector('header h1', { timeout: 8000 });
+    // AI meal input is on the Dashboard (Today) tab — no tab switch needed
   });
 
   test('should analyze a meal via AI and log it', async ({ page }) => {
-    // Fill the AI text area
-    const input = page.getByPlaceholder('What did you eat? (e.g. 150g chicken and 1 cup rice)');
+    const input = page.getByPlaceholder("e.g. '2 slices pizza, a cola, garlic bread'");
     await expect(input).toBeVisible();
     await input.fill('150g chicken and 1 cup rice');
 
-    // Click the submit button
-    await page.getByRole('button', { name: 'Analyze Meal' }).click();
+    await page.getByRole('button', { name: /submit text for ai analysis/i }).click();
 
-    // The mock API resolves and shows the Draft Meal Review component
-    await expect(page.getByText('Mocked AI Protein Plate')).toBeVisible();
+    // Mock returns "Mocked AI Protein Plate" with its ingredients
+    await expect(page.getByText('Mocked AI Protein Plate')).toBeVisible({ timeout: 5000 });
     await expect(page.getByText('Grilled Chicken')).toBeVisible();
     await expect(page.getByText('Steamed Rice')).toBeVisible();
 
-    // Click "Log Meal" to save it
-    await page.getByRole('button', { name: 'Log Meal' }).click();
+    // Log the meal
+    await page.getByRole('button', { name: /log this meal/i }).click();
 
-    // It should now appear in the LogList
+    // Navigate to logs to confirm entry was saved
+    await page.getByRole('tab', { name: 'Logs tab' }).click();
+    await page.waitForSelector('text=Food Log', { timeout: 4000 });
     await expect(page.getByText('Mocked AI Protein Plate')).toBeVisible();
-    
-    // Check if the AI indicator is visible on the logged item
-    const aiBadge = page.locator('.lucide-sparkles').first();
-    await expect(aiBadge).toBeVisible();
   });
 
-  test('should add a meal manually via SearchSelect', async ({ page }) => {
-    // Open the manual search select
-    await page.getByText('Search database...').click();
-    
-    // Type in the search box
-    await page.getByPlaceholder('Search...').fill('Oats');
-    
-    // Select the "Oats" item from the mock database list (assuming Oats is in data.js)
-    // We can just click the first item in the dropdown
-    await page.locator('[role="listbox"] > div').first().click();
+  test('should add a meal manually via food database search', async ({ page }) => {
+    // Navigate to the Nutrition tab — food database search is in section 02
+    await page.getByRole('tab', { name: 'Nutrition tab' }).click();
+    await page.waitForSelector('text=02 · FROM DATABASE', { timeout: 4000 });
 
-    // We should see the manual entry form with amount
-    const amountInput = page.locator('input[type="number"]').first();
+    // Open dropdown and pick first food item — no typing needed for this validation test
+    await page.getByPlaceholder('Search food… e.g. oats').click();
+    await page.waitForSelector('.search-option', { timeout: 4000 });
+    await page.locator('.search-option').first().click({ force: true });
+
+    const amountInput = page.getByLabel('Amount (grams)');
     await amountInput.fill('50');
 
-    // Add item
-    await page.getByRole('button', { name: 'Add' }).click();
+    await page.getByRole('button', { name: /add food/i }).click();
 
-    // Verify it was added to the list (the first item from the database is usually Apple or Oats, we will check if an amount is shown)
-    // We check that a generic "g" unit or amount is visible
-    await expect(page.getByText('50g')).toBeVisible();
+    // Navigate to logs to confirm
+    await page.getByRole('tab', { name: 'Logs tab' }).click();
+    await page.waitForSelector('text=Food Log', { timeout: 4000 });
+    await expect(page.getByText('Oats (Dry/Raw)')).toBeVisible();
   });
 
-  test('should delete a logged meal', async ({ page }) => {
-    // First log a meal
-    await page.getByPlaceholder('What did you eat?').fill('Apple');
-    await page.getByRole('button', { name: 'Analyze Meal' }).click();
-    await page.getByRole('button', { name: 'Log Meal' }).click();
+  test('should delete a logged meal from the Logs tab', async ({ page }) => {
+    // Log a meal via AI on Dashboard
+    const input = page.getByPlaceholder("e.g. '2 slices pizza, a cola, garlic bread'");
+    await input.fill('Apple');
+    await page.getByRole('button', { name: /submit text for ai analysis/i }).click();
+    await expect(page.getByText('Mocked AI Protein Plate')).toBeVisible({ timeout: 5000 });
+    await page.getByRole('button', { name: /log this meal/i }).click();
 
-    // Find the delete button for the logged meal
-    // Since there are multiple delete buttons in the app, we target the one in the log list
-    const logItem = page.locator('.log-item').first();
-    const deleteButton = logItem.getByRole('button');
-    
-    await deleteButton.click();
+    await page.getByRole('tab', { name: 'Logs tab' }).click();
+    await page.waitForSelector('text=Food Log', { timeout: 4000 });
+    await expect(page.getByText('Mocked AI Protein Plate')).toBeVisible();
 
-    // Verify it is removed
-    await expect(page.getByText('Mocked AI Protein Plate')).toBeHidden();
+    // LogList renders delete button with aria-label="Delete food log"
+    await page.getByRole('button', { name: 'Delete food log' }).first().click();
+
+    await expect(page.getByText('Mocked AI Protein Plate')).not.toBeVisible({ timeout: 3000 });
   });
 });

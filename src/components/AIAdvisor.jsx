@@ -314,6 +314,7 @@ const AIAdvisor = ({ foodLogs, workoutLogs, cardioLogs, steps, totals, userProfi
             style={{
               width: 'auto',
               padding: '9px 16px',
+              minHeight: 44,
               fontSize: '0.8rem',
               fontFamily: 'var(--font-heading)',
               fontWeight: 700,
@@ -375,6 +376,7 @@ const AIAdvisor = ({ foodLogs, workoutLogs, cardioLogs, steps, totals, userProfi
               )}
             </div>
             <button
+              aria-label="Close AI advice"
               onClick={() => setOpen(false)}
               style={{ width: 'auto', padding: '6px', background: 'transparent', color: 'var(--gray-500)', borderRadius: 'var(--r-md)' }}
             >

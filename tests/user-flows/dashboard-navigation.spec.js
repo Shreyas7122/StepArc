@@ -42,9 +42,9 @@ test.describe('Dashboard & Core Navigation Flow', () => {
     // Modal should appear
     await expect(page.getByText('MY PROFILE')).toBeVisible({ timeout: 3000 });
 
-    // Check if the mock data is populated
-    await expect(page.getByDisplayValue('23')).toBeVisible(); // Age
-    await expect(page.getByDisplayValue('175')).toBeVisible(); // Height
+    // Check if the mock data is populated (inputs carry aria-label matching Field label prop)
+    await expect(page.locator('input[aria-label="Age"]')).toHaveValue('23');
+    await expect(page.locator('input[aria-label="Height"]')).toHaveValue('175');
 
     // Close the modal using the close button (aria-label="Close profile settings")
     await page.click('button[aria-label="Close profile settings"]');

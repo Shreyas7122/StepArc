@@ -120,7 +120,7 @@ test.describe('03 · Custom Food Entry — Manual Macro Form', () => {
     await page.waitForSelector('text=Food Log', { timeout: 4000 });
 
     await expect(page.getByText('Chicken Subji')).toBeVisible();
-    // Custom foods are logged via handleAILog so they carry the "AI" badge
-    await expect(page.getByText('AI')).toBeVisible();
+    // Custom foods are logged via handleAILog so they carry the "AI" MonoBadge
+    await expect(page.getByText('AI', { exact: true })).toBeVisible();
   });
 });

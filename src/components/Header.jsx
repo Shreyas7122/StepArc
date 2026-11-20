@@ -1,9 +1,27 @@
 import { User, LogOut } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 const Header = ({ onOpenProfile, onSignOut, userEmail }) => {
   const [showMenu, setShowMenu] = useState(false);
+  const menuBtnRef = useRef(null);
+  const dropdownRef = useRef(null);
+
+  // Close when clicking outside both the toggle button AND the dropdown panel.
+  // Using mousedown so it fires before click but only when outside both refs.
+  useEffect(() => {
+    if (!showMenu) return;
+    const close = (e) => {
+      if (
+        !menuBtnRef.current?.contains(e.target) &&
+        !dropdownRef.current?.contains(e.target)
+      ) {
+        setShowMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', close);
+    return () => document.removeEventListener('mousedown', close);
+  }, [showMenu]);
   const today = new Date();
   const dateStr = today.toLocaleDateString('en-US', {
     weekday: 'long', month: 'long', day: 'numeric',
@@ -56,12 +74,14 @@ const Header = ({ onOpenProfile, onSignOut, userEmail }) => {
       {/* User button — top right */}
       <div style={{ position: 'absolute', top: 'calc(18px + env(safe-area-inset-top, 0px))', right: 18, zIndex: 100 }}>
         <button
+          ref={menuBtnRef}
           type="button"
           aria-label="Toggle user profile and settings menu"
           onClick={() => setShowMenu(v => !v)}
           style={{
             width: 'auto',
             padding: '8px 10px',
+            minWidth: 44, minHeight: 44,
             background: 'rgba(255,255,255,0.06)',
             border: '1px solid var(--ink-700)',
             borderRadius: 'var(--r-md)',
@@ -81,9 +101,10 @@ const Header = ({ onOpenProfile, onSignOut, userEmail }) => {
 
       {/* Dropdown menu — portaled to body to escape transform containing block */}
       {showMenu && createPortal(
-        <>
-          <div onClick={() => setShowMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 9998 }} />
-          <div
+        <div
+            ref={dropdownRef}
+            role="menu"
+            aria-label="User account menu"
             style={{
               position: 'fixed',
               top: 'calc(68px + env(safe-area-inset-top, 0px))',
@@ -124,7 +145,7 @@ const Header = ({ onOpenProfile, onSignOut, userEmail }) => {
               type="button"
               onClick={() => { setShowMenu(false); onSignOut(); }}
               style={{
-                width: '100%', padding: '12px 16px',
+                width: '100%', padding: '12px 16px', minHeight: 44,
                 background: 'transparent', border: 'none',
                 borderTop: '1px solid var(--ink-700)',
                 color: 'var(--danger)',
@@ -140,8 +161,7 @@ const Header = ({ onOpenProfile, onSignOut, userEmail }) => {
             >
               <LogOut size={15} /> Sign Out
             </button>
-          </div>
-        </>,
+          </div>,
         document.body
       )}
 

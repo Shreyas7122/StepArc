@@ -63,6 +63,7 @@ const DraftFoodRow = ({ it, foodDef, cal, hasPieces, pieces, onUpdateAmount, onR
         />
         <span style={{ fontSize: '0.72rem', color: 'var(--gray-500)' }}>{displayUnit}</span>
         <button
+          aria-label="Remove item"
           onClick={() => onRemoveItem(it.tempId)}
           style={{ background: 'rgba(239,68,68,0.15)', padding: '7px', width: 'auto', borderRadius: 'var(--r-md)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.2)' }}
         >
@@ -169,6 +170,7 @@ const DraftMealReview = ({
             </div>
           </div>
           <button
+            aria-label="Cancel draft"
             onClick={onCancel}
             style={{
               background: 'transparent',
@@ -346,6 +348,7 @@ const DraftMealReview = ({
 
         {/* Confirm button */}
         <button
+          aria-label="Confirm and log meal"
           onClick={onConfirm}
           style={{
             background: 'var(--gradient-cta)',

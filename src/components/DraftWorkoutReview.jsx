@@ -53,6 +53,7 @@ const DraftWorkoutReview = ({
           </div>
         </div>
         <button
+          aria-label="Cancel draft"
           onClick={onCancel}
           style={{
             background: 'transparent',
@@ -193,6 +194,7 @@ const DraftWorkoutReview = ({
 
       {/* Confirm button */}
       <button
+        aria-label="Confirm and log workout"
         onClick={onConfirm}
         style={{
           background: 'var(--gradient-cta)',

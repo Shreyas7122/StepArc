@@ -12,7 +12,14 @@
     "test:unit:watch": "vitest",
     "test:e2e": "playwright test",
     "test:a11y": "playwright test tests/accessibility.spec.js",
-    "test": "vitest run && playwright test"
+    "test": "vitest run && playwright test",
+    "android:sync": "cap sync android",
+    "android:open": "cap open android",
+    "android:build": "npm run build && cap sync android",
+    "android:studio": "npm run build && cap sync android && cap open android",
+    "android:run": "npm run build && cap sync android && cap run android",
+    "backend:dev": "cd backend && ../venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000 --reload",
+    "ngrok:api": "ngrok http 8000 --log=stdout"
   },
   "dependencies": {
     "@capacitor/android": "^8.3.3",
